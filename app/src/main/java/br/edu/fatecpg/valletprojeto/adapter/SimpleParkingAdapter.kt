@@ -31,7 +31,7 @@ class SimpleParkingAdapter(
             )
 
             binding.txvPreco.text = "R$%.2f/h".format(estacionamento.valorHora)
-            binding.txvEnderecoEstacionamento.text = estacionamento.endereco
+            binding.txvEnderecoEstacionamento.text = estacionamento.enderecoCompleto
             binding.tvParkingDistance.text = formatarDistancia(estacionamento.distanciaMetros)
 
             Glide.with(binding.root.context)

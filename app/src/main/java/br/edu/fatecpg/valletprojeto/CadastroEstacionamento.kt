@@ -35,24 +35,31 @@ class CadastroEstacionamento : AppCompatActivity() {
                 cep,
                 onSuccess = { endereco ->
 
-                    val enderecoCompleto = "${endereco.logradouro}, ${endereco.bairro}, ${endereco.localidade} - ${endereco.uf}"
+                    val enderecoParaGeocoder = "${endereco.logradouro}, ${endereco.bairro}, ${endereco.localidade} - ${endereco.uf}"
 
                     val geocoder = Geocoder(this, Locale.getDefault())
                     val resultados = try {
-                        geocoder.getFromLocationName(enderecoCompleto, 1)
+                        geocoder.getFromLocationName(enderecoParaGeocoder, 1)
                     } catch (e: Exception) {
                         e.printStackTrace()
                         null
                     }
+                    val mapaEndereco = hashMapOf(
+                        "cep" to endereco.cep,
+                        "logradouro" to endereco.logradouro,
+                        "complemento" to "",
+                        "numero" to "",
+                        "bairro" to endereco.bairro,
+                        "cidade" to endereco.localidade,
+                        "uf" to endereco.uf
+                    )
 
-                    val latitude = resultados?.firstOrNull()?.latitude
-                    val longitude = resultados?.firstOrNull()?.longitude
 
                     val est = Estacionamento(
                         nome = binding.edtNomeEstacionamento.text.toString().trim(),
                         cnpj = binding.edtCnpj.text.toString().trim(),
                         telefone = binding.edtTelefone.text.toString().trim(),
-                        endereco = enderecoCompleto,
+                        endereco = mapaEndereco,
                         cep = endereco.cep,
                         quantidadeVagasTotal = binding.edtVagasTotal.text.toString().toIntOrNull() ?: 0,
                         tiposVagasComum = true,
