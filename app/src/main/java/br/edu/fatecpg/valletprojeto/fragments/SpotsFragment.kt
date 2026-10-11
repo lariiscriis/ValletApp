@@ -23,6 +23,8 @@ import br.edu.fatecpg.valletprojeto.adapter.FavoriteParkingAdapter
 import br.edu.fatecpg.valletprojeto.adapter.SimpleParkingAdapter
 import br.edu.fatecpg.valletprojeto.databinding.FragmentSpotsBinding
 import br.edu.fatecpg.valletprojeto.viewmodel.SpotsViewModel
+import com.google.firebase.firestore.FirebaseFirestore
+import java.util.Locale
 
 class SpotsFragment : Fragment() {
 
@@ -57,9 +59,106 @@ class SpotsFragment : Fragment() {
             val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
             val spokenText = results?.getOrNull(0)
             if (!spokenText.isNullOrBlank()) {
+                handleVoiceCommand(spokenText)
+            }
+        }
+    }
+
+    private fun handleVoiceCommand(spokenText: String) {
+        val command = spokenText.lowercase(Locale.getDefault())
+
+        when {
+            command.contains("cancel") -> {
+                cancelarReservaAtivaPorVoz()
+            }
+            command.contains("reserv") -> {
+                val parkingNameQuery = extractParkingNameFromCommand(command)
+                val currentParkings = viewModel.parkings.value ?: emptyList()
+
+                val targetParking = if (parkingNameQuery.isNotBlank()) {
+                    currentParkings.firstOrNull { it.nome.contains(parkingNameQuery, ignoreCase = true) }
+                        ?: currentParkings.firstOrNull()
+                } else {
+                    currentParkings.firstOrNull()
+                }
+
+                if (targetParking != null) {
+                    Toast.makeText(requireContext(), "Abrindo vagas para ${targetParking.nome}", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(requireContext(), VagaActivity::class.java)
+                    intent.putExtra("estacionamentoId", targetParking.id)
+                    startActivity(intent)
+                } else {
+                    Toast.makeText(requireContext(), "Nenhum estacionamento encontrado para reserva", Toast.LENGTH_SHORT).show()
+                    binding.svSearch.setQuery(spokenText, true)
+                }
+            }
+            command.contains("favorit") -> {
+                Toast.makeText(requireContext(), "Filtrando favoritos", Toast.LENGTH_SHORT).show()
+                binding.svSearch.setQuery("favorito", false)
+            }
+            else -> {
                 binding.svSearch.setQuery(spokenText, true)
             }
         }
+    }
+
+    private fun extractParkingNameFromCommand(command: String): String {
+        return command
+            .replace("reserve", "")
+            .replace("reservar", "")
+            .replace("reserva", "")
+            .replace("uma", "")
+            .replace("vaga", "")
+            .replace("no", "")
+            .replace("na", "")
+            .replace("estacionamento", "")
+            .replace("por favor", "")
+            .trim()
+    }
+
+    private fun cancelarReservaAtivaPorVoz() {
+        val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        if (userId == null) {
+            Toast.makeText(requireContext(), "Usuário não autenticado", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        Toast.makeText(requireContext(), "Buscando reserva ativa para cancelar...", Toast.LENGTH_SHORT).show()
+
+        val db = FirebaseFirestore.getInstance()
+        db.collection("reserva")
+            .whereEqualTo("usuarioId", userId)
+            .whereEqualTo("status", "ativa")
+            .limit(1)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val doc = snapshot.documents.firstOrNull()
+                if (doc != null) {
+                    val reservaId = doc.id
+                    val vagaId = doc.getString("vagaId")
+
+                    val batch = db.batch()
+                    batch.update(doc.reference, "status", "cancelada")
+                    if (!vagaId.isNullOrEmpty()) {
+                        val vagaRef = db.collection("vaga").document(vagaId)
+                        batch.update(vagaRef, "disponivel", true)
+                    }
+
+                    batch.commit().addOnSuccessListener {
+                        Toast.makeText(requireContext(), "Reserva cancelada com sucesso!", Toast.LENGTH_LONG).show()
+                        try {
+                            androidx.work.WorkManager.getInstance(requireContext()).cancelAllWorkByTag("reserva_$reservaId")
+                        } catch (_: Exception) {}
+                    }.addOnFailureListener { e ->
+                        Toast.makeText(requireContext(), "Erro ao cancelar reserva: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Nenhuma reserva ativa encontrada para cancelar", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(requireContext(), "Erro ao buscar reserva: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -159,7 +258,7 @@ class SpotsFragment : Fragment() {
         binding.btnVoiceSearch.setOnClickListener {
             val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-                putExtra(RecognizerIntent.EXTRA_LANGUAGE, java.util.Locale.getDefault())
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
                 putExtra(RecognizerIntent.EXTRA_PROMPT, "Fale o nome ou endereço do estacionamento")
             }
             try {
