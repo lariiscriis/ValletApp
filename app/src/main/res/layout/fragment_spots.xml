@@ -64,14 +64,32 @@
                 app:cardCornerRadius="24dp"
                 app:cardElevation="2dp">
 
-                <androidx.appcompat.widget.SearchView
-                    android:id="@+id/sv_search"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="48dp"
-                    app:iconifiedByDefault="false"
-                    app:queryBackground="@android:color/transparent"
-                    app:queryHint="Pesquisar estacionamento" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <androidx.appcompat.widget.SearchView
+                        android:id="@+id/sv_search"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:minHeight="48dp"
+                        app:iconifiedByDefault="false"
+                        app:queryBackground="@android:color/transparent"
+                        app:queryHint="Pesquisar estacionamento" />
+
+                    <ImageButton
+                        android:id="@+id/btn_voice_search"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Pesquisa por voz"
+                        android:src="@drawable/ic_mic" />
+
+                </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 

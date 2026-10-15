@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:layout_marginTop="24dp"
-    android:layout_marginBottom="24dp">
+    android:fillViewport="true">
+<!--    android:layout_marginTop="24dp"-->
+<!--    android:layout_marginBottom="24dp">-->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -168,48 +168,111 @@
             android:layout_width="100dp"
             android:layout_height="100dp"/>
 
-        <!-- Botões de Ação (permanecem os mesmos) -->
+        <!-- ===================== BOTÕES DE AÇÃO ===================== -->
 
+        <!-- Verificar Rota: sempre visível, largura total -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_verificar_rota"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:layout_marginTop="20dp"
             android:text="Verificar Rota"
+            android:textAllCaps="false"
+            app:cornerRadius="16dp"
             app:icon="@drawable/ic_parking"
             app:iconGravity="textStart"
             app:iconPadding="8dp"
             app:backgroundTint="@color/verdeclaro" />
 
+        <!-- Confirmar Reserva: visível apenas ANTES da reserva ser criada -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_reservar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
+            android:layout_marginTop="14dp"
             android:text="Confirmar Reserva"
-            app:backgroundTint="@color/verdeescuro"
-            android:layout_marginTop="20dp"/>
+            android:textAllCaps="false"
+            app:cornerRadius="16dp"
+            app:backgroundTint="@color/verdeescuro" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_renovar"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        <!-- Renovar + Finalizar: lado a lado, visíveis com a reserva ATIVA -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Renovar por +1 hora"
-            android:visibility="gone"/>
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_renovar"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="Renovar"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/ic_schedule"
+                app:iconGravity="textStart"
+                app:iconPadding="4dp"
+                app:iconSize="16dp"
+                app:strokeColor="@color/verdeescuro"
+                android:textColor="@color/verdeescuro"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_finalizar"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:text="Finalizar"
+                android:textAllCaps="false"
+                android:textSize="13sp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/ic_flag"
+                app:iconGravity="textStart"
+                app:iconPadding="4dp"
+                app:iconSize="16dp"
+                app:backgroundTint="@color/verdeescuro"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Cancelar Reserva: ação destrutiva, visual discreto, separada das demais -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cancelar"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:text="Cancelar Reserva"
+            android:textAllCaps="false"
+            app:icon="@drawable/ic_cancel"
+            app:iconGravity="textStart"
+            app:iconSize="16dp"
+            app:iconTint="@android:color/holo_red_dark"
             android:textColor="@android:color/holo_red_dark"
+            android:textSize="13sp"
             android:visibility="gone"/>
 
         <ProgressBar
             android:id="@+id/progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:visibility="gone"/>
 
     </LinearLayout>

@@ -493,6 +493,82 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    fun finalizarReservaAposPagamento(
+        vaga: Vaga,
+        onConcluido: () -> Unit
+    ) {
+        viewModelScope.launch {
+            val userId = auth.currentUser?.uid
+
+            if (userId == null) {
+                Log.e("ReservaViewModel", "Usuário não autenticado.")
+                return@launch
+            }
+
+            try {
+                cancelarNotificacoesAgendadas(getApplication())
+
+                val reservaAtivaSnapshot = db.collection("reserva")
+                    .whereEqualTo("usuarioId", userId)
+                    .whereEqualTo("vagaId", vaga.id)
+                    .whereEqualTo("status", "ativa")
+                    .limit(1)
+                    .get()
+                    .await()
+
+                val reservaDoc = reservaAtivaSnapshot.documents.firstOrNull()
+
+                if (reservaDoc == null) {
+                    Log.e("ReservaViewModel", "Nenhuma reserva ativa encontrada.")
+                    return@launch
+                }
+
+                val batch = db.batch()
+
+                // Finaliza a reserva
+                batch.update(
+                    reservaDoc.reference,
+                    "status",
+                    "cancelada"
+                )
+
+                // Libera a vaga
+                val vagaRef = db.collection("vaga").document(vaga.id)
+
+                batch.update(
+                    vagaRef,
+                    "disponivel",
+                    true
+                )
+
+                // Salva tudo no Firebase
+                batch.commit().await()
+
+                // Para o cronômetro
+                timer?.cancel()
+
+                _temReservaAtiva.value = false
+                idVagaAtiva = null
+                currentReservaId = null
+
+                Log.d(
+                    "ReservaViewModel",
+                    "Reserva finalizada após pagamento."
+                )
+
+                // Só avisa que terminou DEPOIS do Firebase confirmar
+                onConcluido()
+
+            } catch (e: Exception) {
+                Log.e(
+                    "ReservaViewModel",
+                    "Erro ao finalizar reserva após pagamento: ${e.message}",
+                    e
+                )
+            }
+        }
+    }
+
     private suspend fun buscarVeiculoPadrao(): Veiculo? {
         val userId = auth.currentUser?.uid ?: return null
         return db.collection("veiculo")

@@ -24,7 +24,7 @@ class FavoriteParkingAdapter(
     inner class ViewHolder(val binding: ItemFavoriteParkingBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(estacionamento: Estacionamento) {
             binding.txvNomeEstacionamento.text = estacionamento.nome
-            binding.txvEnderecoEstacionamento.text = estacionamento.endereco
+            binding.txvEnderecoEstacionamento.text = estacionamento.enderecoCompleto
 
             val isOpen = estacionamento.estaAberto()
             binding.tvParkingStatus.text = if (isOpen) "ABERTO" else "FECHADO"

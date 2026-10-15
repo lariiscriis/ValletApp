@@ -16,15 +16,36 @@ import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
+import br.edu.fatecpg.valletprojeto.model.Vaga
 
 class ReservaActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityReservaBinding
     private lateinit var viewModel: ReservaViewModel
     private val db = FirebaseFirestore.getInstance()
-
     private var vagaId: String? = null
     private var estacionamentoId: String? = null
+
+    private var vagaAtivaParaPagamento: Vaga? = null
+
+    private val pagamentoLauncher =
+        registerForActivityResult(
+            androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+
+            if (result.resultCode == RESULT_OK) {
+                vagaAtivaParaPagamento?.let { vaga ->
+                    viewModel.finalizarReservaAposPagamento(vaga) {
+
+                        val intent = Intent(this, DashboardBase::class.java)
+                        startActivity(intent)
+
+                        finish()
+                    }
+                }
+            }
+        }
+
 
     private var estacionamentoLat: Double? = null
     private var estacionamentoLon: Double? = null
@@ -141,6 +162,7 @@ class ReservaActivity : AppCompatActivity() {
             binding.layoutTimerReserva.visibility = View.GONE
             binding.btnReservar.visibility = View.GONE
             binding.btnRenovar.visibility = View.GONE
+            binding.btnFinalizar.visibility = View.GONE
             binding.btnCancelar.visibility = View.GONE
 
             when (state) {
@@ -158,8 +180,11 @@ class ReservaActivity : AppCompatActivity() {
                 }
 
                 is ReservaUIState.Active -> {
+                    vagaAtivaParaPagamento = state.vaga
+
                     binding.layoutTimerReserva.visibility = View.VISIBLE
                     binding.btnRenovar.visibility = View.VISIBLE
+                    binding.btnFinalizar.visibility = View.VISIBLE
                     binding.btnCancelar.visibility = View.VISIBLE
 
                     binding.tvVagaNumero.text = "Vaga ${state.vaga.numero}"
@@ -173,6 +198,25 @@ class ReservaActivity : AppCompatActivity() {
 
                     binding.btnRenovar.setOnClickListener { viewModel.renovarReserva(state.reserva) }
                     binding.btnCancelar.setOnClickListener { viewModel.cancelarReserva(state.vaga) }
+
+                    // Finalizar Reserva: abre a tela de pagamento (mock) para encerrar
+                    // a reserva antes do horário final, passando os dados atuais.
+                    binding.btnFinalizar.setOnClickListener {
+                        val intent = Intent(this, PagamentoActivity::class.java).apply {
+                            putExtra("vagaId", state.vaga.id)
+                            putExtra("vagaNumero", state.vaga.numero)
+                            putExtra("vagaTipo", state.vaga.tipo)
+                            putExtra("vagaLocalizacao", state.vaga.localizacao)
+                            putExtra("estacionamentoNome", estacionamentoNome ?: "Vallet")
+                            putExtra("veiculoModelo", state.veiculo.modelo)
+                            putExtra("veiculoPlaca", state.veiculo.placa)
+                            putExtra("horarioInicioTexto", inicioStr)
+                            putExtra("horarioFimTexto", fimStr)
+                            putExtra("horaInicioMillis", state.reserva.inicioReserva!!.toDate().time)
+                        }
+
+                        pagamentoLauncher.launch(intent)
+                    }
                 }
 
                 is ReservaUIState.Finished -> {
