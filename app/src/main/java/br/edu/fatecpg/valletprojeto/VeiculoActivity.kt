@@ -77,7 +77,6 @@ class VeiculoActivity : AppCompatActivity() {
                     putExtra("modelo", veiculo.modelo)
                     putExtra("apelido", veiculo.apelido)
                     putExtra("ano", veiculo.ano)
-                    putExtra("km", veiculo.km)
                     putExtra("tipo", veiculo.tipo)
                 }
                 editarVeiculoLauncher.launch(intent)

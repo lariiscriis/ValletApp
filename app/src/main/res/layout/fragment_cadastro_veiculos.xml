@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -126,58 +127,29 @@
                     android:textColor="#000000" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <LinearLayout
-                android:id="@+id/line_ano_km"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutEditAno"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:orientation="horizontal"
+                android:hint="@string/ano"
+                app:boxStrokeColor="@color/verdeescuro"
+                app:hintTextColor="@color/verdeescuro"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/layoutEditApelido">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/layoutEditAno"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editAno"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:hint="@string/ano"
-                    app:boxStrokeColor="@color/verdeescuro"
-                    app:hintTextColor="@color/verdeescuro">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editAno"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionNext"
-                        android:inputType="phone"
-                        android:maxLength="4"
-                        android:maxLines="1"
-                        android:textColor="#000000" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/layoutEditKM"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/KM"
-                    app:boxStrokeColor="@color/verdeescuro"
-                    app:hintTextColor="@color/verdeescuro">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/editKM"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:inputType="number"
-                        android:maxLines="1"
-                        android:textColor="#000000" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
+                    android:imeOptions="actionDone"
+                    android:inputType="number"
+                    android:maxLength="4"
+                    android:maxLines="1"
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/tv_tipo_label"
@@ -190,7 +162,7 @@
                 android:textColor="@color/verdeescuro"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/line_ano_km" />
+                app:layout_constraintTop_toBottomOf="@id/layoutEditAno" />
 
             <RadioGroup
                 android:id="@+id/rg_vehicle_type"
@@ -266,7 +238,7 @@
                 app:strokeColor="@color/verdeescuro"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnConfirmar" />
+                app:layout_constraintTop_toBottomOf="@id/btnConfirmar" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

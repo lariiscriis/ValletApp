@@ -26,7 +26,6 @@ class EditarVeiculoActivity : AppCompatActivity() {
         val modelo = intent.getStringExtra("modelo")
         val apelido = intent.getStringExtra("apelido")
         val ano = intent.getStringExtra("ano")
-        val km = intent.getStringExtra("km")
         val tipo = intent.getStringExtra("tipo")
 
         // Preencher os campos
@@ -35,7 +34,6 @@ class EditarVeiculoActivity : AppCompatActivity() {
         binding.editModelo.setText(modelo)
         binding.editApelido.setText(apelido)
         binding.editAno.setText(ano)
-        binding.editKM.setText(km)
 
         // Selecionar o tipo de veículo correto
         if (tipo.equals("Moto", ignoreCase = true)) {
@@ -81,7 +79,6 @@ class EditarVeiculoActivity : AppCompatActivity() {
         val novoModelo = binding.editModelo.text.toString()
         val novoApelido = binding.editApelido.text.toString()
         val novoAno = binding.editAno.text.toString()
-        val novoKM = binding.editKM.text.toString()
         val novoTipo = if (binding.rbCarro.isChecked) "Carro" else "Moto"
 
         if (veiculoId.isNullOrEmpty()) {
@@ -95,7 +92,6 @@ class EditarVeiculoActivity : AppCompatActivity() {
             "modelo" to novoModelo,
             "apelido" to novoApelido,
             "ano" to novoAno,
-            "km" to novoKM,
             "tipo" to novoTipo
         )
 

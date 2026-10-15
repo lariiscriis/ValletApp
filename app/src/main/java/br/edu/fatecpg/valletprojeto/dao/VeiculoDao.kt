@@ -26,7 +26,6 @@ object VeiculoDao {
             "marca" to veiculo.marca,
             "modelo" to veiculo.modelo,
             "ano" to veiculo.ano,
-            "km" to veiculo.km,
             "tipo" to veiculo.tipo,
             "usuarioEmail" to emailUsuario,
             "usuarioId" to userId,

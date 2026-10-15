@@ -68,9 +68,8 @@ class VeiculoFragment : DialogFragment() {
         val modelo = binding.editModelo.text.toString().trim()
         val apelido = binding.editApelido.text.toString().trim()
         val ano = binding.editAno.text.toString().trim()
-        val km = binding.editKM.text.toString().trim()
 
-        if (placa.isEmpty() || marca.isEmpty() || modelo.isEmpty() || ano.isEmpty() || km.isEmpty()) {
+        if (placa.isEmpty() || marca.isEmpty() || modelo.isEmpty() || ano.isEmpty()) {
             Toast.makeText(requireContext(), "Preencha todos os campos obrigatórios (*)", Toast.LENGTH_SHORT).show()
             return
         }
@@ -88,7 +87,6 @@ class VeiculoFragment : DialogFragment() {
                     modelo = modelo,
                     apelido = apelido,
                     ano = ano,
-                    km = km,
                     tipo = tipoSelecionado,
                     padrao = veiculos.isEmpty() // Define como padrão se for o primeiro veículo
                 )
