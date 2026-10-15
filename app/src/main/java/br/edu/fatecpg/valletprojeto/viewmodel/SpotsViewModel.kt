@@ -246,7 +246,7 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
             allParkingsMasterList.filterNot { it.id in (_favoriteParkings.value?.map { fav -> fav.id } ?: emptySet()) }
         } else {
             allParkingsMasterList.filter {
-                (it.nome.contains(query, ignoreCase = true) || it.endereco.contains(query, ignoreCase = true)) &&
+                (it.nome.contains(query, ignoreCase = true) || it.enderecoCompleto.contains(query, ignoreCase = true)) &&
                         it.id !in (_favoriteParkings.value?.map { fav -> fav.id } ?: emptySet())
             }
         }

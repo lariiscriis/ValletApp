@@ -6,7 +6,6 @@ data class Veiculo(
     val modelo: String = "",
     val apelido: String = "",
     val ano: String = "",
-    val km: String="",
     val tipo: String="",
     var id: String = "",
     var usuarioEmail: String = "",

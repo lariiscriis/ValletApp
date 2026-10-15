@@ -12,7 +12,7 @@ data class Estacionamento(
     val adminUid: String? = null,
     val adminEmail: String = "",
     val dataCadastro: Any? = null,
-    val endereco: String = "",
+    val endereco: Map<String, Any>? = null,
     val cep: String = "",
     val tiposVagasComum: Boolean = false,
     val tiposVagasIdosoPcd: Boolean = false,
@@ -38,6 +38,16 @@ data class Estacionamento(
 )
 {
 
+    val enderecoCompleto: String
+        get() {
+            if (endereco == null) return ""
+            val logradouro = endereco["logradouro"] ?: ""
+            val numero = endereco["numero"] ?: ""
+            val bairro = endereco["bairro"] ?: ""
+            val cidade = endereco["cidade"] ?: ""
+            val uf = endereco["uf"] ?: ""
+            return "$logradouro, $numero - $bairro, $cidade - $uf".trim().trim(',', '-', ' ')
+        }
     fun calcularDistancia(userLocation: Location?): Int? {
         if (userLocation == null || (latitude == 0.0 && longitude == 0.0)) {
             return null
