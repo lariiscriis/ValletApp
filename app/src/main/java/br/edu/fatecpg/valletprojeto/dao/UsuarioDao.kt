@@ -21,7 +21,7 @@ class UsuarioDao {
                     val data = hashMapOf(
                         "email" to usuario.email,
                         "nome" to usuario.nome,
-                        "tipo_user" to usuario.tipoUser,
+                        "tipo_user" to "motorista",
                         "data_criacao" to FieldValue.serverTimestamp()
                     )
                     usuario.cnh?.let { data["cnh"] = it }

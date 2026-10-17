@@ -137,7 +137,7 @@
                 android:layout_marginBottom="16dp"
                 android:overScrollMode="never"
                 android:visibility="gone"
-                tools:listitem="@layout/item_favorite_parking" />
+                tools:listitem="@layout/item_estacionamento_favorito" />
 
             <!-- Loading para outros estacionamentos -->
             <LinearLayout
@@ -183,7 +183,7 @@
                 android:layout_marginBottom="16dp"
                 android:overScrollMode="never"
                 android:visibility="gone"
-                tools:listitem="@layout/item_parking" />
+                tools:listitem="@layout/item_estacionamento" />
 
         </LinearLayout>
     </ScrollView>

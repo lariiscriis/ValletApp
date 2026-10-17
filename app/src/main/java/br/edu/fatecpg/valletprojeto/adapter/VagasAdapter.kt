@@ -10,9 +10,6 @@ import br.edu.fatecpg.valletprojeto.databinding.ItemVagaBinding
 import br.edu.fatecpg.valletprojeto.model.Vaga
 
 class VagasAdapter(
-    private val isAdmin: Boolean,
-    private val onEditClick: (Vaga) -> Unit,
-    private val onDeleteClick: (Vaga) -> Unit,
     private val onVagaClick: (Vaga) -> Unit
 ) : ListAdapter<Vaga, VagasAdapter.VagaViewHolder>(DiffCallback) {
     inner class VagaViewHolder(private val binding: ItemVagaBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -21,19 +18,10 @@ class VagasAdapter(
             binding.tvLocalizacao.text = vaga.localizacao
             binding.tvPreco.text = "R$ %.2f/h".format(vaga.preco)
 
-            if (isAdmin) {
-                binding.btnEdit.visibility = View.VISIBLE
-                binding.btnExcluir.visibility = View.VISIBLE
-                binding.btnEdit.setOnClickListener { onEditClick(vaga) }
-                binding.btnExcluir.setOnClickListener { onDeleteClick(vaga) }
-                binding.root.setOnClickListener(null)
-            } else {
-                binding.btnEdit.visibility = View.GONE
-                binding.btnExcluir.visibility = View.GONE
-                binding.root.setOnClickListener {
-                    onVagaClick(vaga)
-                }
-            }
+            binding.btnEdit.visibility = View.GONE
+            binding.btnExcluir.visibility = View.GONE
+            binding.root.setOnClickListener { onVagaClick(vaga) }
+
 
         }
     }

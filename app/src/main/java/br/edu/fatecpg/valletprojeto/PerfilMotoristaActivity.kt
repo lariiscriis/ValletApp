@@ -26,7 +26,7 @@ class PerfilMotoristaActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this).get(PerfilMotoristaViewModel::class.java)
         binding.btnEditarPerfil.setOnClickListener {
-            startActivity(Intent(this, EditarPerfilMotoristaActivity::class.java))
+            startActivity(Intent(this, EditarPerfilActivity::class.java))
         }
 
         setupObservers()

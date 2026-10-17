@@ -12,7 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import br.edu.fatecpg.valletprojeto.DashboardBase
+import br.edu.fatecpg.valletprojeto.DashboardActivity
 import br.edu.fatecpg.valletprojeto.R
 import br.edu.fatecpg.valletprojeto.ReservaActivity
 import br.edu.fatecpg.valletprojeto.adapter.HistoricoReservasAdapter
@@ -329,7 +329,7 @@ class MotoristaFragment : Fragment() {
     private fun abrirPaginaDeEstacionamentos() {
         if (!isAdded || activity == null) return
 
-        val dashboardActivity = activity as? DashboardBase
+        val dashboardActivity = activity as? DashboardActivity
         dashboardActivity?.let {
             val bottomNav = it.findViewById<BottomNavigationView>(R.id.bottom_navigation)
             bottomNav.selectedItemId = R.id.nav_spots

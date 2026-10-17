@@ -37,7 +37,7 @@ class ReservaActivity : AppCompatActivity() {
                 vagaAtivaParaPagamento?.let { vaga ->
                     viewModel.finalizarReservaAposPagamento(vaga) {
 
-                        val intent = Intent(this, DashboardBase::class.java)
+                        val intent = Intent(this, DashboardActivity::class.java)
                         startActivity(intent)
 
                         finish()

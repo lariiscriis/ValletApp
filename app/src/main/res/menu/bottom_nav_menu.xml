@@ -4,7 +4,7 @@
     <item
         android:id="@+id/nav_spots"
         android:icon="@drawable/ic_parking"
-        android:title="Vagas" />
+        android:title="Estacionamentos" />
 
     <item
         android:id="@+id/nav_dashboard"
@@ -15,10 +15,5 @@
         android:id="@+id/nav_vehicles"
         android:icon="@drawable/ic_vehicle"
         android:title="Veículos" />
-
-    <item
-        android:id="@+id/nav_management"
-        android:icon="@drawable/ic_management"
-        android:title="Gerenciamento" />
 
 </menu>

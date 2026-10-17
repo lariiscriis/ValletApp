@@ -9,13 +9,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import br.edu.fatecpg.valletprojeto.databinding.ActivityCadastroBinding
+import br.edu.fatecpg.valletprojeto.databinding.ActivityCadastroUsuarioBinding
 import br.edu.fatecpg.valletprojeto.model.Usuario
 import br.edu.fatecpg.valletprojeto.viewmodel.CadastroViewModel
 
-class CadastroActivity : AppCompatActivity() {
+class CadastroUsuarioActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityCadastroBinding
+    private lateinit var binding: ActivityCadastroUsuarioBinding
     private val viewModel: CadastroViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +23,7 @@ class CadastroActivity : AppCompatActivity() {
 
         enableEdgeToEdge()
 
-        binding = ActivityCadastroBinding.inflate(layoutInflater)
+        binding = ActivityCadastroUsuarioBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->

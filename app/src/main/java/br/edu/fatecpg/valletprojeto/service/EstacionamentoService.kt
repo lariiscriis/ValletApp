@@ -4,7 +4,6 @@ import br.edu.fatecpg.valletprojeto.model.Reserva
 import br.edu.fatecpg.valletprojeto.model.Vaga
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.TimeUnit
 
@@ -15,7 +14,7 @@ import java.util.concurrent.TimeUnit
  * Em um ambiente real, as funções de notificação e interação com o usuário (perguntar/confirmar)
  * seriam implementadas por meio de callbacks ou eventos assíncronos (como LiveData ou Flow no Android).
  */
-class ParkingService(private val db: FirebaseFirestore) {
+class EstacionamentoService(private val db: FirebaseFirestore) {
 
     companion object {
         // Tempo mínimo de reserva em milissegundos (1 hora)

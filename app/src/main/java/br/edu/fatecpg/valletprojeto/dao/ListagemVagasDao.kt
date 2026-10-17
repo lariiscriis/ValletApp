@@ -3,7 +3,7 @@ package br.edu.fatecpg.valletprojeto.dao
 import br.edu.fatecpg.valletprojeto.model.Vaga
 import com.google.firebase.firestore.FirebaseFirestore
 
-class ParkingSpotDao {
+class ListagemVagasDao {
 
     private val db = FirebaseFirestore.getInstance()
 
@@ -27,7 +27,8 @@ class ParkingSpotDao {
                             localizacao = localizacao,
                             preco = preco,
                             tipo = tipo,
-                            disponivel = disponivel
+                            disponivel = disponivel,
+                            estacionamentoId = doc.getString("estacionamentoId") ?: ""
                         )
                     } catch (e: Exception) {
                         null

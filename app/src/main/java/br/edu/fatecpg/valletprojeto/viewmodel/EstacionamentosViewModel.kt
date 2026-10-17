@@ -23,9 +23,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlin.math.roundToInt
 
-class SpotsViewModel(application: Application) : AndroidViewModel(application) {
+class EstacionamentosViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -80,7 +79,7 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadData(useLocation: Boolean = true) {
         if (_isLoading.value == true) return
-        Log.d("SpotsViewModel", "Iniciando loadData...")
+        Log.d("EstacionamentosViewModel", "Iniciando loadData...")
 
         viewModelScope.launch {
             _isLoading.postValue(true)
@@ -88,15 +87,15 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
 
             try {
                 val userLocation = if (useLocation) {
-                    Log.d("SpotsViewModel", "Buscando localização...")
+                    Log.d("EstacionamentosViewModel", "Buscando localização...")
                     withTimeoutOrNull(5000) { fetchUserLocation() }
                 } else null
 
                 if (useLocation && userLocation == null) {
-                    Log.w("SpotsViewModel", "Falha ao obter localização.")
+                    Log.w("EstacionamentosViewModel", "Falha ao obter localização.")
                     _error.postValue("Não foi possível obter a localização.")
                 } else {
-                    Log.d("SpotsViewModel", "Localização obtida: $userLocation")
+                    Log.d("EstacionamentosViewModel", "Localização obtida: $userLocation")
                 }
 
                 val favoriteIdsDeferred = async { fetchFavoriteIds() }
@@ -104,14 +103,14 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
                     if (userLocation != null) {
                         fetchParkingsNear(userLocation)
                     } else {
-                        Log.d("SpotsViewModel", "Fallback: buscando todos os estacionamentos (sem geofire).")
+                        Log.d("EstacionamentosViewModel", "Fallback: buscando todos os estacionamentos (sem geofire).")
                         fetchAllParkings()
                     }
                 }
 
                 val favoriteIds = favoriteIdsDeferred.await()
                 val allFetchedParkings = parkingsDeferred.await()
-                Log.d("SpotsViewModel", "Busca concluída. ${allFetchedParkings.size} estacionamentos encontrados.")
+                Log.d("EstacionamentosViewModel", "Busca concluída. ${allFetchedParkings.size} estacionamentos encontrados.")
 
                 val processedParkings = allFetchedParkings.map { est ->
                     val distancia = est.calcularDistancia(userLocation)
@@ -121,22 +120,22 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
                 allParkingsMasterList = processedParkings
                 val (favorites, others) = allParkingsMasterList.partition { it.id in favoriteIds }
 
-                Log.d("SpotsViewModel", "Separando ${favorites.size} favoritos e ${others.size} outros.")
+                Log.d("EstacionamentosViewModel", "Separando ${favorites.size} favoritos e ${others.size} outros.")
                 _favoriteParkings.postValue(favorites)
                 _parkings.postValue(others)
 
             } catch (e: Exception) {
-                Log.e("SpotsViewModel", "Erro em loadData", e)
+                Log.e("EstacionamentosViewModel", "Erro em loadData", e)
                 _error.postValue("Erro crítico: ${e.message}")
             } finally {
                 _isLoading.postValue(false)
-                Log.d("SpotsViewModel", "loadData finalizado.")
+                Log.d("EstacionamentosViewModel", "loadData finalizado.")
             }
         }
     }
 
     private suspend fun fetchParkingsNear(location: Location): List<Estacionamento> = withContext(Dispatchers.IO) {
-        Log.d("SpotsViewModel", "Executando fetchParkingsNear em ${Thread.currentThread().name}")
+        Log.d("EstacionamentosViewModel", "Executando fetchParkingsNear em ${Thread.currentThread().name}")
         val center = GeoLocation(location.latitude, location.longitude)
         val radiusInM = 100 * 1000.0
 
@@ -150,7 +149,7 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         val snapshots = Tasks.await(Tasks.whenAllSuccess<QuerySnapshot>(tasks))
-        Log.d("SpotsViewModel", "Geohash query retornou ${snapshots.sumOf { it.size() }} documentos brutos.")
+        Log.d("EstacionamentosViewModel", "Geohash query retornou ${snapshots.sumOf { it.size() }} documentos brutos.")
 
         val matchingDocs = snapshots.flatMap { snap ->
             snap.documents.filter { doc ->
@@ -158,19 +157,19 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
                 val lng = doc.get("longitude") as? Double ?: (doc.get("longitude") as? String)?.toDoubleOrNull() ?: 0.0
 
                 if (lat == 0.0 || lng == 0.0) {
-                    Log.w("SpotsViewModel", "ALERTA: Coordenadas inválidas para o doc ${doc.id}. Lat: $lat, Lng: $lng")
+                    Log.w("EstacionamentosViewModel", "ALERTA: Coordenadas inválidas para o doc ${doc.id}. Lat: $lat, Lng: $lng")
                 }
 
                 val docLocation = GeoLocation(lat, lng)
                 val distancia = GeoFireUtils.getDistanceBetween(docLocation, center)
 
-                Log.d("SpotsViewModel", "Filtrando doc ${doc.id}: Distância = ${"%.2f".format(distancia / 1000)} km. (Raio: ${radiusInM / 1000} km)")
+                Log.d("EstacionamentosViewModel", "Filtrando doc ${doc.id}: Distância = ${"%.2f".format(distancia / 1000)} km. (Raio: ${radiusInM / 1000} km)")
 
                 distancia <= radiusInM
             }
         }
 
-        Log.d("SpotsViewModel", "Documentos filtrados por distância: ${matchingDocs.size}")
+        Log.d("EstacionamentosViewModel", "Documentos filtrados por distância: ${matchingDocs.size}")
 
         matchingDocs.mapNotNull { doc ->
             doc.toObject(Estacionamento::class.java)?.copy(id = doc.id)
@@ -178,7 +177,7 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private suspend fun fetchAllParkings(): List<Estacionamento> = withContext(Dispatchers.IO) {
-        Log.d("SpotsViewModel", "Executando fetchAllParkings em ${Thread.currentThread().name}")
+        Log.d("EstacionamentosViewModel", "Executando fetchAllParkings em ${Thread.currentThread().name}")
         val snapshot = db.collection("estacionamento").limit(100).get().await()
         snapshot.documents.mapNotNull { doc ->
             doc.toObject(Estacionamento::class.java)?.copy(id = doc.id)
@@ -186,7 +185,7 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private suspend fun fetchFavoriteIds(): Set<String> = withContext(Dispatchers.IO) {
-        Log.d("SpotsViewModel", "Executando fetchFavoriteIds em ${Thread.currentThread().name}")
+        Log.d("EstacionamentosViewModel", "Executando fetchFavoriteIds em ${Thread.currentThread().name}")
         val userId = auth.currentUser?.uid ?: return@withContext emptySet()
         try {
             val snapshot = db.collection("favoritos").whereEqualTo("usuarioId", userId).get().await()
@@ -198,11 +197,11 @@ class SpotsViewModel(application: Application) : AndroidViewModel(application) {
 
     @SuppressLint("MissingPermission")
     private suspend fun fetchUserLocation(): Location? = withContext(Dispatchers.IO) {
-        Log.d("SpotsViewModel", "Executando fetchUserLocation em ${Thread.currentThread().name}")
+        Log.d("EstacionamentosViewModel", "Executando fetchUserLocation em ${Thread.currentThread().name}")
         try {
             fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).await()
         } catch (e: Exception) {
-            Log.e("SpotsViewModel", "Erro ao obter localização", e)
+            Log.e("EstacionamentosViewModel", "Erro ao obter localização", e)
             null
         }
     }

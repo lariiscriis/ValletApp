@@ -7,21 +7,21 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import br.edu.fatecpg.valletprojeto.R
-import br.edu.fatecpg.valletprojeto.databinding.ItemParkingBinding
+import br.edu.fatecpg.valletprojeto.databinding.ItemEstacionamentoBinding
 import br.edu.fatecpg.valletprojeto.model.Estacionamento
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 
-class SimpleParkingAdapter(
+class EstacionamentosAdapter(
     private val onFavoriteClicked: (Estacionamento) -> Unit,
     private val onItemClicked: (Estacionamento) -> Unit
-) : ListAdapter<Estacionamento, SimpleParkingAdapter.ViewHolder>(ParkingDiffCallback) {
+) : ListAdapter<Estacionamento, EstacionamentosAdapter.ViewHolder>(ParkingDiffCallback) {
 
     private val listeners = mutableMapOf<String, ListenerRegistration>()
     private val db = FirebaseFirestore.getInstance()
 
-    inner class ViewHolder(private val binding: ItemParkingBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: ItemEstacionamentoBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(estacionamento: Estacionamento) {
             binding.txvNomeEstacionamento.text = estacionamento.nome
             val isOpen = estacionamento.estaAberto()
@@ -80,7 +80,7 @@ class SimpleParkingAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemParkingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemEstacionamentoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 

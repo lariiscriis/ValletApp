@@ -17,9 +17,8 @@ import androidx.work.workDataOf
 import br.edu.fatecpg.valletprojeto.model.Reserva
 import br.edu.fatecpg.valletprojeto.model.Vaga
 import br.edu.fatecpg.valletprojeto.model.Veiculo
-import br.edu.fatecpg.valletprojeto.receiver.ReservaAvisoReceiver
 import br.edu.fatecpg.valletprojeto.receiver.ReservaCriadaReceiver
-import br.edu.fatecpg.valletprojeto.receiver.ReservaExpiredReceiver
+import br.edu.fatecpg.valletprojeto.receiver.ReservaExpiradaReceiver
 import br.edu.fatecpg.valletprojeto.worker.CheckReservaWorker
 import br.edu.fatecpg.valletprojeto.worker.ReservaNotificationWorker
 import com.google.firebase.Timestamp
@@ -235,7 +234,7 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
         }
 
         // 🔥 AGENDAR FINALIZAÇÃO AUTOMÁTICA
-        val expiraIntent = Intent(context, ReservaExpiredReceiver::class.java).apply {
+        val expiraIntent = Intent(context, ReservaExpiradaReceiver::class.java).apply {
             putExtra("reservaId", reserva.id)
             putExtra("vagaId", reserva.vagaId)
         }

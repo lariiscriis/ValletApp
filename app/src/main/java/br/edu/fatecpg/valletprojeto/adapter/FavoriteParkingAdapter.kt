@@ -7,11 +7,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import br.edu.fatecpg.valletprojeto.R
-import br.edu.fatecpg.valletprojeto.databinding.ItemFavoriteParkingBinding
+import br.edu.fatecpg.valletprojeto.databinding.ItemEstacionamentoFavoritoBinding
 import br.edu.fatecpg.valletprojeto.model.Estacionamento
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import androidx.core.graphics.toColorInt
 
 class FavoriteParkingAdapter(
     private val onFavoriteClicked: (Estacionamento) -> Unit,
@@ -21,7 +22,7 @@ class FavoriteParkingAdapter(
     private val listeners = mutableMapOf<String, ListenerRegistration>()
     private val db = FirebaseFirestore.getInstance()
 
-    inner class ViewHolder(val binding: ItemFavoriteParkingBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(val binding: ItemEstacionamentoFavoritoBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(estacionamento: Estacionamento) {
             binding.txvNomeEstacionamento.text = estacionamento.nome
             binding.txvEnderecoEstacionamento.text = estacionamento.enderecoCompleto
@@ -29,7 +30,7 @@ class FavoriteParkingAdapter(
             val isOpen = estacionamento.estaAberto()
             binding.tvParkingStatus.text = if (isOpen) "ABERTO" else "FECHADO"
             binding.tvParkingStatus.setBackgroundColor(
-                if (isOpen) Color.parseColor("#00A676") else Color.RED
+                if (isOpen) "#00A676".toColorInt() else Color.RED
             )
 
 
@@ -83,7 +84,7 @@ class FavoriteParkingAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemFavoriteParkingBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemEstacionamentoFavoritoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 

@@ -189,7 +189,7 @@ class LoginActivity : AppCompatActivity(),
 
                 val intent = Intent(
                     this,
-                    CadastroActivity::class.java
+                    CadastroUsuarioActivity::class.java
                 )
 
                 startActivity(intent)
@@ -459,7 +459,7 @@ class LoginActivity : AppCompatActivity(),
         val timeoutRunnable = Runnable {
 
             isTimedOut = true
-
+            auth.signOut()
             resetLoadingState()
 
             AlertDialog.Builder(this)
@@ -507,7 +507,7 @@ class LoginActivity : AppCompatActivity(),
 
         db.collection("usuario")
             .document(uid)
-            .get()
+            .get(com.google.firebase.firestore.Source.SERVER)
             .addOnSuccessListener { documentSnapshot ->
 
                 mainHandler.removeCallbacks(
@@ -551,6 +551,20 @@ class LoginActivity : AppCompatActivity(),
                     "Preparando ambiente..."
                 )
 
+                val tipoUsuario = documentSnapshot.getString("tipo_user")
+                    ?.trim()?.lowercase(java.util.Locale.ROOT)
+                if (tipoUsuario != "motorista") {
+                    auth.signOut()
+                    resetLoadingState()
+                    AlertDialog.Builder(this)
+                        .setTitle("Acesso restrito")
+                        .setMessage("Este aplicativo é exclusivo para motoristas. Administradores devem acessar o Desktop.")
+                        .setPositiveButton("OK", null)
+                        .show()
+                    return@addOnSuccessListener
+                }
+                if (auth.currentUser?.uid != uid) return@addOnSuccessListener
+
                 redirectToHome(
                     uid,
                     email
@@ -572,6 +586,7 @@ class LoginActivity : AppCompatActivity(),
                     return@addOnFailureListener
                 }
 
+                auth.signOut()
                 resetLoadingState()
 
                 Log.e(
@@ -667,7 +682,7 @@ class LoginActivity : AppCompatActivity(),
                 startActivity(
                     Intent(
                         this,
-                        CadastroActivity::class.java
+                        CadastroUsuarioActivity::class.java
                     )
                 )
             }
@@ -699,10 +714,11 @@ class LoginActivity : AppCompatActivity(),
 
         // Gera e salva o token antes de navegar
         gerarESalvarTokenFCM(uid) {
+            if (auth.currentUser?.uid != uid || isFinishing || isDestroyed) return@gerarESalvarTokenFCM
 
             val intent = Intent(
                 this,
-                DashboardBase::class.java
+                DashboardActivity::class.java
             )
 
             intent.putExtra(
@@ -820,7 +836,7 @@ class LoginActivity : AppCompatActivity(),
 
         db.collection("usuario")
             .document(uid)
-            .get()
+            .get(com.google.firebase.firestore.Source.SERVER)
             .addOnSuccessListener { document ->
 
                 val tokenSalvo =

@@ -10,7 +10,7 @@ import androidx.work.WorkManager
 import br.edu.fatecpg.valletprojeto.worker.CheckReservaWorker
 import java.util.concurrent.TimeUnit
 
-class ReservaExpiredReceiver : BroadcastReceiver() {
+class ReservaExpiradaReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("ReservaExpiredReceiver", "Receiver acionado - FINALIZANDO RESERVA")
 

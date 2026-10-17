@@ -20,20 +20,20 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.edu.fatecpg.valletprojeto.VagaActivity
 import br.edu.fatecpg.valletprojeto.adapter.FavoriteParkingAdapter
-import br.edu.fatecpg.valletprojeto.adapter.SimpleParkingAdapter
-import br.edu.fatecpg.valletprojeto.databinding.FragmentSpotsBinding
-import br.edu.fatecpg.valletprojeto.viewmodel.SpotsViewModel
+import br.edu.fatecpg.valletprojeto.adapter.EstacionamentosAdapter
+import br.edu.fatecpg.valletprojeto.databinding.FragmentEstacionamentosBinding
+import br.edu.fatecpg.valletprojeto.viewmodel.EstacionamentosViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
 
-class SpotsFragment : Fragment() {
+class EstacionamentosFragment : Fragment() {
 
-    private var _binding: FragmentSpotsBinding? = null
+    private var _binding: FragmentEstacionamentosBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: SpotsViewModel by viewModels()
+    private val viewModel: EstacionamentosViewModel by viewModels()
 
-    private lateinit var simpleAdapter: SimpleParkingAdapter
+    private lateinit var simpleAdapter: EstacionamentosAdapter
     private lateinit var favoriteAdapter: FavoriteParkingAdapter
 
     private val handler = Handler(Looper.getMainLooper())
@@ -162,7 +162,7 @@ class SpotsFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentSpotsBinding.inflate(inflater, container, false)
+        _binding = FragmentEstacionamentosBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -223,7 +223,7 @@ class SpotsFragment : Fragment() {
     }
 
     private fun setupRecyclerViews() {
-        simpleAdapter = SimpleParkingAdapter(
+        simpleAdapter = EstacionamentosAdapter(
             onFavoriteClicked = { estacionamento ->
                 viewModel.toggleFavoriteStatus(estacionamento)
             },
