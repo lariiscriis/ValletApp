@@ -11,8 +11,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import br.edu.fatecpg.valletprojeto.R
 import br.edu.fatecpg.valletprojeto.VeiculoActivity
-import br.edu.fatecpg.valletprojeto.dao.UsuarioDao
-import br.edu.fatecpg.valletprojeto.dao.VeiculoDao
 import br.edu.fatecpg.valletprojeto.databinding.FragmentCadastroVeiculosBinding
 import br.edu.fatecpg.valletprojeto.model.Veiculo
 import br.edu.fatecpg.valletprojeto.viewmodel.VeiculoViewModel
