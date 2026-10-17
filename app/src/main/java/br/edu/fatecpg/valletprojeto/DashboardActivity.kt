@@ -9,16 +9,13 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import br.edu.fatecpg.valletprojeto.databinding.ActivityDashboardBaseBinding
-import br.edu.fatecpg.valletprojeto.fragments.AdminFragment
 import br.edu.fatecpg.valletprojeto.fragments.MotoristaFragment
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import androidx.lifecycle.lifecycleScope
-import br.edu.fatecpg.valletprojeto.fragments.OccupationFragment
-import br.edu.fatecpg.valletprojeto.fragments.SpotsFragment
-import br.edu.fatecpg.valletprojeto.fragments.VagaFragment
+import br.edu.fatecpg.valletprojeto.databinding.ActivityDashboardBinding
+import br.edu.fatecpg.valletprojeto.fragments.EstacionamentosFragment
 import br.edu.fatecpg.valletprojeto.fragments.VeiculoListFragment
 import br.edu.fatecpg.valletprojeto.worker.NotificationUtils
 import kotlinx.coroutines.Dispatchers
@@ -26,10 +23,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
-
-class DashboardBase : AppCompatActivity() {
-    private lateinit var binding: ActivityDashboardBaseBinding
-    private var isAdmin = true
+class DashboardActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityDashboardBinding
     private val auth = FirebaseAuth.getInstance()
 
     private val globalVoiceLauncher = registerForActivityResult(
@@ -47,46 +42,14 @@ class DashboardBase : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityDashboardBaseBinding.inflate(layoutInflater)
+        binding = ActivityDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
-
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-
-            val statusBar = insets.getInsets(
-                androidx.core.view.WindowInsetsCompat.Type.statusBars()
-            )
-
-            val navigationBar = insets.getInsets(
-                androidx.core.view.WindowInsetsCompat.Type.navigationBars()
-            )
-
-            // Evita adicionar o espaço inferior ao layout inteiro
-            view.setPadding(
-                view.paddingLeft,
-                statusBar.top,
-                view.paddingRight,
-                0
-            )
-
-            // Mantém a tabbar acima dos botões do sistema
-            val params = binding.bottomNavigation.layoutParams as
-                    androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
-
-            params.bottomMargin = (12 * resources.displayMetrics.density).toInt() +
-                    navigationBar.bottom
-
-            binding.bottomNavigation.layoutParams = params
-
-            insets
-        }
-
-
         NotificationUtils.createNotificationChannel(this)
-        verificarTipoUsuario()
         carregarDadosUsuario()
 
+        setupNavigation()
+        loadInitialFragment()
         setupProfileClickListeners()
 
         binding.fabVoiceAssistant.setOnClickListener {
@@ -114,11 +77,7 @@ class DashboardBase : AppCompatActivity() {
         val ivProfileImage = findViewById<ImageView>(R.id.iv_profile_image)
 
         val clickListener = {
-            if (isAdmin) {
-                startActivity(Intent(this, PerfilAdminActivity::class.java))
-            } else {
-                startActivity(Intent(this, PerfilMotoristaActivity::class.java))
-            }
+            startActivity(Intent(this, PerfilActivity::class.java))
         }
 
         tvUserName.setOnClickListener { clickListener() }
@@ -126,35 +85,7 @@ class DashboardBase : AppCompatActivity() {
         setupButtonListeners()
     }
 
-    private fun verificarTipoUsuario() {
-        val email = FirebaseAuth.getInstance().currentUser?.email
 
-        if (email == null) {
-            Toast.makeText(this, "Usuário não autenticado.", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-
-        FirebaseFirestore.getInstance().collection("usuario")
-            .whereEqualTo("email", email)
-            .get()
-            .addOnSuccessListener { documents ->
-                if (!documents.isEmpty) {
-                    val document = documents.first()
-                    val tipo = document.getString("tipo_user") ?: "motorista"
-                    isAdmin = tipo == "admin"
-                    setupNavigation()
-                    loadInitialFragment()
-                } else {
-                    Toast.makeText(this, "Perfil não encontrado.", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Erro ao verificar tipo de usuário.", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-    }
 
     private fun setupButtonListeners() {
         binding.btnLogout.setOnClickListener {
@@ -184,7 +115,7 @@ class DashboardBase : AppCompatActivity() {
 
                     val fotoUrl = userDoc.getString("fotoPerfil")
                     if (!fotoUrl.isNullOrEmpty()) {
-                        Glide.with(this@DashboardBase)
+                        Glide.with(this@DashboardActivity)
                             .load(fotoUrl)
                             .placeholder(R.drawable.ic_default_profile)
                             .into(findViewById(R.id.iv_profile_image))
@@ -198,62 +129,18 @@ class DashboardBase : AppCompatActivity() {
     }
 
     private fun setupNavigation() {
-        val menu = binding.bottomNavigation.menu
-
-        menu.findItem(R.id.nav_vehicles).isVisible = !isAdmin
-/*
-        menu.findItem(R.id.nav_management).isVisible = isAdmin
-*/
-
-        val navSpots = menu.findItem(R.id.nav_spots)
-        if (isAdmin) {
-            navSpots.title = "Vagas Ocupadas"
-            navSpots.setIcon(R.drawable.ic_parking)
-        } else {
-            navSpots.title = "Vagas"
-            navSpots.setIcon(R.drawable.ic_parking)
-        }
-
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_spots -> {
-                    if (isAdmin) replaceFragment(OccupationFragment())
-                    else replaceFragment(SpotsFragment())
-                    true
-                }
-                R.id.nav_dashboard -> {
-                    if (isAdmin) replaceFragment(AdminFragment())
-                    else replaceFragment(MotoristaFragment())
-                    true
-                }
-                R.id.nav_placeholder -> {
-                    // Item central reservado para o FAB de IA (Não faz nada ao clicar)
-                    false
-                }
-                R.id.nav_vehicles -> {
-                    replaceFragment(VeiculoListFragment())
-                    true
-                }
-/*                R.id.nav_management -> {
-                    if (isAdmin) replaceFragment(VagaFragment())
-                    true
-                }*/
+                R.id.nav_spots -> { replaceFragment(EstacionamentosFragment()); true }
+                R.id.nav_dashboard -> { replaceFragment(MotoristaFragment()); true }
+                R.id.nav_vehicles -> { replaceFragment(VeiculoListFragment()); true }
                 else -> false
             }
         }
     }
 
     private fun loadInitialFragment() {
-        when (isAdmin) {
-            true -> {
-                replaceFragment(AdminFragment())
-                binding.bottomNavigation.selectedItemId = R.id.nav_dashboard
-            }
-            false -> {
-                replaceFragment(MotoristaFragment())
-                binding.bottomNavigation.selectedItemId = R.id.nav_dashboard
-            }
-        }
+        binding.bottomNavigation.selectedItemId = R.id.nav_dashboard
     }
 
     private fun replaceFragment(fragment: Fragment) {
@@ -283,22 +170,14 @@ class DashboardBase : AppCompatActivity() {
                 cancelarReservaAtivaGlobal()
             }
             command.contains("veículo") || command.contains("veiculo") || command.contains("carro") -> {
-                if (!isAdmin) {
-                    binding.bottomNavigation.selectedItemId = R.id.nav_vehicles
-                    Toast.makeText(this, "Exibindo veículos", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Comando disponível apenas para motoristas", Toast.LENGTH_SHORT).show()
-                }
+                binding.bottomNavigation.selectedItemId = R.id.nav_vehicles
+                Toast.makeText(this, "Exibindo veículos", Toast.LENGTH_SHORT).show()
             }
             command.contains("histórico") || command.contains("historico") || command.contains("reservas") -> {
                 startActivity(Intent(this, HistoricoReservasActivity::class.java))
             }
             command.contains("perfil") -> {
-                if (isAdmin) {
-                    startActivity(Intent(this, PerfilAdminActivity::class.java))
-                } else {
-                    startActivity(Intent(this, PerfilMotoristaActivity::class.java))
-                }
+                startActivity(Intent(this, PerfilActivity::class.java))
             }
             command.contains("sair") || command.contains("deslogar") || command.contains("logout") || command.contains("desconectar") -> {
                 performLogout()

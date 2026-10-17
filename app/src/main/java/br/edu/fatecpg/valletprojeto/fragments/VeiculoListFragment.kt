@@ -19,8 +19,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import br.edu.fatecpg.valletprojeto.EditarVeiculoActivity
 import br.edu.fatecpg.valletprojeto.R
-import br.edu.fatecpg.valletprojeto.dao.UsuarioDao
-import br.edu.fatecpg.valletprojeto.dao.VeiculoDao
 import br.edu.fatecpg.valletprojeto.databinding.ActivityVeiculoBinding
 import br.edu.fatecpg.valletprojeto.databinding.ItemCardVeiculoBinding
 import br.edu.fatecpg.valletprojeto.model.Veiculo
@@ -34,7 +32,7 @@ class VeiculoListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: VeiculoViewModel by activityViewModels {
-        VeiculoViewModelFactory(UsuarioDao(), VeiculoDao)
+        VeiculoViewModelFactory()
     }
 
     private lateinit var veiculosAdapter: VeiculosAdapter

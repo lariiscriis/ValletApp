@@ -4,11 +4,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import br.edu.fatecpg.valletprojeto.databinding.ActivityEditarPerfilBinding
 import com.bumptech.glide.Glide
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.*
@@ -18,7 +16,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class EditarPerfilMotoristaActivity : AppCompatActivity() {
+class EditarPerfilActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditarPerfilBinding
     private val auth = FirebaseAuth.getInstance()
@@ -132,7 +130,7 @@ class EditarPerfilMotoristaActivity : AppCompatActivity() {
             OkHttpClient().newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     runOnUiThread {
-                        Toast.makeText(this@EditarPerfilMotoristaActivity, "Erro ao enviar imagem", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@EditarPerfilActivity, "Erro ao enviar imagem", Toast.LENGTH_SHORT).show()
                         atualizarFirestore(nome, email, telefone, cnh, null)
                     }
                 }

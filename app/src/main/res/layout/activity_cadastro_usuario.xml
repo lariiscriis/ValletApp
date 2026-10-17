@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F0F2EB"
-    tools:context=".CadastroActivity">
+    tools:context=".CadastroUsuarioActivity">
 
     <!-- ÁREA SUPERIOR COM O BOTÃO DE VOLTAR -->
 

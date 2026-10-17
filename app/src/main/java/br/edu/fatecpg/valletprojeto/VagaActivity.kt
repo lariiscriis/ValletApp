@@ -6,21 +6,15 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import br.edu.fatecpg.valletprojeto.adapter.VagasAdapter
 import br.edu.fatecpg.valletprojeto.databinding.ActivityVagaBinding
-import br.edu.fatecpg.valletprojeto.model.Vaga
 import br.edu.fatecpg.valletprojeto.viewmodel.ReservaUIState
 import br.edu.fatecpg.valletprojeto.viewmodel.ReservaViewModel
 import br.edu.fatecpg.valletprojeto.viewmodel.VagaViewModel
 import com.google.android.material.chip.Chip
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
 class VagaActivity : AppCompatActivity() {
 
@@ -28,7 +22,6 @@ class VagaActivity : AppCompatActivity() {
     private lateinit var reservaViewModel: ReservaViewModel
     private lateinit var binding: ActivityVagaBinding
     private lateinit var vagasAdapter: VagasAdapter
-    private var isAdmin: Boolean = false
     private var estacionamentoId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,38 +38,21 @@ class VagaActivity : AppCompatActivity() {
             finish()
             return
         }
-        verificarTipoUsuario()
+        setupUI()
     }
 
     private fun setupUI() {
         setupRecyclerView()
         setupObservers()
         setupFilterListeners()
-        setupAdminFeatures()
+        binding.fabAdd.visibility = View.GONE
         setupReservaObserver()
         viewModel.fetchVagasComFiltro(estacionamentoId!!)
 
         reservaViewModel.verificarReservaAtiva()
     }
 
-    private fun verificarTipoUsuario() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId == null) {
-            isAdmin = false
-            setupUI()
-            return
-        }
 
-        FirebaseFirestore.getInstance().collection("usuario").document(userId).get()
-            .addOnSuccessListener { document ->
-                isAdmin = document.getString("tipo_user") == "admin"
-                setupUI()
-            }
-            .addOnFailureListener {
-                isAdmin = false
-                setupUI()
-            }
-    }
 
     private fun setupReservaObserver() {
         reservaViewModel.temReservaAtiva.observe(this) { temReserva ->
@@ -144,15 +120,6 @@ class VagaActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         vagasAdapter = VagasAdapter(
-            isAdmin = this.isAdmin,
-            onEditClick = { vaga ->
-                startActivity(Intent(this, EditarVagaActivity::class.java).apply {
-                    putExtra("vagaId", vaga.id)
-                })
-            },
-            onDeleteClick = { vaga ->
-                showDeleteDialog(vaga)
-            },
             onVagaClick = { vaga ->
                 if (reservaViewModel.temReservaAtiva.value == true) {
                     Toast.makeText(this, "Você já tem uma reserva ativa. Finalize-a antes de reservar outra vaga.", Toast.LENGTH_LONG).show()
@@ -211,32 +178,9 @@ class VagaActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupAdminFeatures() {
-        if (isAdmin) {
-            binding.fabAdd.visibility = View.VISIBLE
-            binding.fabAdd.setOnClickListener {
-                val intent = Intent(this, CadastroVagaActivity::class.java)
-                intent.putExtra("estacionamentoId", estacionamentoId)
-                startActivity(intent)
-            }
-        } else {
-            binding.fabAdd.visibility = View.GONE
-        }
-    }
 
-    private fun showDeleteDialog(vaga: Vaga) {
-        AlertDialog.Builder(this)
-            .setTitle("Excluir Vaga")
-            .setMessage("Tem certeza que deseja excluir esta vaga?")
-            .setPositiveButton("Excluir") { _, _ ->
-                viewModel.deleteVaga(vaga.id) { success, message ->
-                    val toastMessage = if (success) "Vaga excluída com sucesso" else message ?: "Erro ao excluir"
-                    Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
-    }
+
+
 
     override fun onResume() {
         super.onResume()

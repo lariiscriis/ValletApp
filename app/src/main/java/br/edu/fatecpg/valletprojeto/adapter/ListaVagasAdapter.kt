@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import br.edu.fatecpg.valletprojeto.R
 import br.edu.fatecpg.valletprojeto.model.Vaga
 
-class ParkingSpotAdapter(
+class ListaVagasAdapter(
     private val spots: List<Vaga>,
     private val onItemClick: (Vaga) -> Unit
-) : RecyclerView.Adapter<ParkingSpotAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<ListaVagasAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvSpotNumber: TextView = itemView.findViewById(R.id.tvSpotNumber)
@@ -35,7 +35,7 @@ class ParkingSpotAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_pagina_reservas_vagas, parent, false)
+            .inflate(R.layout.item_lista_vagas, parent, false)
         return ViewHolder(view)
     }
 

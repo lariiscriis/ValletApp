@@ -1,138 +1,49 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-
-    <application
-        android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@drawable/valletlogo"
-        android:label="@string/app_name"
-        android:roundIcon="@drawable/valletlogo"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.ValletProjeto"
-        tools:targetApi="31">
-        <activity
-            android:name=".GerarTokenActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ValletProjeto" />
-
-        <service
-            android:name=".service.FirebaseMessagingService"
-            android:exported="false">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
+    <application android:allowBackup="true" android:dataExtractionRules="@xml/data_extraction_rules" android:fullBackupContent="@xml/backup_rules" android:icon="@drawable/valletlogo" android:label="@string/app_name" android:roundIcon="@drawable/valletlogo" android:supportsRtl="true" android:theme="@style/Theme.ValletProjeto" tools:targetApi="31">
+        <activity android:name=".GerarTokenActivity" android:exported="false" android:theme="@style/Theme.ValletProjeto"/>
+        <service android:name=".service.FirebaseMessagingService" android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
-
-        <meta-data
-            android:name="com.google.firebase.components:io.grpc.okhttp"
-            android:value="false" />
-
-        <receiver
-            android:name=".service.ConfirmacaoReceiver"
-            android:exported="false">
+        <meta-data android:name="com.google.firebase.components:io.grpc.okhttp" android:value="false"/>
+        <receiver android:name=".service.ConfirmacaoReceiver" android:exported="false">
             <intent-filter>
-                <action android:name="ACTION_CONFIRM_RESERVATION" />
-                <action android:name="ACTION_CANCEL_RESERVATION" />
+                <action android:name="ACTION_CONFIRM_RESERVATION"/>
+                <action android:name="ACTION_CANCEL_RESERVATION"/>
             </intent-filter>
         </receiver>
-
-        <receiver
-            android:name=".receiver.ReservaAvisoReceiver"
-            android:enabled="true"
-            android:exported="false" />
-        <receiver
-            android:name=".receiver.ReservaExpiredReceiver"
-            android:enabled="true"
-            android:exported="false" />
-        <receiver
-            android:name=".receiver.ReservaCriadaReceiver"
-            android:enabled="true"
-            android:exported="false" />
-
-        <activity
-            android:name=".VeiculoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".PaginaDeReservaVagas"
-            android:exported="false" />
-        <activity
-            android:name=".PerfilMotoristaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".PerfilAdminActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EditarPerfilAdministradorActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EditarPerfilMotoristaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ReservaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EditarVagaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".CadastroVagaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HistoricoReservasActivity"
-            android:exported="false" />
-        <activity
-            android:name=".VagaActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EditarVeiculoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".DashboardBase"
-            android:exported="false" />
-        <activity
-            android:name=".CadastroEstacionamento"
-            android:exported="false" />
-        <activity
-            android:name=".IntroCadastroEstacionamento"
-            android:exported="false" />
-        <activity
-            android:name=".IntroCadastroVeiculo"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
+        <receiver android:name=".receiver.ReservaAvisoReceiver" android:enabled="true" android:exported="false"/>
+        <receiver android:name=".receiver.ReservaExpiradaReceiver" android:enabled="true" android:exported="false"/>
+        <receiver android:name=".receiver.ReservaCriadaReceiver" android:enabled="true" android:exported="false"/>
+        <activity android:name=".VeiculoActivity" android:exported="false"/>
+        <activity android:name=".PaginaDeReservaVagas" android:exported="false"/>
+        <activity android:name=".PerfilActivity" android:exported="false"/>
+        <activity android:name=".EditarPerfilActivity" android:exported="false"/>
+        <activity android:name=".ReservaActivity" android:exported="false"/>
+        <activity android:name=".HistoricoReservasActivity" android:exported="false"/>
+        <activity android:name=".VagaActivity" android:exported="false"/>
+        <activity android:name=".EditarVeiculoActivity" android:exported="false"/>
+        <activity android:name=".DashboardActivity" android:exported="false"/>
+        <activity android:name=".IntroCadastroVeiculo" android:exported="false"/>
+        <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".LoginActivity"
-            android:exported="true" />
-        <activity
-            android:name=".CadastroActivity"
-            android:exported="true" />
-
-        <activity
-            android:name=".PagamentoActivity"
-            android:exported="false"
-            android:theme="@style/Theme.ValletProjeto" />
-
-        <meta-data
-            android:name="preloaded_fonts"
-            android:resource="@array/preloaded_fonts" />
+        <activity android:name=".LoginActivity" android:exported="true"/>
+        <activity android:name=".CadastroUsuarioActivity" android:exported="true"/>
+        <activity android:name=".PagamentoActivity" android:exported="false" android:theme="@style/Theme.ValletProjeto"/>
+        <meta-data android:name="preloaded_fonts" android:resource="@array/preloaded_fonts"/>
     </application>
-
 </manifest>
