@@ -10,7 +10,7 @@ import br.edu.fatecpg.valletprojeto.databinding.ActivityPerfilMotoristaBinding
 import br.edu.fatecpg.valletprojeto.viewmodel.PerfilMotoristaViewModel
 import com.bumptech.glide.Glide
 
-class PerfilMotoristaActivity : AppCompatActivity() {
+class PerfilActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPerfilMotoristaBinding
     private lateinit var viewModel: PerfilMotoristaViewModel

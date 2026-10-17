@@ -4,16 +4,16 @@
     <item
         android:id="@+id/nav_spots"
         android:icon="@drawable/ic_parking"
-        android:title="Estacionamentos" />
+        android:title="@string/estacionamentos" />
 
     <item
         android:id="@+id/nav_dashboard"
         android:icon="@drawable/ic_dashboard"
-        android:title="Início" />
+        android:title="@string/inicio" />
 
     <item
         android:id="@+id/nav_vehicles"
         android:icon="@drawable/ic_vehicle"
-        android:title="Veículos" />
+        android:title="@string/veiculos" />
 
 </menu>

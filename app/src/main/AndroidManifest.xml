@@ -27,7 +27,7 @@
         <receiver android:name=".receiver.ReservaCriadaReceiver" android:enabled="true" android:exported="false"/>
         <activity android:name=".VeiculoActivity" android:exported="false"/>
         <activity android:name=".PaginaDeReservaVagas" android:exported="false"/>
-        <activity android:name=".PerfilMotoristaActivity" android:exported="false"/>
+        <activity android:name=".PerfilActivity" android:exported="false"/>
         <activity android:name=".EditarPerfilActivity" android:exported="false"/>
         <activity android:name=".ReservaActivity" android:exported="false"/>
         <activity android:name=".HistoricoReservasActivity" android:exported="false"/>

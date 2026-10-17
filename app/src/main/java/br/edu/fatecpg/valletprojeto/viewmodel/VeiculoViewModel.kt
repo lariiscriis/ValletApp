@@ -1,12 +1,10 @@
 package br.edu.fatecpg.valletprojeto.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import br.edu.fatecpg.valletprojeto.dao.UsuarioDao
 import br.edu.fatecpg.valletprojeto.dao.VeiculoDao
 import br.edu.fatecpg.valletprojeto.model.Veiculo
 
-class VeiculoViewModel(usuarioDao: UsuarioDao, veiculoDao: VeiculoDao) : ViewModel() {
+class VeiculoViewModel : ViewModel() {
 
     fun cadastrarVeiculo(
         veiculo: Veiculo,
@@ -16,7 +14,11 @@ class VeiculoViewModel(usuarioDao: UsuarioDao, veiculoDao: VeiculoDao) : ViewMod
         VeiculoDao.cadastrarVeiculo(veiculo, onSuccess, onFailure)
     }
 
-    fun definirVeiculoPadrao(veiculoId: String, usuarioId: String, onComplete: (Boolean) -> Unit) {
+    fun definirVeiculoPadrao(
+        veiculoId: String,
+        usuarioId: String,
+        onComplete: (Boolean) -> Unit
+    ) {
         VeiculoDao.definirVeiculoPadrao(veiculoId, usuarioId, onComplete)
     }
 
@@ -26,5 +28,4 @@ class VeiculoViewModel(usuarioDao: UsuarioDao, veiculoDao: VeiculoDao) : ViewMod
     ) {
         VeiculoDao.listarVeiculosDoUsuario(onSuccess, onFailure)
     }
-
 }

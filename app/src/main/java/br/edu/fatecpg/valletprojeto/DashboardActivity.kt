@@ -77,7 +77,7 @@ class DashboardActivity : AppCompatActivity() {
         val ivProfileImage = findViewById<ImageView>(R.id.iv_profile_image)
 
         val clickListener = {
-            startActivity(Intent(this, PerfilMotoristaActivity::class.java))
+            startActivity(Intent(this, PerfilActivity::class.java))
         }
 
         tvUserName.setOnClickListener { clickListener() }
@@ -177,7 +177,7 @@ class DashboardActivity : AppCompatActivity() {
                 startActivity(Intent(this, HistoricoReservasActivity::class.java))
             }
             command.contains("perfil") -> {
-                startActivity(Intent(this, PerfilMotoristaActivity::class.java))
+                startActivity(Intent(this, PerfilActivity::class.java))
             }
             command.contains("sair") || command.contains("deslogar") || command.contains("logout") || command.contains("desconectar") -> {
                 performLogout()

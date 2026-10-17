@@ -34,7 +34,7 @@ class VeiculoListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: VeiculoViewModel by activityViewModels {
-        VeiculoViewModelFactory(UsuarioDao(), VeiculoDao)
+        VeiculoViewModelFactory()
     }
 
     private lateinit var veiculosAdapter: VeiculosAdapter

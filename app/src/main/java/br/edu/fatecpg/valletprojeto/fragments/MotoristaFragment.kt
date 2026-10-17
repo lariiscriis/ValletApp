@@ -9,6 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.work.WorkManager
+import androidx.work.WorkInfo
+import br.edu.fatecpg.valletprojeto.viewmodel.ReservaViewModel
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -37,6 +41,7 @@ class MotoristaFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var adapter: HistoricoReservasAdapter
     private val db = FirebaseFirestore.getInstance()
+    private val reservaViewModel: ReservaViewModel by viewModels()
 
     private var vagaIdAtiva: String? = null
     private var estacionamentoIdAtivo: String? = null
@@ -58,10 +63,18 @@ class MotoristaFragment : Fragment() {
         setupRecyclerView()
         setupClickListeners()
         mostrarLoadingGeral()
+        WorkManager.getInstance(requireContext())
+            .getWorkInfosByTagLiveData("recuperacao_reservas_expiradas")
+            .observe(viewLifecycleOwner) { trabalhos ->
+                if (trabalhos.any { it.state == WorkInfo.State.SUCCEEDED }) {
+                    buscarReservasOtimizado()
+                }
+            }
     }
 
     override fun onResume() {
         super.onResume()
+        reservaViewModel.verificarEFinalizarReservasExpiradas()
         buscarReservasOtimizado()
     }
 

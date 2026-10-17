@@ -6,21 +6,15 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import br.edu.fatecpg.valletprojeto.adapter.VagasAdapter
 import br.edu.fatecpg.valletprojeto.databinding.ActivityVagaBinding
-import br.edu.fatecpg.valletprojeto.model.Vaga
 import br.edu.fatecpg.valletprojeto.viewmodel.ReservaUIState
 import br.edu.fatecpg.valletprojeto.viewmodel.ReservaViewModel
 import br.edu.fatecpg.valletprojeto.viewmodel.VagaViewModel
 import com.google.android.material.chip.Chip
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
 class VagaActivity : AppCompatActivity() {
 

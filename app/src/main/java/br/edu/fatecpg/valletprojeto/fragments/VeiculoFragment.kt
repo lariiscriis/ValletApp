@@ -36,7 +36,7 @@ class VeiculoFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val factory = VeiculoViewModelFactory(UsuarioDao(), VeiculoDao)
+        val factory = VeiculoViewModelFactory()
         viewModel = ViewModelProvider(this, factory).get(VeiculoViewModel::class.java)
 
         binding.btnConfirmar.setOnClickListener {

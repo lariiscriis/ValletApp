@@ -9,6 +9,9 @@ import androidx.work.WorkerParameters
 import br.edu.fatecpg.valletprojeto.R
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import android.app.PendingIntent
+import android.content.Intent
+import br.edu.fatecpg.valletprojeto.ReservaActivity
 
 class ReservaNotificationWorker(
     context: Context,
@@ -25,7 +28,7 @@ class ReservaNotificationWorker(
 
         Log.d("ReservaNotificationWorker", "Executando worker: tipo=$tipoNotificacao, reservaId=$reservaId, vagaId=$vagaId")
 
-        // 🔥 VERIFICAR SE A RESERVA AINDA EXISTE E ESTÁ ATIVA
+        // VERIFICAR SE A RESERVA AINDA EXISTE E ESTÁ ATIVA
         if (reservaId != null) {
             try {
                 val reservaDoc = db.collection("reserva").document(reservaId).get().await()
@@ -45,22 +48,49 @@ class ReservaNotificationWorker(
         }
     }
 
-    private suspend fun enviarNotificacaoAviso(vagaId: String?, estacionamentoId: String?): Result {
-        if (vagaId == null) return Result.failure()
+    private fun enviarNotificacaoAviso(
+        vagaId: String?,
+        estacionamentoId: String?
+    ): Result {
+        if (vagaId.isNullOrBlank() || estacionamentoId.isNullOrBlank()) {
+            return Result.failure()
+        }
 
         NotificationUtils.createNotificationChannel(applicationContext)
-        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val notification = NotificationCompat.Builder(applicationContext, NotificationConstants.RESERVA_CHANNEL_ID)
+        val intent = Intent(applicationContext, ReservaActivity::class.java).apply {
+            putExtra("vagaId", vagaId)
+            putExtra("estacionamentoId", estacionamentoId)
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            applicationContext,
+            vagaId.hashCode() + 1,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notificationManager = applicationContext
+            .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        val notification = NotificationCompat.Builder(
+            applicationContext,
+            NotificationConstants.RESERVA_CHANNEL_ID
+        )
             .setSmallIcon(R.drawable.ic_parking)
             .setContentTitle("Sua reserva está acabando!")
-            .setContentText("Faltam 10 minutos para o fim da sua reserva na vaga $vagaId.")
+            .setContentText("Faltam 10 minutos. Toque para abrir a reserva e renovar.")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()
 
         notificationManager.notify(vagaId.hashCode() + 1, notification)
-        Log.d("ReservaNotificationWorker", "Notificação de aviso enviada para vaga: $vagaId")
+
+        Log.d(
+            "ReservaNotificationWorker",
+            "Notificação de aviso enviada para vaga: $vagaId"
+        )
 
         return Result.success()
     }

@@ -3,7 +3,6 @@ package br.edu.fatecpg.valletprojeto.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.edu.fatecpg.valletprojeto.dao.VagaDao
 import br.edu.fatecpg.valletprojeto.model.Vaga
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -19,7 +18,6 @@ class VagaViewModel : ViewModel() {
     private val auth = FirebaseAuth.getInstance()
 
     private val vagasCollection = db.collection("vaga")
-    private val vagaDao = VagaDao()
 
     val vagas = MutableLiveData<List<Vaga>>()
     val errorMessage = MutableLiveData<String>()
@@ -65,10 +63,10 @@ class VagaViewModel : ViewModel() {
             .whereEqualTo("disponivel", true)
 
         if (tipo != null) {
-            if (tipo.equals("Preferencial", ignoreCase = true)) {
-                query = query.whereEqualTo("preferencial", true)
+            query = if (tipo.equals("Preferencial", ignoreCase = true)) {
+                query.whereEqualTo("preferencial", true)
             } else {
-                query = query.whereEqualTo("tipo", tipo.lowercase())
+                query.whereEqualTo("tipo", tipo.lowercase())
             }
         }
 
@@ -90,10 +88,6 @@ class VagaViewModel : ViewModel() {
         }
     }
 
-    fun cadastrarVaga(vaga: Vaga, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-        vagaDao.cadastrarVaga(vaga, onSuccess, onFailure)
-    }
-
     fun verificarSeTemVagas(estacionamentoId: String, onResult: (Boolean) -> Unit) {
         if (estacionamentoId.isBlank()) {
             onResult(false)
@@ -106,13 +100,6 @@ class VagaViewModel : ViewModel() {
             .get()
             .addOnSuccessListener { snapshot -> onResult(!snapshot.isEmpty) }
             .addOnFailureListener { onResult(false) }
-    }
-
-    fun deleteVaga(vagaId: String, onComplete: (Boolean, String?) -> Unit) {
-        vagasCollection.document(vagaId)
-            .delete()
-            .addOnSuccessListener { onComplete(true, null) }
-            .addOnFailureListener { e -> onComplete(false, e.message) }
     }
 
     override fun onCleared() {

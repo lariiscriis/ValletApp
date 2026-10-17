@@ -30,4 +30,7 @@
     <string name="dashboard_reservas">Reservas</string>
     <string name="dashboard_tempo_total">Tempo total</string>
     <string name="dashboard_historico_recente">Histórico Recente</string>
+    <string name="estacionamentos">Estacionamentos</string>
+    <string name="inicio">Início</string>
+    <string name="veiculos">Veículos</string>
 </resources>
