@@ -7,4 +7,14 @@
         <color name="cinza">#D1D1D1</color>
         <color name="branco">#FFFFFF</color>
 
+        <color name="vallet_green_dark">#3B5942</color>
+        <color name="vallet_green">#637365</color>
+        <color name="vallet_green_muted">#97A697</color>
+        <color name="vallet_green_light">#CBD9C5</color>
+        <color name="vallet_background">#F0F2EB</color>
+
+        <color name="vallet_surface">#FFFFFF</color>
+        <color name="vallet_text">#263D2E</color>
+        <color name="vallet_text_secondary">#637365</color>
+
 </resources>

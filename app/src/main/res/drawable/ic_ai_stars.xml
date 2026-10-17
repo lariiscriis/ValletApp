@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Estrela Grande (Esquerda) -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M9.5,2C9.5,6.14 6.14,9.5 2,9.5C6.14,9.5 9.5,12.86 9.5,17C9.5,12.86 12.86,9.5 17,9.5C12.86,9.5 9.5,6.14 9.5,2Z" />
+
+    <!-- Estrela Média (Superior Direita) -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M18,2C18,4.21 16.21,6 14,6C16.21,6 18,7.79 18,10C18,7.79 19.79,6 22,6C19.79,6 18,4.21 18,2Z" />
+
+    <!-- Estrela Pequena (Inferior Direita) -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M18,14C18,16.21 16.21,18 14,18C16.21,18 18,19.79 18,22C18,19.79 19.79,18 22,18C19.79,18 18,16.21 18,14Z" />
+
+</vector>

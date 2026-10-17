@@ -26,9 +26,9 @@
 
     <style name="Theme.ValletProjeto" parent="Base.Theme.ValletProjeto" />
 
-    <style name="CustomBottomNavigationViewIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+<!--    <style name="CustomBottomNavigationViewIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">@color/cinza</item>
-    </style>
+    </style>-->
 
     <style name="DialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog">
         <item name="android:windowBackground">@drawable/form_background</item>

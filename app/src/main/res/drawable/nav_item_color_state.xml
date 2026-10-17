@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/verdeescuro" android:state_checked="true"/>
-    <item android:color="@color/preto" android:state_checked="false"/>
-    <item android:color="@color/preto"/>
-
-
+    <item
+        android:state_checked="true"
+        android:color="@color/vallet_green_dark" />
+    <item android:color="@color/vallet_green" />
 </selector>

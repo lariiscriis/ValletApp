@@ -26,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Locale
 
+
 class DashboardBase : AppCompatActivity() {
     private lateinit var binding: ActivityDashboardBaseBinding
     private var isAdmin = true
@@ -48,6 +49,39 @@ class DashboardBase : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDashboardBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+
+            val statusBar = insets.getInsets(
+                androidx.core.view.WindowInsetsCompat.Type.statusBars()
+            )
+
+            val navigationBar = insets.getInsets(
+                androidx.core.view.WindowInsetsCompat.Type.navigationBars()
+            )
+
+            // Evita adicionar o espaço inferior ao layout inteiro
+            view.setPadding(
+                view.paddingLeft,
+                statusBar.top,
+                view.paddingRight,
+                0
+            )
+
+            // Mantém a tabbar acima dos botões do sistema
+            val params = binding.bottomNavigation.layoutParams as
+                    androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+
+            params.bottomMargin = (12 * resources.displayMetrics.density).toInt() +
+                    navigationBar.bottom
+
+            binding.bottomNavigation.layoutParams = params
+
+            insets
+        }
+
 
         NotificationUtils.createNotificationChannel(this)
         verificarTipoUsuario()
@@ -167,14 +201,16 @@ class DashboardBase : AppCompatActivity() {
         val menu = binding.bottomNavigation.menu
 
         menu.findItem(R.id.nav_vehicles).isVisible = !isAdmin
+/*
         menu.findItem(R.id.nav_management).isVisible = isAdmin
+*/
 
         val navSpots = menu.findItem(R.id.nav_spots)
         if (isAdmin) {
             navSpots.title = "Vagas Ocupadas"
             navSpots.setIcon(R.drawable.ic_parking)
         } else {
-            navSpots.title = "Estacionamentos"
+            navSpots.title = "Vagas"
             navSpots.setIcon(R.drawable.ic_parking)
         }
 
@@ -190,14 +226,18 @@ class DashboardBase : AppCompatActivity() {
                     else replaceFragment(MotoristaFragment())
                     true
                 }
+                R.id.nav_placeholder -> {
+                    // Item central reservado para o FAB de IA (Não faz nada ao clicar)
+                    false
+                }
                 R.id.nav_vehicles -> {
                     replaceFragment(VeiculoListFragment())
                     true
                 }
-                R.id.nav_management -> {
+/*                R.id.nav_management -> {
                     if (isAdmin) replaceFragment(VagaFragment())
                     true
-                }
+                }*/
                 else -> false
             }
         }
