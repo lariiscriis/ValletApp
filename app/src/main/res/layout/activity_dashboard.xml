@@ -109,7 +109,7 @@
         app:layout_constraintTop_toBottomOf="@+id/top_bar" />
 
     <!-- Barra de Navegação Inferior -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <LinearLayout
         android:id="@+id/bottom_navigation"
         android:layout_width="0dp"
         android:layout_height="64dp"
@@ -118,34 +118,103 @@
         android:layout_marginBottom="12dp"
         android:background="@drawable/bg_bottom_navigation"
         android:elevation="16dp"
-        app:itemIconSize="26dp"
-        app:itemIconTint="@drawable/nav_item_color_state"
-        app:itemRippleColor="@color/vallet_green_light"
-        app:labelVisibilityMode="unlabeled"
-        app:itemActiveIndicatorStyle="@null"
-        app:paddingBottomSystemWindowInsets="false"
-        app:paddingTopSystemWindowInsets="false"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <!-- Assistente de Voz de IA (FAB r) -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        <ImageView
+            android:id="@+id/nav_spots"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_nav_ripple"
+            android:clickable="true"
+            android:contentDescription="Vagas"
+            android:focusable="true"
+            android:padding="19dp"
+            android:src="@drawable/icons8_local"
+            app:tint="@drawable/nav_item_color_state" />
+
+        <ImageView
+            android:id="@+id/nav_dashboard"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_nav_ripple"
+            android:clickable="true"
+            android:contentDescription="Início"
+            android:focusable="true"
+            android:padding="19dp"
+            android:src="@drawable/icons8_home"
+            app:tint="@drawable/nav_item_color_state" />
+
+        <!-- Vão do FAB -->
+
+
+        <ImageView
+            android:id="@+id/nav_vehicles"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_nav_ripple"
+            android:clickable="true"
+            android:contentDescription="Veículos"
+            android:focusable="true"
+            android:padding="19dp"
+            android:src="@drawable/icons8_car"
+            app:tint="@drawable/nav_item_color_state" />
+
+        <ImageView
+            android:id="@+id/nav_extra"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_nav_ripple"
+            android:clickable="true"
+            android:contentDescription="Perfil"
+            android:focusable="true"
+            android:padding="19dp"
+            android:src="@drawable/icons8_person"
+            app:tint="@drawable/nav_item_color_state" />
+
+    </LinearLayout>
+
+    <!-- Assistente de Voz de IA (losango) -->
+    <FrameLayout
         android:id="@+id/fab_voice_assistant"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/vallet_green"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginBottom="-40dp"
+        android:clickable="true"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:contentDescription="Assistente IA"
         android:elevation="20dp"
-        android:src="@drawable/ic_ai_stars"
-        app:fabSize="normal"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+        android:focusable="true"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="@+id/bottom_navigation"
-        app:layout_constraintStart_toStartOf="@+id/bottom_navigation"
-        app:layout_constraintTop_toTopOf="@+id/bottom_navigation"
-        app:tint="@android:color/white"
-        tools:ignore="TouchTargetSizeCheck" />
+        app:layout_constraintStart_toStartOf="@+id/bottom_navigation">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:rotation="45"
+            app:cardBackgroundColor="@color/vallet_green"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="4dp" />
+
+        <ImageView
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:elevation="12dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/icons8_ai"
+            app:tint="@android:color/white" />
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -135,18 +135,34 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun setupNavigation() {
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_spots -> { replaceFragment(EstacionamentosFragment()); true }
-                R.id.nav_dashboard -> { replaceFragment(MotoristaFragment()); true }
-                R.id.nav_vehicles -> { replaceFragment(VeiculoListFragment()); true }
-                else -> false
-            }
+        binding.navSpots.setOnClickListener { selecionar(R.id.nav_spots) }
+        binding.navDashboard.setOnClickListener { selecionar(R.id.nav_dashboard) }
+        binding.navVehicles.setOnClickListener { selecionar(R.id.nav_vehicles) }
+        binding.navExtra.setOnClickListener {
+            startActivity(Intent(this, PerfilActivity::class.java))
+        }
+    }
+
+    private fun selecionar(itemId: Int) {
+        val itens = mapOf(
+            R.id.nav_spots to binding.navSpots,
+            R.id.nav_dashboard to binding.navDashboard,
+            R.id.nav_vehicles to binding.navVehicles
+        )
+        if (itens[itemId]?.isSelected == true) return  // já está nessa aba
+
+        itens.forEach { (id, view) -> view.isSelected = (id == itemId) }
+
+        when (itemId) {
+            R.id.nav_spots -> replaceFragment(EstacionamentosFragment())
+            R.id.nav_dashboard -> replaceFragment(MotoristaFragment())
+            R.id.nav_vehicles -> replaceFragment(VeiculoListFragment())
+
         }
     }
 
     private fun loadInitialFragment() {
-        binding.bottomNavigation.selectedItemId = R.id.nav_dashboard
+        selecionar(R.id.nav_dashboard)
     }
 
     private fun replaceFragment(fragment: Fragment) {
@@ -176,7 +192,8 @@ class DashboardActivity : AppCompatActivity() {
                 cancelarReservaAtivaGlobal()
             }
             command.contains("veículo") || command.contains("veiculo") || command.contains("carro") -> {
-                binding.bottomNavigation.selectedItemId = R.id.nav_vehicles
+                selecionar(R.id.nav_vehicles)
+
                 Toast.makeText(this, "Exibindo veículos", Toast.LENGTH_SHORT).show()
             }
             command.contains("histórico") || command.contains("historico") || command.contains("reservas") -> {
@@ -189,7 +206,7 @@ class DashboardActivity : AppCompatActivity() {
                 performLogout()
             }
             else -> {
-                binding.bottomNavigation.selectedItemId = R.id.nav_spots
+                selecionar(R.id.nav_spots)
                 Toast.makeText(this, "Comando não reconhecido, indo para estacionamentos...", Toast.LENGTH_SHORT).show()
             }
         }
