@@ -45,6 +45,12 @@ class DashboardActivity : AppCompatActivity() {
         binding = ActivityDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+            binding.root.setPadding(0, systemBars.top, 0, systemBars.bottom)
+            insets
+        }
+
         NotificationUtils.createNotificationChannel(this)
         carregarDadosUsuario()
 
