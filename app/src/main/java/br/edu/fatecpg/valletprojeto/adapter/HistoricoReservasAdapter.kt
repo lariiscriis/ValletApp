@@ -24,11 +24,15 @@ class HistoricoReservasAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val reserva = listaReservas[position]
+
         holder.binding.tvVaga.text = reserva.vaga
+
         holder.binding.tvEstacionamentoNome.text = reserva.estacionamentoNome
-        val periodo = "Duração: ${reserva.data} - ${reserva.horario}"
+
+        val periodo = "${reserva.data} • ${reserva.horario}"
         holder.binding.tvPeriodo.text = periodo
-        holder.binding.tvStatus.text = "Status: Finalizada"
+
+        holder.binding.tvStatus.text = reserva.duracao
     }
 
     override fun getItemCount() = listaReservas.size

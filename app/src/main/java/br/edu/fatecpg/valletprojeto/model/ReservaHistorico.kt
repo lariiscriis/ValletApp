@@ -4,5 +4,6 @@ data class ReservaHistorico(
     val vaga: String,
     val data: String,
     val horario: String,
-    val estacionamentoNome: String
+    val estacionamentoNome: String,
+    val duracao: String = ""
 )

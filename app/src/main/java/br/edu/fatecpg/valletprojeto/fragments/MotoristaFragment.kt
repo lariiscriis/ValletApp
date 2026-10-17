@@ -92,6 +92,7 @@ class MotoristaFragment : Fragment() {
     private fun setupRecyclerView() {
         binding.rvHistoricoRecente.layoutManager = LinearLayoutManager(requireContext())
         binding.rvHistoricoRecente.setHasFixedSize(true)
+        binding.rvHistoricoRecente.isNestedScrollingEnabled = false
     }
 
     private fun setupClickListeners() {
@@ -193,21 +194,22 @@ class MotoristaFragment : Fragment() {
                         inicio = inicio,
                         fim = fim
                     )
-                } else {
+                }else {
                     if (inicio != null) {
                         historico.add(
                             ReservaHistorico(
                                 vaga = vaga.numero,
                                 data = SimpleDateFormat("dd/MM", Locale.getDefault()).format(inicio),
                                 horario = formatarHorario(inicio, fim),
-                                estacionamentoNome = estacionamentoNome
+                                estacionamentoNome = estacionamentoNome,
+                                duracao = calcularDuracaoTexto(inicio, fim)
                             )
                         )
                     }
                 }
             }
 
-            val historicoLimitado = historico.takeLast(10).reversed()
+            val historicoLimitado = historico.takeLast(3).reversed()
 
             return@async ProcessamentoResultado(
                 totalHoras = totalHoras,
@@ -344,8 +346,9 @@ class MotoristaFragment : Fragment() {
 
         val dashboardActivity = activity as? DashboardActivity
         dashboardActivity?.let {
-            val bottomNav = it.findViewById<BottomNavigationView>(R.id.bottom_navigation)
-            bottomNav.selectedItemId = R.id.nav_spots
+            val btnVagas = it.findViewById<android.widget.ImageView>(R.id.nav_spots)
+
+            btnVagas?.performClick()
         }
     }
 
@@ -370,4 +373,18 @@ class MotoristaFragment : Fragment() {
         val inicio: Date?,
         val fim: Date?
     )
+
+    private fun calcularDuracaoTexto(inicio: Date?, fim: Date?): String {
+        if (inicio == null || fim == null) return ""
+        val diferencaMillis = fim.time - inicio.time
+        val horas = TimeUnit.MILLISECONDS.toHours(diferencaMillis)
+        val minutos = TimeUnit.MILLISECONDS.toMinutes(diferencaMillis) % 60
+
+        return if (horas > 0) {
+            "${horas}h ${minutos}min"
+        } else {
+            "${minutos}min"
+        }
+    }
+
 }
