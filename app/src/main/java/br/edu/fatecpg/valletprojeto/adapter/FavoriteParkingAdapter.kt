@@ -1,8 +1,8 @@
 package br.edu.fatecpg.valletprojeto.adapter
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +12,6 @@ import br.edu.fatecpg.valletprojeto.model.Estacionamento
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import androidx.core.graphics.toColorInt
 
 class FavoriteParkingAdapter(
     private val onFavoriteClicked: (Estacionamento) -> Unit,
@@ -24,32 +23,50 @@ class FavoriteParkingAdapter(
 
     inner class ViewHolder(val binding: ItemEstacionamentoFavoritoBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(estacionamento: Estacionamento) {
+            val context = binding.root.context
+
             binding.txvNomeEstacionamento.text = estacionamento.nome
             binding.txvEnderecoEstacionamento.text = estacionamento.enderecoCompleto
-
-            val isOpen = estacionamento.estaAberto()
-            binding.tvParkingStatus.text = if (isOpen) "ABERTO" else "FECHADO"
-            binding.tvParkingStatus.setBackgroundColor(
-                if (isOpen) "#00A676".toColorInt() else Color.RED
-            )
-
-
             binding.txvPreco.text = "R$%.2f/h".format(estacionamento.valorHora)
-
             binding.tvParkingDistance.text = formatarDistancia(estacionamento.distanciaMetros)
-            binding.btnVerVagas.setOnClickListener { onItemClicked(estacionamento) }
 
+            // ==========================================
+            // 1. LÓGICA: ABERTO vs FECHADO (Novo Design)
+            // ==========================================
+            val isOpen = estacionamento.estaAberto()
+            if (isOpen) {
+                binding.root.alpha = 1.0f // Normal
+                binding.tvParkingStatus.text = "Aberto"
+                binding.tvParkingStatus.setBackgroundResource(R.drawable.bg_status_aberto)
+                binding.tvParkingStatus.setTextColor(ContextCompat.getColor(context, R.color.vallet_green_dark))
+                binding.btnVerVagas.backgroundTintList = ContextCompat.getColorStateList(context, R.color.vallet_green_dark)
+            } else {
+                binding.root.alpha = 0.6f // Desbotado
+                binding.tvParkingStatus.text = "Fechado"
+                binding.tvParkingStatus.setBackgroundResource(R.drawable.bg_status_fechado)
+                binding.tvParkingStatus.setTextColor(ContextCompat.getColor(context, R.color.vallet_status_closed_text))
+                binding.btnVerVagas.backgroundTintList = ContextCompat.getColorStateList(context, R.color.vallet_green_muted)
+            }
 
-            Glide.with(binding.root.context)
+            Glide.with(context)
                 .load(estacionamento.fotoEstacionamentoUri)
                 .placeholder(R.drawable.estacionamento_foto)
                 .error(R.drawable.estacionamento_foto)
+                .centerCrop()
                 .into(binding.ivParkingImage)
 
+            // ==========================================
+            // 2. LISTENERS
+            // ==========================================
+            binding.root.setOnClickListener { onItemClicked(estacionamento) }
+            binding.btnVerVagas.setOnClickListener { onItemClicked(estacionamento) }
             binding.ivFavorite.setOnClickListener { onFavoriteClicked(estacionamento) }
 
-            binding.root.setOnClickListener { onItemClicked(estacionamento) }
-            binding.ivFavorite.setImageResource(R.drawable.btn_star_on)
+            // ==========================================
+            // 3. ÍCONE DE CORAÇÃO PREENCHIDO
+            // ==========================================
+            // Como este adapter é exclusivo para favoritos, usamos o coração preenchido
+            binding.ivFavorite.setImageResource(R.drawable.ic_heart_filled)
 
             setupVagasListener(estacionamento)
         }
@@ -65,8 +82,8 @@ class FavoriteParkingAdapter(
             val listener = db.collection("vaga")
                 .whereEqualTo("estacionamentoId", estacionamento.id)
                 .whereEqualTo("disponivel", true)
-                .addSnapshotListener { snapshot, e ->
-                    binding.tvTavInfo.text = "Vagas disponíveis: ${snapshot?.size() ?: "N/A"}"
+                .addSnapshotListener { snapshot, _ ->
+                    binding.tvTavInfo.text = "Vagas: ${snapshot?.size() ?: "N/A"}"
                 }
             listeners[estacionamento.id] = listener
         }

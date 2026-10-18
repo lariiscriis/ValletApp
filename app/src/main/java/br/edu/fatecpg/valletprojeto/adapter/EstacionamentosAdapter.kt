@@ -23,29 +23,49 @@ class EstacionamentosAdapter(
 
     inner class ViewHolder(private val binding: ItemEstacionamentoBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(estacionamento: Estacionamento) {
-            binding.txvNomeEstacionamento.text = estacionamento.nome
-            val isOpen = estacionamento.estaAberto()
-            binding.tvParkingStatus.text = if (isOpen) "ABERTO" else "FECHADO"
-            binding.tvParkingStatus.setBackgroundColor(
-                if (isOpen) Color.parseColor("#00A676") else Color.RED
-            )
+            val context = binding.root.context
 
+            binding.txvNomeEstacionamento.text = estacionamento.nome
             binding.txvPreco.text = "R$%.2f/h".format(estacionamento.valorHora)
             binding.txvEnderecoEstacionamento.text = estacionamento.enderecoCompleto
             binding.tvParkingDistance.text = formatarDistancia(estacionamento.distanciaMetros)
 
-            Glide.with(binding.root.context)
+            // ==========================================
+            // 1. LÓGICA: ABERTO vs FECHADO
+            // ==========================================
+            val isOpen = estacionamento.estaAberto()
+            if (isOpen) {
+                binding.root.alpha = 1.0f // Normal
+                binding.tvParkingStatus.text = "Aberto"
+                binding.tvParkingStatus.setBackgroundResource(R.drawable.bg_status_aberto)
+                binding.tvParkingStatus.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.vallet_green_dark))
+                binding.btnVerVagas.backgroundTintList = androidx.core.content.ContextCompat.getColorStateList(context, R.color.vallet_green_dark)
+            } else {
+                binding.root.alpha = 0.6f
+                binding.tvParkingStatus.text = "Fechado"
+                binding.tvParkingStatus.setBackgroundResource(R.drawable.bg_status_fechado)
+                binding.tvParkingStatus.setTextColor(androidx.core.content.ContextCompat.getColor(context, R.color.vallet_status_closed_text))
+                binding.btnVerVagas.backgroundTintList = androidx.core.content.ContextCompat.getColorStateList(context, R.color.vallet_green_muted)
+            }
+
+            Glide.with(context)
                 .load(estacionamento.fotoEstacionamentoUri)
                 .placeholder(R.drawable.estacionamento_foto)
                 .centerCrop()
                 .into(binding.ivParkingImage)
 
+            // ==========================================
+            // 2. LISTENERS
+            // ==========================================
             binding.root.setOnClickListener { onItemClicked(estacionamento) }
             binding.btnVerVagas.setOnClickListener { onItemClicked(estacionamento) }
-
             binding.ivFavorite.setOnClickListener { onFavoriteClicked(estacionamento) }
 
-            binding.ivFavorite.setImageResource(R.drawable.btn_star_off)
+            // ==========================================
+            // 3. ÍCONE DE CORAÇÃO
+            // ==========================================
+
+            binding.ivFavorite.setImageResource(R.drawable.ic_heart_outline)
 
             iniciarListenerVagas(estacionamento)
         }
@@ -62,7 +82,7 @@ class EstacionamentosAdapter(
                 .whereEqualTo("estacionamentoId", estacionamento.id)
                 .whereEqualTo("disponivel", true)
                 .addSnapshotListener { snapshot, _ ->
-                    binding.txvVagasDisponiveis.text = "Vagas disponíveis: ${snapshot?.size() ?: 0}"
+                    binding.txvVagasDisponiveis.text = "Vagas: ${snapshot?.size() ?: 0}"
                 }
             listeners[estacionamento.id] = listener
         }
