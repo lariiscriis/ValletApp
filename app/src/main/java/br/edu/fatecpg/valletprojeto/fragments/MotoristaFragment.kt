@@ -91,7 +91,7 @@ class MotoristaFragment : Fragment() {
 
     private fun setupRecyclerView() {
         binding.rvHistoricoRecente.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvHistoricoRecente.setHasFixedSize(true)
+       /* binding.rvHistoricoRecente.setHasFixedSize(true)*/
         binding.rvHistoricoRecente.isNestedScrollingEnabled = false
     }
 
