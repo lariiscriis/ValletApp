@@ -1,88 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cv_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
+    android:layout_marginHorizontal="24dp"
     android:layout_marginVertical="8dp"
-    app:cardBackgroundColor="?attr/colorSurface"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="4dp">
+    app:cardBackgroundColor="@color/vallet_card_bg"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="2dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:padding="16dp">
 
-        <!-- Ícone do Veículo -->
-        <ImageView
-            android:id="@+id/iv_vehicle_icon"
-            android:layout_width="78dp"
+        <!-- Container -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_vehicle_image"
+            android:layout_width="80dp"
             android:layout_height="80dp"
-            android:contentDescription="Ícone do veículo"
-            android:scaleType="centerCrop"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="#F5F6F5"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/carro_option" />
-
-        <!-- Layout para as informações do veículo -->
-        <LinearLayout
-            android:id="@+id/ll_vehicle_info"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/iv_favorite_toggle"
-            app:layout_constraintStart_toEndOf="@id/iv_vehicle_icon"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/txv_apelido_veiculo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_medium"
-                android:textColor="@color/verdeescuro"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                tools:text="Meu Carro" />
+            <ImageView
+                android:id="@+id/iv_vehicle_icon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/carro_option" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- Badge "Veículo principal"  -->
+        <LinearLayout
+            android:id="@+id/ll_badge_principal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/bg_badge_principal"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/cv_vehicle_image"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <ImageView
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@drawable/star"
+                app:tint="@color/vallet_green_dark" />
 
             <TextView
-                android:id="@+id/txv_detalhes_veiculo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:textColor="#444444"
-                android:textSize="16sp"
-                tools:text="VW Gol - 2023" />
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Veículo principal"
+                android:textColor="@color/vallet_green_dark"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <!-- Apelido -->
+        <TextView
+            android:id="@+id/txv_apelido_veiculo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/vallet_text"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toStartOf="@+id/fl_favorite"
+            app:layout_constraintStart_toEndOf="@id/cv_vehicle_image"
+            app:layout_constraintTop_toBottomOf="@id/ll_badge_principal"
+            tools:text="Meu Carro" />
+
+        <!-- Detalhes (Marca/Modelo - Ano) -->
+        <TextView
+            android:id="@+id/txv_detalhes_veiculo"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/vallet_text_secondary"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/iv_arrow"
+            app:layout_constraintStart_toEndOf="@id/cv_vehicle_image"
+            app:layout_constraintTop_toBottomOf="@id/txv_apelido_veiculo"
+            tools:text="VW Gol - 2023" />
+
+        <!-- Placa -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_placa"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@id/cv_vehicle_image"
+            app:layout_constraintTop_toBottomOf="@id/txv_detalhes_veiculo">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/plate_outline"
+                app:tint="@color/vallet_green_muted" />
 
             <TextView
                 android:id="@+id/txv_placa_veiculo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins"
-                android:textColor="#666666"
-                android:textSize="16sp"
+                android:layout_marginStart="4dp"
+                android:fontFamily="@font/poppins_medium"
+                android:textColor="@color/vallet_green_dark"
+                android:textSize="12sp"
                 tools:text="BRA2E19" />
-
         </LinearLayout>
 
+        <!-- Coração / Favorito -->
+        <FrameLayout
+            android:id="@+id/fl_favorite"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_circle_icon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_favorite_toggle"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:contentDescription="Marcar como veículo principal"
+                tools:src="@drawable/ic_heart_filled"
+                />
+        </FrameLayout>
+
+        <!-- Seta da direita -->
         <ImageView
-            android:id="@+id/iv_favorite_toggle"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/btn_star_off"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="8dp"
-            android:contentDescription="Marcar como veículo principal"
+            android:id="@+id/iv_arrow"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/chevron_right"
+            app:tint="@color/vallet_green_muted"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/btn_star_on" />
+            app:layout_constraintTop_toBottomOf="@id/fl_favorite" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.cardview.widget.CardView>

@@ -39,7 +39,7 @@
             android:contentDescription="Voltar"
             android:focusable="true"
             android:src="@drawable/ic_arrow_back"
-            app:tint="@color/branco"
+            app:tint="@color/white"
             tools:ignore="TouchTargetSizeCheck" />
     </FrameLayout>
 

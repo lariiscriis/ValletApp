@@ -4,51 +4,102 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".VeiculoActivity"
-    android:layout_marginTop="10dp">
+    android:background="@color/vallet_background"
+    tools:context=".VeiculoActivity">
 
+    <!-- Cabeçalho -->
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"
         android:fontFamily="@font/poppins_medium"
-        android:padding="16dp"
-        android:text="@string/meus_veiculos"
-        android:textColor="@color/verdeescuro"
-        android:textSize="20sp"
+        android:text="Meus Veículos"
+        android:textColor="@color/vallet_green_dark"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/tv_subtitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/poppins"
+        android:text="Gerencie seus veículos cadastrados e tenha mais praticidade nas suas reservas."
+        android:textColor="@color/vallet_green"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+    <!-- Lista de Veículos -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_car_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:clipToPadding="false"
-        android:paddingBottom="80dp"
+        android:paddingBottom="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title"
+        app:layout_constraintTop_toBottomOf="@id/tv_subtitle"
         tools:listitem="@layout/item_card_veiculo" />
 
+    <!-- Estado Vazio -->
+    <LinearLayout
+        android:id="@+id/ll_empty_state"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_subtitle">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/icons8_car"
+            app:tint="@color/vallet_green_muted" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Nenhum veículo cadastrado"
+            android:textColor="@color/vallet_text"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- FAB de Adicionar -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_car"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="32dp"
         android:contentDescription="Adicionar novo veículo"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/verdeescuro"
+        android:src="@drawable/add"
+        app:backgroundTint="@color/vallet_green_dark"
+        app:elevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:tint="@android:color/white" />
+        app:tint="@color/vallet_surface" />
 
     <FrameLayout
         android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

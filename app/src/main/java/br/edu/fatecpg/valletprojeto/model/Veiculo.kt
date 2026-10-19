@@ -1,5 +1,7 @@
 package br.edu.fatecpg.valletprojeto.model
 
+import com.google.firebase.firestore.PropertyName
+
 data class Veiculo(
     val placa: String = "",
     val marca: String = "",
@@ -12,5 +14,8 @@ data class Veiculo(
     var dataCadastro: String = "",
     var padrao: Boolean = false,
     var usuarioId: String = "",
+
+    @get:PropertyName("cor")
+    @set:PropertyName("cor")
     var cor: String = ""
 )

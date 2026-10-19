@@ -124,7 +124,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/barrier_bottom" />
 
-        <!-- DISTANCIA (Alinhado com a esquerda do texto, e centralizado com a tag Status) -->
+        <!-- DISTANCIA -->
         <TextView
             android:id="@+id/tv_parking_distance"
             android:layout_width="wrap_content"

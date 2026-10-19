@@ -1,246 +1,433 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/vallet_background"
+    android:fitsSystemWindows="true">
+
+    <!-- Topbar Customizada -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/vallet_text"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Adicionar Veículo"
+            android:textColor="@color/vallet_green_dark"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/dialog_background"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
         android:fillViewport="true"
+        android:paddingBottom="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="0.9">
+        app:layout_constraintTop_toBottomOf="@id/cl_topbar">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="24dp">
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp">
 
+            <!-- Subtítulo -->
             <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_medium"
-                android:text="@string/adicionar_veiculo"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/poppins"
+                android:text="Cadastre seu veículo para aproveitar todas as funcionalidades."
                 android:textAlignment="center"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:textColor="@color/vallet_text_secondary"
+                android:textSize="14sp" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutEditPlaca"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
+            <!-- CARD DE FOTO DO VEÍCULO  -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="@string/placa"
-                app:boxStrokeColor="@color/verdeescuro"
-                app:hintTextColor="@color/verdeescuro"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_title">
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/vallet_surface"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/vallet_green_light"
+                app:strokeWidth="1dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editPlaca"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:inputType="textCapCharacters"
-                    android:maxLines="1"
-                    android:textColor="#000000" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:padding="16dp">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutEditMarca"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
+                    <!-- Título: Foto do Veículo -->
+                    <TextView
+                        android:id="@+id/tv_foto_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Foto do Veículo"
+                        android:textColor="@color/vallet_green_dark"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- Foto do Veículo -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cv_vehicle_photo"
+                        android:layout_width="100dp"
+                        android:layout_height="75dp"
+                        android:layout_marginTop="12dp"
+                        app:cardBackgroundColor="#F5F6F5"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tv_foto_label">
+
+                        <ImageView
+                            android:id="@+id/iv_vehicle_photo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            tools:src="@drawable/carro_option_resized" />
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Descrição ao lado da foto -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="12dp"
+                        android:fontFamily="@font/poppins"
+                        android:text="Toque no ícone ao lado para adicionar a foto do seu veículo."
+                        android:textColor="@color/vallet_text_secondary"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toBottomOf="@id/cv_vehicle_photo"
+                        app:layout_constraintEnd_toStartOf="@id/iv_change_photo"
+                        app:layout_constraintStart_toEndOf="@id/cv_vehicle_photo"
+                        app:layout_constraintTop_toTopOf="@id/cv_vehicle_photo" />
+
+                    <!-- Botão de Alterar Foto -->
+                    <ImageView
+                        android:id="@+id/iv_change_photo"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/bg_circle_icon"
+                        android:backgroundTint="@color/vallet_green_dark"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="8dp"
+                        android:src="@drawable/camera"
+                        app:layout_constraintBottom_toBottomOf="@id/cv_vehicle_photo"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/cv_vehicle_photo"
+                        app:tint="@color/vallet_surface"
+                        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- LINHA 1: Placa e Ano -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/marca"
-                app:boxStrokeColor="@color/verdeescuro"
-                app:hintTextColor="@color/verdeescuro"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutEditPlaca">
+                android:layout_marginBottom="12dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editMarca"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutEditPlaca"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:inputType="textCapWords"
-                    android:maxLines="1"
-                    android:textColor="#000000" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:hint="Placa *"
+                    app:boxBackgroundColor="@color/vallet_surface"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeColor="@color/vallet_green_light"
+                    app:hintTextColor="@color/vallet_green_dark">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutEditModelo"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editPlaca"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/plate_outline"
+                        android:drawablePadding="10dp"
+                        android:drawableTint="@color/vallet_green_dark"
+                        android:fontFamily="@font/poppins"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapCharacters"
+                        android:maxLines="1"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutEditAno"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:hint="Ano *"
+                    app:boxBackgroundColor="@color/vallet_surface"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeColor="@color/vallet_green_light"
+                    app:hintTextColor="@color/vallet_green_dark">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editAno"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/calendar_check"
+                        android:drawablePadding="10dp"
+                        android:drawableTint="@color/vallet_green_dark"
+                        android:fontFamily="@font/poppins"
+                        android:imeOptions="actionNext"
+                        android:inputType="number"
+                        android:maxLength="4"
+                        android:maxLines="1"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <!-- LINHA 2: Marca e Modelo -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/modelo"
-                app:boxStrokeColor="@color/verdeescuro"
-                app:hintTextColor="@color/verdeescuro"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutEditMarca">
+                android:layout_marginBottom="12dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editModelo"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutEditMarca"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:inputType="textCapWords"
-                    android:maxLines="1"
-                    android:textColor="#000000" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:hint="Marca *"
+                    app:boxBackgroundColor="@color/vallet_surface"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeColor="@color/vallet_green_light"
+                    app:hintTextColor="@color/vallet_green_dark">
 
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editMarca"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/brand_bumble"
+                        android:drawablePadding="10dp"
+                        android:drawableTint="@color/vallet_green_dark"
+                        android:fontFamily="@font/poppins"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords"
+                        android:maxLines="1"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutEditModelo"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:hint="Modelo *"
+                    app:boxBackgroundColor="@color/vallet_surface"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeColor="@color/vallet_green_light"
+                    app:hintTextColor="@color/vallet_green_dark">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editModelo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/icons8_car"
+                        android:drawablePadding="10dp"
+                        android:drawableTint="@color/vallet_green_dark"
+                        android:fontFamily="@font/poppins"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords"
+                        android:maxLines="1"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
+
+            <!-- Campo: Apelido -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/layoutEditApelido"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/apelido"
-                app:boxStrokeColor="@color/verdeescuro"
-                app:hintTextColor="@color/verdeescuro"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutEditModelo">
+                android:layout_marginBottom="12dp"
+                android:hint="Apelido *"
+                app:boxBackgroundColor="@color/vallet_surface"
+                app:boxCornerRadiusBottomEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxStrokeColor="@color/vallet_green_light"
+                app:hintTextColor="@color/vallet_green_dark">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/editApelido"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/icons8_person"
+                    android:drawablePadding="10dp"
+                    android:drawableTint="@color/vallet_green_dark"
+                    android:fontFamily="@font/poppins"
                     android:imeOptions="actionNext"
-                    android:inputType="text"
+                    android:inputType="textCapWords"
                     android:maxLines="1"
-                    android:textColor="#000000" />
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutEditAno"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
+            <!-- LINHA 3: Tipo e Cor -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/ano"
-                app:boxStrokeColor="@color/verdeescuro"
-                app:hintTextColor="@color/verdeescuro"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutEditApelido">
+                android:layout_marginBottom="16dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/editAno"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutEditTipo"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:imeOptions="actionDone"
-                    android:inputType="number"
-                    android:maxLength="4"
-                    android:maxLines="1"
-                    android:textColor="#000000" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:hint="Tipo *"
+                    app:boxBackgroundColor="@color/vallet_surface"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeColor="@color/vallet_green_light"
+                    app:hintTextColor="@color/vallet_green_dark">
 
-            <TextView
-                android:id="@+id/tv_tipo_label"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/poppins_medium"
-                android:text="@string/tipo_veiculo"
-                android:textAlignment="center"
-                android:textColor="@color/verdeescuro"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/layoutEditAno" />
+                    <AutoCompleteTextView
+                        android:id="@+id/editTipo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/car_parking_01"
+                        android:drawablePadding="10dp"
+                        android:drawableTint="@color/vallet_green_dark"
+                        android:fontFamily="@font/poppins"
+                        android:inputType="none"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:paddingEnd="36dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
+                        tools:ignore="SpeakableTextPresentCheck" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-            <RadioGroup
-                android:id="@+id/rg_vehicle_type"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_tipo_label">
-
-                <RadioButton
-                    android:id="@+id/rb_carro"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutEditCor"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/radio_car_selector"
-                    android:button="@android:color/transparent"
-                    android:checked="true"
-                    android:drawableTop="@drawable/carro_option_resized"
-                    android:drawablePadding="4dp"
-                    android:fontFamily="@font/poppins"
-                    android:gravity="center"
-                    android:padding="16dp"
-                    android:text="@string/carro"
-                    android:textColor="@color/verdeescuro" />
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:hint="Cor *"
+                    app:boxBackgroundColor="@color/vallet_surface"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeColor="@color/vallet_green_light"
+                    app:hintTextColor="@color/vallet_green_dark">
 
-                <RadioButton
-                    android:id="@+id/rb_moto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:background="@drawable/radio_moto_selector"
-                    android:button="@android:color/transparent"
-                    android:drawableTop="@drawable/moto_option_resized"
-                    android:drawablePadding="4dp"
-                    android:fontFamily="@font/poppins"
-                    android:gravity="center"
-                    android:padding="16dp"
-                    android:text="@string/moto"
-                    android:textColor="@color/verdeescuro" />
-            </RadioGroup>
+                    <AutoCompleteTextView
+                        android:id="@+id/editCor"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/color"
+                        android:drawablePadding="10dp"
+                        android:drawableTint="@color/vallet_green_dark"
+                        android:fontFamily="@font/poppins"
+                        android:inputType="none"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:ellipsize="end"
+                        android:paddingEnd="36dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
+                        tools:ignore="SpeakableTextPresentCheck" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </LinearLayout>
 
-            <Button
-                android:id="@+id/btnConfirmar"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:backgroundTint="@color/verdeescuro"
-                android:elevation="4dp"
-                android:fontFamily="@font/poppins_medium"
-                android:minHeight="48dp"
-                android:padding="12dp"
-                android:text="@string/confirmar"
-                android:textColor="@color/branco"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rg_vehicle_type" />
-
-            <Button
-                android:id="@+id/btnCancelar"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/poppins_medium"
-                android:minHeight="48dp"
-                android:padding="12dp"
-                android:text="@string/cancelar"
-                android:textColor="@color/verdeescuro"
-                android:textSize="16sp"
-                app:strokeColor="@color/verdeescuro"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btnConfirmar" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
     </ScrollView>
+
+    <!-- Botão Salvar -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnConfirmar"
+        android:layout_width="0dp"
+        android:layout_height="54dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/vallet_green_dark"
+        android:fontFamily="@font/poppins_medium"
+        android:text="Salvar veículo"
+        android:textAllCaps="false"
+        android:textColor="@color/vallet_surface"
+        android:textSize="16sp"
+        app:cornerRadius="27dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

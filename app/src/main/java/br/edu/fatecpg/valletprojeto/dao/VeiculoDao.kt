@@ -25,6 +25,7 @@ object VeiculoDao {
             "modelo" to veiculo.modelo,
             "ano" to veiculo.ano,
             "cor" to veiculo.cor.trim(),
+            "apelido" to veiculo.apelido,
             "tipo" to veiculo.tipo,
             "usuarioEmail" to emailUsuario,
             "usuarioId" to userId,
