@@ -196,6 +196,20 @@ class LoginActivity : AppCompatActivity(),
             }
         }
 
+        // Toggle Password Visibility
+        var isPasswordVisible = false
+        binding.senhaimglogin.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+            if (isPasswordVisible) {
+                binding.editTextSenha.transformationMethod = android.text.method.HideReturnsTransformationMethod.getInstance()
+                binding.senhaimglogin.setImageResource(R.drawable.ic_eye)
+            } else {
+                binding.editTextSenha.transformationMethod = android.text.method.PasswordTransformationMethod.getInstance()
+                binding.senhaimglogin.setImageResource(R.drawable.ic_eye_off)
+            }
+            binding.editTextSenha.setSelection(binding.editTextSenha.text?.length ?: 0)
+        }
+
         // Botão de login
         binding.button3.setOnClickListener {
 
