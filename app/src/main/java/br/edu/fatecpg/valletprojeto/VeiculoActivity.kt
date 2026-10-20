@@ -94,6 +94,7 @@ class VeiculoActivity : AppCompatActivity() {
                     putExtra("tipo", veiculo.tipo)
                     putExtra("cor", veiculo.cor)
                     putExtra("padrao", veiculo.padrao)
+                    putExtra("fotoUrl", veiculo.fotoUrl)
                 }
                 editarVeiculoLauncher.launch(intent)
             }
@@ -119,13 +120,29 @@ class VeiculosAdapter(
             binding.txvDetalhesVeiculo.text = "${veiculo.marca} ${veiculo.modelo} - ${veiculo.ano}"
             binding.txvPlacaVeiculo.text = veiculo.placa
 
-            binding.ivVehicleIcon.setImageResource(
-                if (veiculo.tipo.equals("Moto", ignoreCase = true)) {
-                    R.drawable.moto_option_resized
-                } else {
-                    R.drawable.carro_option_resized
-                }
-            )
+            android.util.Log.d("VeiculoDebug", "Veiculo ${veiculo.modelo} placa ${veiculo.placa} fotoUrl = '${veiculo.fotoUrl}'")
+
+            if (!veiculo.fotoUrl.isNullOrEmpty()) {
+                android.util.Log.d("GlideDebug", "Loading vehicle image URL: '${veiculo.fotoUrl}'")
+                com.bumptech.glide.Glide.with(binding.root.context)
+                    .load(veiculo.fotoUrl)
+                    .placeholder(
+                        if (veiculo.tipo.equals("Moto", ignoreCase = true)) R.drawable.moto_option_resized else R.drawable.carro_option_resized
+                    )
+                    .error(
+                        if (veiculo.tipo.equals("Moto", ignoreCase = true)) R.drawable.moto_option_resized else R.drawable.carro_option_resized
+                    )
+                    .centerCrop()
+                    .into(binding.ivVehicleIcon)
+            } else {
+                binding.ivVehicleIcon.setImageResource(
+                    if (veiculo.tipo.equals("Moto", ignoreCase = true)) {
+                        R.drawable.moto_option_resized
+                    } else {
+                        R.drawable.carro_option_resized
+                    }
+                )
+            }
 
             // Controle da Badge "Veículo principal" e ícone de Favorito
             if (veiculo.padrao) {

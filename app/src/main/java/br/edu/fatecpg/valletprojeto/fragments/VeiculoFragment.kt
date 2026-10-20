@@ -16,12 +16,30 @@ import br.edu.fatecpg.valletprojeto.databinding.FragmentCadastroVeiculosBinding
 import br.edu.fatecpg.valletprojeto.model.Veiculo
 import br.edu.fatecpg.valletprojeto.viewmodel.VeiculoViewModel
 import br.edu.fatecpg.valletprojeto.viewmodel.VeiculoViewModelFactory
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
 
 class VeiculoFragment : DialogFragment() {
 
     private var _binding: FragmentCadastroVeiculosBinding? = null
     private val binding get() = _binding!!
     private lateinit var viewModel: VeiculoViewModel
+
+    private var fotoSelecionadaUri: android.net.Uri? = null
+    private val cloudinaryUrl = "https://api.cloudinary.com/v1_1/dkmbs6lyk/image/upload"
+    private val uploadPreset = "appEstacionamento"
+
+    private val pickImageLauncher = registerForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            fotoSelecionadaUri = uri
+            com.bumptech.glide.Glide.with(requireContext())
+                .load(uri)
+                .centerCrop()
+                .into(binding.ivVehiclePhoto)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +61,9 @@ class VeiculoFragment : DialogFragment() {
         binding.btnConfirmar.setOnClickListener {
             cadastrarVeiculo()
         }
+
+        binding.ivChangePhoto.setOnClickListener { pickImageLauncher.launch("image/*") }
+        binding.cvVehiclePhoto.setOnClickListener { pickImageLauncher.launch("image/*") }
 
         binding.ivBack.setOnClickListener {
             AlertDialog.Builder(requireContext())
@@ -86,6 +107,83 @@ class VeiculoFragment : DialogFragment() {
             return
         }
 
+        if (fotoSelecionadaUri != null) {
+            processarUploadEcadastrar(placa, marca, modelo, apelido, ano, tipoSelecionado, corSelecionada)
+        } else {
+            salvarVeiculoNoBanco(placa, marca, modelo, apelido, ano, tipoSelecionado, corSelecionada, null)
+        }
+    }
+
+    private fun processarUploadEcadastrar(
+        placa: String,
+        marca: String,
+        modelo: String,
+        apelido: String,
+        ano: String,
+        tipo: String,
+        cor: String
+    ) {
+        val file = java.io.File(requireContext().cacheDir, "upload_veiculo.jpg")
+        try {
+            requireContext().contentResolver.openInputStream(fotoSelecionadaUri!!)?.use { input ->
+                java.io.FileOutputStream(file).use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            val requestBody = okhttp3.MultipartBody.Builder()
+                .setType(okhttp3.MultipartBody.FORM)
+                .addFormDataPart("file", file.name, file.asRequestBody("image/*".toMediaTypeOrNull()))
+                .addFormDataPart("upload_preset", uploadPreset)
+                .build()
+
+            val request = okhttp3.Request.Builder()
+                .url(cloudinaryUrl)
+                .post(requestBody)
+                .build()
+
+            okhttp3.OkHttpClient().newCall(request).enqueue(object : okhttp3.Callback {
+                override fun onFailure(call: okhttp3.Call, e: java.io.IOException) {
+                    val act = activity ?: return
+                    act.runOnUiThread {
+                        if (isAdded) {
+                            Toast.makeText(requireContext(), "Erro ao enviar imagem", Toast.LENGTH_SHORT).show()
+                            salvarVeiculoNoBanco(placa, marca, modelo, apelido, ano, tipo, cor, null)
+                        }
+                    }
+                }
+
+                override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                    val json = response.body?.string()
+                    android.util.Log.d("CloudinaryDebug", "Response json: $json")
+                    val urlRegex = """"secure_url":"(.*?)"""".toRegex()
+                    val match = urlRegex.find(json ?: "")
+                    val imageUrl = match?.groups?.get(1)?.value?.replace("\\/", "/")
+                    android.util.Log.d("CloudinaryDebug", "Extracted imageUrl: $imageUrl")
+
+                    val act = activity ?: return
+                    act.runOnUiThread {
+                        if (isAdded) {
+                            salvarVeiculoNoBanco(placa, marca, modelo, apelido, ano, tipo, cor, imageUrl)
+                        }
+                    }
+                }
+            })
+        } catch (_: Exception) {
+            salvarVeiculoNoBanco(placa, marca, modelo, apelido, ano, tipo, cor, null)
+        }
+    }
+
+    private fun salvarVeiculoNoBanco(
+        placa: String,
+        marca: String,
+        modelo: String,
+        apelido: String,
+        ano: String,
+        tipo: String,
+        cor: String,
+        fotoUrl: String?
+    ) {
         viewModel.listarVeiculosDoUsuario(
             onSuccess = { veiculos ->
                 val novoVeiculo = Veiculo(
@@ -94,20 +192,18 @@ class VeiculoFragment : DialogFragment() {
                     modelo = modelo,
                     apelido = apelido,
                     ano = ano,
-                    tipo = tipoSelecionado.lowercase(),
-                    cor = corSelecionada,
-                    padrao = veiculos.isEmpty()
+                    tipo = tipo.lowercase(),
+                    cor = cor,
+                    padrao = veiculos.isEmpty(),
+                    fotoUrl = fotoUrl
                 )
 
                 viewModel.cadastrarVeiculo(
                     novoVeiculo,
                     onSuccess = {
                         Toast.makeText(requireContext(), "Veículo salvo!", Toast.LENGTH_SHORT).show()
-
                         (activity as? VeiculoActivity)?.onVeiculoCadastrado()
-
                         parentFragmentManager.setFragmentResult("atualizar_lista", Bundle())
-
                         dismiss()
                     },
                     onFailure = { erro ->

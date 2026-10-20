@@ -1,20 +1,42 @@
 package br.edu.fatecpg.valletprojeto
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import br.edu.fatecpg.valletprojeto.databinding.ActivityEditarVeiculoBinding
+import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class EditarVeiculoActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditarVeiculoBinding
     private val db = FirebaseFirestore.getInstance()
     private var veiculoId: String? = null
+
+    private var fotoSelecionadaUri: android.net.Uri? = null
+    private val cloudinaryUrl = "https://api.cloudinary.com/v1_1/dkmbs6lyk/image/upload"
+    private val uploadPreset = "appEstacionamento"
+
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            fotoSelecionadaUri = uri
+            Glide.with(this)
+                .load(uri)
+                .centerCrop()
+                .into(binding.ivVehiclePhoto)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,12 +46,14 @@ class EditarVeiculoActivity : AppCompatActivity() {
         veiculoId = intent.getStringExtra("veiculoId")
 
         setupDropdowns()
-
         preencherCampos()
 
         binding.ivBack.setOnClickListener { finish() }
         binding.btnConfirmar.setOnClickListener { atualizarVeiculo() }
         binding.btnExcluir.setOnClickListener { confirmarExclusao() }
+
+        binding.ivChangePhoto.setOnClickListener { pickImageLauncher.launch("image/*") }
+        binding.cvVehiclePhoto.setOnClickListener { pickImageLauncher.launch("image/*") }
     }
 
     private fun setupDropdowns() {
@@ -49,6 +73,7 @@ class EditarVeiculoActivity : AppCompatActivity() {
         val apelido = intent.getStringExtra("apelido")
         val ano = intent.getStringExtra("ano")
         val isPrincipal = intent.getBooleanExtra("padrao", false)
+        val fotoUrl = intent.getStringExtra("fotoUrl")
 
         val tipoOriginal = intent.getStringExtra("tipo")
         val tipoFormatado = tipoOriginal?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } ?: "Carro"
@@ -71,13 +96,18 @@ class EditarVeiculoActivity : AppCompatActivity() {
 
         binding.llBadgePrincipal.visibility = if (isPrincipal) View.VISIBLE else View.GONE
 
-        if (tipoFormatado.equals("Moto", ignoreCase = true)) {
-            binding.ivVehiclePhoto.setImageResource(R.drawable.moto_option_resized)
+        if (!fotoUrl.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(fotoUrl)
+                .centerCrop()
+                .into(binding.ivVehiclePhoto)
         } else {
-            binding.ivVehiclePhoto.setImageResource(R.drawable.carro_option_resized)
+            if (tipoFormatado.equals("Moto", ignoreCase = true)) {
+                binding.ivVehiclePhoto.setImageResource(R.drawable.moto_option_resized)
+            } else {
+                binding.ivVehiclePhoto.setImageResource(R.drawable.carro_option_resized)
+            }
         }
-
-        Log.d("EditarVeiculo", "cor recebida = '${intent.getStringExtra("cor")}'")
     }
 
     private fun confirmarExclusao() {
@@ -134,15 +164,76 @@ class EditarVeiculoActivity : AppCompatActivity() {
             return
         }
 
-        val veiculoAtualizado = mapOf(
-            "placa" to novaPlaca,
-            "marca" to novaMarca,
-            "modelo" to novoModelo,
-            "apelido" to novoApelido,
-            "ano" to novoAno,
-            "tipo" to novoTipo,
-            "cor" to novaCor
+        if (fotoSelecionadaUri != null) {
+            val file = File(cacheDir, "upload_veiculo_edit.jpg")
+            try {
+                contentResolver.openInputStream(fotoSelecionadaUri!!)?.use { input ->
+                    FileOutputStream(file).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                val requestBody = okhttp3.MultipartBody.Builder()
+                    .setType(okhttp3.MultipartBody.FORM)
+                    .addFormDataPart("file", file.name, file.asRequestBody("image/*".toMediaTypeOrNull()))
+                    .addFormDataPart("upload_preset", uploadPreset)
+                    .build()
+
+                val request = okhttp3.Request.Builder()
+                    .url(cloudinaryUrl)
+                    .post(requestBody)
+                    .build()
+
+                okhttp3.OkHttpClient().newCall(request).enqueue(object : okhttp3.Callback {
+                    override fun onFailure(call: okhttp3.Call, e: IOException) {
+                        runOnUiThread {
+                            Toast.makeText(this@EditarVeiculoActivity, "Erro ao enviar imagem", Toast.LENGTH_SHORT).show()
+                            salvarAtualizacaoNoBanco(novaPlaca, novaMarca, novoModelo, novoApelido, novoAno, novoTipo, novaCor, null)
+                        }
+                    }
+
+                    override fun onResponse(call: okhttp3.Call, response: okhttp3.Response) {
+                        val json = response.body?.string()
+                        val urlRegex = """"secure_url":"(.*?)"""".toRegex()
+                        val match = urlRegex.find(json ?: "")
+                        val imageUrl = match?.groups?.get(1)?.value?.replace("\\/", "/")
+
+                        runOnUiThread {
+                            salvarAtualizacaoNoBanco(novaPlaca, novaMarca, novoModelo, novoApelido, novoAno, novoTipo, novaCor, imageUrl)
+                        }
+                    }
+                })
+            } catch (_: Exception) {
+                salvarAtualizacaoNoBanco(novaPlaca, novaMarca, novoModelo, novoApelido, novoAno, novoTipo, novaCor, null)
+            }
+        } else {
+            salvarAtualizacaoNoBanco(novaPlaca, novaMarca, novoModelo, novoApelido, novoAno, novoTipo, novaCor, null)
+        }
+    }
+
+    private fun salvarAtualizacaoNoBanco(
+        placa: String,
+        marca: String,
+        modelo: String,
+        apelido: String,
+        ano: String,
+        tipo: String,
+        cor: String,
+        fotoUrl: String?
+    ) {
+        val veiculoAtualizado = mutableMapOf<String, Any>(
+            "placa" to placa,
+            "marca" to marca,
+            "modelo" to modelo,
+            "apelido" to apelido,
+            "ano" to ano,
+            "tipo" to tipo,
+            "cor" to cor
         )
+
+        if (fotoUrl != null) {
+            veiculoAtualizado["fotoUrl"] = fotoUrl
+        }
 
         db.collection("veiculo").document(veiculoId!!)
             .update(veiculoAtualizado)

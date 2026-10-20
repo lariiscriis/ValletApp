@@ -30,6 +30,7 @@ object VeiculoDao {
             "usuarioEmail" to emailUsuario,
             "usuarioId" to userId,
             "padrao" to veiculo.padrao,
+            "fotoUrl" to (veiculo.fotoUrl ?: ""),
             "data_cadastro" to FieldValue.serverTimestamp()
         )
 
@@ -96,9 +97,23 @@ object VeiculoDao {
             .whereEqualTo("usuarioId", userId)
             .get()
             .addOnSuccessListener { result ->
-                val lista = result.toObjects(Veiculo::class.java)
-                lista.forEachIndexed { index, veiculo ->
-                    veiculo.id = result.documents[index].id
+                val lista = mutableListOf<Veiculo>()
+                for (doc in result.documents) {
+                    val veiculo = Veiculo(
+                        id = doc.id,
+                        placa = doc.getString("placa") ?: "",
+                        marca = doc.getString("marca") ?: "",
+                        modelo = doc.getString("modelo") ?: "",
+                        apelido = doc.getString("apelido") ?: "",
+                        ano = doc.getString("ano") ?: "",
+                        tipo = doc.getString("tipo") ?: "",
+                        usuarioEmail = doc.getString("usuarioEmail") ?: "",
+                        usuarioId = doc.getString("usuarioId") ?: "",
+                        padrao = doc.getBoolean("padrao") ?: false,
+                        cor = doc.getString("cor") ?: "",
+                        fotoUrl = doc.getString("fotoUrl")
+                    )
+                    lista.add(veiculo)
                 }
                 onSuccess(lista)
             }
