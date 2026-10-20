@@ -111,6 +111,7 @@ class VeiculoListFragment : Fragment() {
                     putExtra("tipo", veiculo.tipo)
                     putExtra("cor", veiculo.cor)
                     putExtra("padrao", veiculo.padrao)
+                    putExtra("fotoUrl", veiculo.fotoUrl)
                 }
                 editarVeiculoLauncher.launch(intent)
             }
@@ -152,13 +153,27 @@ class VeiculosAdapter(
 
             binding.txvPlacaVeiculo.text = veiculo.placa
 
-            binding.ivVehicleIcon.setImageResource(
-                if (veiculo.tipo.equals("Moto", ignoreCase = true)) {
-                    R.drawable.moto_option_resized
-                } else {
-                    R.drawable.carro_option_resized
-                }
-            )
+            if (!veiculo.fotoUrl.isNullOrEmpty()) {
+                com.bumptech.glide.Glide.with(itemView.context)
+                    .load(veiculo.fotoUrl)
+                    .centerCrop()
+                    .placeholder(
+                        if (veiculo.tipo.equals("Moto", ignoreCase = true)) {
+                            R.drawable.moto_option_resized
+                        } else {
+                            R.drawable.carro_option_resized
+                        }
+                    )
+                    .into(binding.ivVehicleIcon)
+            } else {
+                binding.ivVehicleIcon.setImageResource(
+                    if (veiculo.tipo.equals("Moto", ignoreCase = true)) {
+                        R.drawable.moto_option_resized
+                    } else {
+                        R.drawable.carro_option_resized
+                    }
+                )
+            }
 
             if (veiculo.padrao) {
                 binding.llBadgePrincipal.visibility = View.VISIBLE
