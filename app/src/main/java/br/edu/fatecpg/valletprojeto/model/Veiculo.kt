@@ -17,5 +17,9 @@ data class Veiculo(
 
     @get:PropertyName("cor")
     @set:PropertyName("cor")
-    var cor: String = ""
+    var cor: String = "",
+
+    @get:PropertyName("fotoUrl")
+    @set:PropertyName("fotoUrl")
+    var fotoUrl: String? = null
 )
