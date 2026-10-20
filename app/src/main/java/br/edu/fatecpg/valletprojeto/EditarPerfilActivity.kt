@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.asRequestBody
+import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -137,12 +138,26 @@ class EditarPerfilActivity : AppCompatActivity() {
 
                 override fun onResponse(call: Call, response: Response) {
                     val json = response.body?.string()
-                    val urlRegex = """"secure_url":"(.*?)"""".toRegex()
-                    val match = urlRegex.find(json ?: "")
-                    val imageUrl = match?.groups?.get(1)?.value?.replace("\\/", "/")
 
-                    runOnUiThread {
-                        atualizarFirestore(nome, email, telefone, cnh, imageUrl)
+                    if (response.isSuccessful && json != null) {
+                        try {
+                            val jsonObject = JSONObject(json)
+                            val imageUrl = jsonObject.getString("secure_url")
+
+                            runOnUiThread {
+                                atualizarFirestore(nome, email, telefone, cnh, imageUrl)
+                            }
+                        } catch (e: Exception) {
+                            runOnUiThread {
+                                Toast.makeText(this@EditarPerfilActivity, "Erro ao processar imagem", Toast.LENGTH_SHORT).show()
+                                atualizarFirestore(nome, email, telefone, cnh, null)
+                            }
+                        }
+                    } else {
+                        runOnUiThread {
+                            Toast.makeText(this@EditarPerfilActivity, "Falha no upload da imagem", Toast.LENGTH_SHORT).show()
+                            atualizarFirestore(nome, email, telefone, cnh, null)
+                        }
                     }
                 }
             })

@@ -21,8 +21,12 @@ class PerfilActivity : AppCompatActivity() {
         binding = ActivityPerfilMotoristaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        title = "Meu Perfil"
+        supportActionBar?.hide()
+
+        binding.btnVoltar.setOnClickListener {
+            finish()
+        }
+
 
         viewModel = ViewModelProvider(this).get(PerfilMotoristaViewModel::class.java)
         binding.btnEditarPerfil.setOnClickListener {
@@ -51,34 +55,35 @@ class PerfilActivity : AppCompatActivity() {
                 Toast.makeText(this, state.errorMessage, Toast.LENGTH_LONG).show()
             }
 
-            state.fotoPerfilUrl?.let { url ->
+            if (!state.fotoPerfilUrl.isNullOrEmpty()) {
                 Glide.with(this)
-                    .load(url)
+                    .load(state.fotoPerfilUrl)
                     .placeholder(R.drawable.homemfundo2)
                     .error(R.drawable.homemfundo2)
                     .into(binding.imgFotoPerfil)
-            } ?: binding.imgFotoPerfil.setImageResource(R.drawable.homemfundo2)
+            } else {
+                binding.imgFotoPerfil.setImageResource(R.drawable.homemfundo2)
+            }
 
             binding.txtNome.text = state.nome
             binding.txtEmail.text = state.email
-            binding.txtTelefone.text = state.telefone
-            binding.txtCnh.text = state.cnh
             binding.txtTipoConta.text = state.tipoUser
-            binding.txtTotalReservas.text = state.totalReservas.toString()
-            binding.txtTempoTotalUso.text = state.tempoTotalUso
-            binding.txtLocaisMaisFrequentados.text = state.locaisMaisFrequentados
 
-            binding.txtHistoricoReservas.text =
-                if (state.ultimasReservas.isNotEmpty())
-                    viewModel.formatarReserva(state.ultimasReservas.first())
-                else
-                    "Nenhuma reserva encontrada."
+            binding.txtInfoNome.text = state.nome
+            binding.txtInfoEmail.text = state.email
+
+            binding.txtTelefone.text = state.telefone.ifEmpty { "Não informado" }
+            binding.txtCnh.text = state.cnh.ifEmpty { "Não informado" }
         }
     }
-
     private fun setupListeners() {
-        binding.btnVerHistorico.setOnClickListener {
+/*        binding.btnVerHistorico.setOnClickListener {
             startActivity(Intent(this, HistoricoReservasActivity::class.java))
-        }
+        }*/
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.carregarDadosPerfil()
     }
 }
