@@ -5,14 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import br.edu.fatecpg.valletprojeto.R
 import br.edu.fatecpg.valletprojeto.VeiculoActivity
-import br.edu.fatecpg.valletprojeto.dao.UsuarioDao
-import br.edu.fatecpg.valletprojeto.dao.VeiculoDao
 import br.edu.fatecpg.valletprojeto.databinding.FragmentCadastroVeiculosBinding
 import br.edu.fatecpg.valletprojeto.model.Veiculo
 import br.edu.fatecpg.valletprojeto.viewmodel.VeiculoViewModel
@@ -36,14 +35,16 @@ class VeiculoFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val factory = VeiculoViewModelFactory(UsuarioDao(), VeiculoDao)
+        val factory = VeiculoViewModelFactory()
         viewModel = ViewModelProvider(this, factory).get(VeiculoViewModel::class.java)
+
+        setupDropdowns()
 
         binding.btnConfirmar.setOnClickListener {
             cadastrarVeiculo()
         }
 
-        binding.btnCancelar.setOnClickListener {
+        binding.ivBack.setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle("Cancelar cadastro")
                 .setMessage("Deseja realmente cancelar o cadastro do veículo?")
@@ -51,15 +52,24 @@ class VeiculoFragment : DialogFragment() {
                 .setNegativeButton("Não", null)
                 .show()
         }
-
     }
 
     override fun onStart() {
         super.onStart()
         dialog?.window?.apply {
-            setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
+            setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
             setBackgroundDrawableResource(android.R.color.transparent)
         }
+    }
+
+    private fun setupDropdowns() {
+        val tipos = arrayOf("Carro", "Moto")
+        val tipoAdapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, tipos)
+        binding.editTipo.setAdapter(tipoAdapter)
+
+        val cores = arrayOf("Branco", "Preto", "Prata", "Cinza", "Vermelho", "Azul", "Outra")
+        val corAdapter = ArrayAdapter(requireContext(), R.layout.item_dropdown, cores)
+        binding.editCor.setAdapter(corAdapter)
     }
 
     private fun cadastrarVeiculo() {
@@ -68,16 +78,12 @@ class VeiculoFragment : DialogFragment() {
         val modelo = binding.editModelo.text.toString().trim()
         val apelido = binding.editApelido.text.toString().trim()
         val ano = binding.editAno.text.toString().trim()
-        val km = binding.editKM.text.toString().trim()
+        val tipoSelecionado = binding.editTipo.text.toString().trim()
+        val corSelecionada = binding.editCor.text.toString().trim()
 
-        if (placa.isEmpty() || marca.isEmpty() || modelo.isEmpty() || ano.isEmpty() || km.isEmpty()) {
+        if (placa.isEmpty() || marca.isEmpty() || modelo.isEmpty() || ano.isEmpty() || tipoSelecionado.isEmpty() || corSelecionada.isEmpty()) {
             Toast.makeText(requireContext(), "Preencha todos os campos obrigatórios (*)", Toast.LENGTH_SHORT).show()
             return
-        }
-
-        val tipoSelecionado = when (binding.rgVehicleType.checkedRadioButtonId) {
-            R.id.rb_moto -> "moto"
-            else -> "carro"
         }
 
         viewModel.listarVeiculosDoUsuario(
@@ -88,17 +94,20 @@ class VeiculoFragment : DialogFragment() {
                     modelo = modelo,
                     apelido = apelido,
                     ano = ano,
-                    km = km,
-                    tipo = tipoSelecionado,
-                    padrao = veiculos.isEmpty() // Define como padrão se for o primeiro veículo
+                    tipo = tipoSelecionado.lowercase(),
+                    cor = corSelecionada,
+                    padrao = veiculos.isEmpty()
                 )
 
                 viewModel.cadastrarVeiculo(
                     novoVeiculo,
                     onSuccess = {
                         Toast.makeText(requireContext(), "Veículo salvo!", Toast.LENGTH_SHORT).show()
-                        // Atualiza a lista de veículos na atividade principal
+
                         (activity as? VeiculoActivity)?.onVeiculoCadastrado()
+
+                        parentFragmentManager.setFragmentResult("atualizar_lista", Bundle())
+
                         dismiss()
                     },
                     onFailure = { erro ->
@@ -111,7 +120,6 @@ class VeiculoFragment : DialogFragment() {
             }
         )
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

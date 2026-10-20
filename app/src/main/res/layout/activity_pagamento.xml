@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/branco">
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,7 +39,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Pagamento"
-                android:textColor="@color/branco"
+                android:textColor="@color/white"
                 android:textSize="26sp"
                 android:textStyle="bold" />
 
@@ -64,7 +64,7 @@
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/branco"
+                app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="16dp"
                 app:strokeColor="@color/cinza"
                 app:strokeWidth="1dp">
@@ -130,7 +130,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Total a pagar"
-                        android:textColor="@color/branco"
+                        android:textColor="@color/white"
                         android:textSize="14sp" />
 
                     <TextView
@@ -138,7 +138,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:textColor="@color/branco"
+                        android:textColor="@color/white"
                         android:textSize="34sp"
                         android:textStyle="bold"
                         tools:text="R$ 10,00" />
@@ -164,7 +164,7 @@
                 android:layout_marginBottom="10dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/branco">
+                app:cardBackgroundColor="@color/white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -210,7 +210,7 @@
                 android:layout_marginBottom="10dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/branco">
+                app:cardBackgroundColor="@color/white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -256,7 +256,7 @@
                 android:layout_marginBottom="10dp"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/branco">
+                app:cardBackgroundColor="@color/white">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -548,7 +548,7 @@
                     android:background="@drawable/bg_icon_chip"
                     android:backgroundTint="@color/verdeescuro"
                     android:src="@drawable/ic_exit_to_app"
-                    app:tint="@color/branco"
+                    app:tint="@color/white"
                     android:contentDescription="Saída liberada" />
             </FrameLayout>
 

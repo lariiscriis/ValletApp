@@ -9,16 +9,17 @@
     <item
         android:id="@+id/nav_dashboard"
         android:icon="@drawable/ic_dashboard"
-        android:title="Início" />
+        android:title="@string/inicio" />
+
+    <item
+        android:id="@+id/nav_placeholder"
+        android:icon="@drawable/ic_dashboard"
+        android:title="IA" />
 
     <item
         android:id="@+id/nav_vehicles"
         android:icon="@drawable/ic_vehicle"
         android:title="Veículos" />
 
-    <item
-        android:id="@+id/nav_management"
-        android:icon="@drawable/ic_management"
-        android:title="Gerenciamento" />
 
 </menu>

@@ -9,10 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.work.WorkManager
+import androidx.work.WorkInfo
+import br.edu.fatecpg.valletprojeto.viewmodel.ReservaViewModel
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import br.edu.fatecpg.valletprojeto.DashboardBase
+import br.edu.fatecpg.valletprojeto.DashboardActivity
 import br.edu.fatecpg.valletprojeto.R
 import br.edu.fatecpg.valletprojeto.ReservaActivity
 import br.edu.fatecpg.valletprojeto.adapter.HistoricoReservasAdapter
@@ -37,6 +41,7 @@ class MotoristaFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var adapter: HistoricoReservasAdapter
     private val db = FirebaseFirestore.getInstance()
+    private val reservaViewModel: ReservaViewModel by viewModels()
 
     private var vagaIdAtiva: String? = null
     private var estacionamentoIdAtivo: String? = null
@@ -58,10 +63,18 @@ class MotoristaFragment : Fragment() {
         setupRecyclerView()
         setupClickListeners()
         mostrarLoadingGeral()
+        WorkManager.getInstance(requireContext())
+            .getWorkInfosByTagLiveData("recuperacao_reservas_expiradas")
+            .observe(viewLifecycleOwner) { trabalhos ->
+                if (trabalhos.any { it.state == WorkInfo.State.SUCCEEDED }) {
+                    buscarReservasOtimizado()
+                }
+            }
     }
 
     override fun onResume() {
         super.onResume()
+        reservaViewModel.verificarEFinalizarReservasExpiradas()
         buscarReservasOtimizado()
     }
 
@@ -78,7 +91,8 @@ class MotoristaFragment : Fragment() {
 
     private fun setupRecyclerView() {
         binding.rvHistoricoRecente.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvHistoricoRecente.setHasFixedSize(true)
+       /* binding.rvHistoricoRecente.setHasFixedSize(true)*/
+        binding.rvHistoricoRecente.isNestedScrollingEnabled = false
     }
 
     private fun setupClickListeners() {
@@ -180,21 +194,22 @@ class MotoristaFragment : Fragment() {
                         inicio = inicio,
                         fim = fim
                     )
-                } else {
+                }else {
                     if (inicio != null) {
                         historico.add(
                             ReservaHistorico(
                                 vaga = vaga.numero,
                                 data = SimpleDateFormat("dd/MM", Locale.getDefault()).format(inicio),
                                 horario = formatarHorario(inicio, fim),
-                                estacionamentoNome = estacionamentoNome
+                                estacionamentoNome = estacionamentoNome,
+                                duracao = calcularDuracaoTexto(inicio, fim)
                             )
                         )
                     }
                 }
             }
 
-            val historicoLimitado = historico.takeLast(10).reversed()
+            val historicoLimitado = historico.takeLast(3).reversed()
 
             return@async ProcessamentoResultado(
                 totalHoras = totalHoras,
@@ -329,10 +344,11 @@ class MotoristaFragment : Fragment() {
     private fun abrirPaginaDeEstacionamentos() {
         if (!isAdded || activity == null) return
 
-        val dashboardActivity = activity as? DashboardBase
+        val dashboardActivity = activity as? DashboardActivity
         dashboardActivity?.let {
-            val bottomNav = it.findViewById<BottomNavigationView>(R.id.bottom_navigation)
-            bottomNav.selectedItemId = R.id.nav_spots
+            val btnVagas = it.findViewById<android.widget.ImageView>(R.id.nav_spots)
+
+            btnVagas?.performClick()
         }
     }
 
@@ -357,4 +373,18 @@ class MotoristaFragment : Fragment() {
         val inicio: Date?,
         val fim: Date?
     )
+
+    private fun calcularDuracaoTexto(inicio: Date?, fim: Date?): String {
+        if (inicio == null || fim == null) return ""
+        val diferencaMillis = fim.time - inicio.time
+        val horas = TimeUnit.MILLISECONDS.toHours(diferencaMillis)
+        val minutos = TimeUnit.MILLISECONDS.toMinutes(diferencaMillis) % 60
+
+        return if (horas > 0) {
+            "${horas}h ${minutos}min"
+        } else {
+            "${minutos}min"
+        }
+    }
+
 }

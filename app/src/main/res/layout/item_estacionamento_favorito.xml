@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="8dp"
+    android:layout_marginHorizontal="4dp"
+    app:cardBackgroundColor="@color/vallet_card_bg"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/content_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- LOGO P -->
+        <FrameLayout
+            android:id="@+id/logo_p_container"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_logo_p"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:background="@drawable/car_parking_01"
+                android:backgroundTint="@color/vallet_green_dark" />
+        </FrameLayout>
+
+        <!-- IMAGEM CONTAINER -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_parking_image_container"
+            android:layout_width="100dp"
+            android:layout_height="72dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_parking_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/backgrounds/scenic" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- FAVORITO -->
+        <ImageView
+            android:id="@+id/ivFavorite"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/ripple_transparent"
+            android:src="@drawable/ic_heart_outline"
+            app:layout_constraintEnd_toEndOf="@id/cv_parking_image_container"
+            app:layout_constraintTop_toTopOf="@id/cv_parking_image_container" />
+
+        <!-- NOME DO ESTACIONAMENTO -->
+        <TextView
+            android:id="@+id/txv_nome_estacionamento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:maxLines="2"
+            android:ellipsize="end"
+            tools:text="Estacionamento Boqueirão"
+            android:textColor="@color/vallet_green_dark"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toStartOf="@+id/cv_parking_image_container"
+            app:layout_constraintStart_toEndOf="@id/logo_p_container"
+            app:layout_constraintTop_toTopOf="@id/logo_p_container" />
+
+        <!-- ENDEREÇO -->
+        <TextView
+            android:id="@+id/txv_endereco_estacionamento"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="12dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/poppins"
+            android:maxLines="2"
+            tools:text="Av. Costa e Silva, 1200\nPraia Grande - SP"
+            android:textColor="@color/vallet_green_muted"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toStartOf="@+id/cv_parking_image_container"
+            app:layout_constraintStart_toStartOf="@id/txv_nome_estacionamento"
+            app:layout_constraintTop_toBottomOf="@id/txv_nome_estacionamento" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="txv_endereco_estacionamento,cv_parking_image_container" />
+
+        <!-- STATUS -->
+        <TextView
+            android:id="@+id/tv_parking_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_status_aberto"
+            android:fontFamily="@font/poppins_medium"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            tools:text="Aberto"
+            android:textColor="@color/vallet_green_dark"
+            android:textSize="11sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/barrier_bottom" />
+
+        <!-- DISTANCIA -->
+        <TextView
+            android:id="@+id/tv_parking_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins"
+            tools:text="1,2 km"
+            android:textColor="@color/vallet_green"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@id/txv_nome_estacionamento"
+            app:layout_constraintTop_toTopOf="@id/tv_parking_status"
+            app:layout_constraintBottom_toBottomOf="@id/tv_parking_status" />
+
+        <!-- DIVISOR VERTICAL -->
+        <View
+            android:id="@+id/divider_info"
+            android:layout_width="1dp"
+            android:layout_height="12dp"
+            android:layout_marginStart="8dp"
+            android:background="#D0D0D0"
+            app:layout_constraintStart_toEndOf="@id/tv_parking_distance"
+            app:layout_constraintTop_toTopOf="@id/tv_parking_distance"
+            app:layout_constraintBottom_toBottomOf="@id/tv_parking_distance" />
+
+        <!-- VAGAS (tvTavInfo) -->
+        <TextView
+            android:id="@+id/tvTavInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/poppins"
+            tools:text="Vagas: 8"
+            android:textColor="@color/vallet_green"
+            android:textSize="12sp"
+            app:layout_constraintStart_toEndOf="@id/divider_info"
+            app:layout_constraintTop_toTopOf="@id/tv_parking_distance"
+            app:layout_constraintBottom_toBottomOf="@id/tv_parking_distance" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:background="#10000000"
+            app:layout_constraintTop_toBottomOf="@id/tv_parking_status" />
+
+        <!-- FOOTER -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/footer_area"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_card_footer"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
+            app:layout_constraintTop_toBottomOf="@id/divider">
+
+            <TextView
+                android:id="@+id/txv_preco"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_bold"
+                tools:text="R$ 7,00/h"
+                android:textColor="@color/vallet_green_dark"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_ver_vagas"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:fontFamily="@font/poppins_medium"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="16dp"
+                android:text="Ver vagas >"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                app:backgroundTint="@color/vallet_green_dark"
+                app:cornerRadius="18dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="TouchTargetSizeCheck" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

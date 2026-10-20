@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/vallet_background">
+
+    <!-- Loading State -->
+    <LinearLayout
+        android:id="@+id/loading_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:indeterminateTint="@color/vallet_green_dark" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Carregando estacionamentos..."
+            android:textColor="@color/vallet_green_dark"
+            android:textSize="16sp"
+            android:fontFamily="@font/poppins_medium" />
+
+        <TextView
+            android:id="@+id/txv_loading_step"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Buscando dados..."
+            android:textColor="@color/vallet_green"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins" />
+    </LinearLayout>
+
+    <!-- Content State -->
+    <ScrollView
+        android:id="@+id/content_state"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Search View -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_search_bar"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
+
+                <androidx.appcompat.widget.SearchView
+                    android:id="@+id/sv_search"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:iconifiedByDefault="false"
+                    app:queryBackground="@android:color/transparent"
+                    app:searchIcon="@null"
+                    app:queryHint="Pesquisar estacionamento..." />
+
+                <ImageButton
+                    android:id="@+id/btn_voice_search"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_nav_ripple"
+                    android:contentDescription="Pesquisa por voz"
+                    android:src="@drawable/ic_mic"
+                    app:tint="@color/vallet_green_dark"
+                    tools:ignore="TouchTargetSizeCheck" />
+            </LinearLayout>
+
+            <!-- Loading Favoritos -->
+            <ProgressBar
+                android:id="@+id/loading_favorites"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/vallet_green_dark"
+                android:visibility="gone" />
+
+            <!-- Favoritos Section -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/txv_favorites_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Meus Favoritos"
+                    android:textColor="@color/vallet_green_dark"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txv_favorites_see_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignBaseline="@id/txv_favorites_title"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="Ver todos >"
+                    android:textColor="@color/vallet_green"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_favorites"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:clipToPadding="false"
+                android:overScrollMode="never"
+                android:visibility="gone"
+                tools:listitem="@layout/item_estacionamento_favorito" />
+
+            <!-- Loading Outros Estacionamentos -->
+            <ProgressBar
+                android:id="@+id/loading_other_parkings"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/vallet_green_dark"
+                android:visibility="gone" />
+
+            <!-- Outros Estacionamentos Section -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:id="@+id/txv_other_parkings_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Outros Estacionamentos"
+                    android:textColor="@color/vallet_green_dark"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/txv_other_parkings_see_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignBaseline="@id/txv_other_parkings_title"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="Ver todos >"
+                    android:textColor="@color/vallet_green"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_other_parkings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingBottom="80dp"
+                android:overScrollMode="never"
+                android:visibility="gone"
+                tools:listitem="@layout/item_estacionamento" />
+
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>

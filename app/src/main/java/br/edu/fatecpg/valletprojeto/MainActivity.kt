@@ -79,16 +79,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkUserTypeAndRedirect(uid: String, email: String) {
-        db.collection("usuario").document(uid).get()
+        db.collection("usuario").document(uid)
+            .get(com.google.firebase.firestore.Source.SERVER)
             .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val tipoUser = document.getString("tipo_user") ?: "usuario"
-                    if (tipoUser == "admin") {
-                        checkEstacionamentoCadastrado(uid, email)
-                    } else {
-                        redirectToHome(tipoUser, email)
-                    }
+                val tipoUsuario = document.getString("tipo_user")
+                    ?.trim()?.lowercase(java.util.Locale.ROOT)
+                if (document.exists() && tipoUsuario == "motorista") {
+                    redirectToHome(email)
                 } else {
+                    android.widget.Toast.makeText(this, "Este aplicativo é exclusivo para motoristas. Administradores devem acessar o Desktop.",
+                        android.widget.Toast.LENGTH_LONG).show()
                     auth.signOut()
                     goToLogin()
                 }
@@ -99,25 +99,6 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    private fun checkEstacionamentoCadastrado(uid: String, email: String) {
-        db.collection("estacionamento")
-            .whereEqualTo("adminUid", uid)
-            .get()
-            .addOnSuccessListener { result ->
-                if (result.isEmpty) {
-                    val intent = Intent(this, CadastroEstacionamento::class.java)
-                    intent.putExtra("email_usuario", email)
-                    startActivity(intent)
-                } else {
-                    redirectToHome("admin", email)
-                }
-                finish()
-            }
-            .addOnFailureListener {
-                redirectToHome("admin", email)
-                finish()
-            }
-    }
     // No seu Application class ou MainActivity
     private fun configurarVerificacaoPeriodica() {
         val constraints = androidx.work.Constraints.Builder()
@@ -136,10 +117,9 @@ class MainActivity : AppCompatActivity() {
             periodicWorkRequest
         )
     }
-    private fun redirectToHome(tipoUser: String, email: String) {
-        val intent = Intent(this, DashboardBase::class.java)
+    private fun redirectToHome(email: String) {
+        val intent = Intent(this, DashboardActivity::class.java)
         intent.putExtra("email_usuario", email)
-        intent.putExtra("tipo_user", tipoUser)
         startActivity(intent)
         finish()
     }

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@color/branco"
+    android:background="@color/white"
     android:padding="32dp">
 
     <ImageView
@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:text="Ver Minha Reserva"
         android:backgroundTint="@color/verdeclaro"
-        android:textColor="@color/branco"
+        android:textColor="@color/white"
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
         android:paddingTop="16dp"

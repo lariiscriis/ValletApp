@@ -1,4 +1,3 @@
-// VeiculoDao.kt
 package br.edu.fatecpg.valletprojeto.dao
 
 import android.util.Log
@@ -6,7 +5,6 @@ import br.edu.fatecpg.valletprojeto.model.Veiculo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.WriteBatch
 
 object VeiculoDao {
 
@@ -26,7 +24,8 @@ object VeiculoDao {
             "marca" to veiculo.marca,
             "modelo" to veiculo.modelo,
             "ano" to veiculo.ano,
-            "km" to veiculo.km,
+            "cor" to veiculo.cor.trim(),
+            "apelido" to veiculo.apelido,
             "tipo" to veiculo.tipo,
             "usuarioEmail" to emailUsuario,
             "usuarioId" to userId,
@@ -46,7 +45,7 @@ object VeiculoDao {
         usuarioId: String,
         onComplete: (Boolean) -> Unit
     ) {
-        Log.d("VeiculoDebug", "DAO: Iniciando transação para definir ${veiculoId} como padrão.")
+        Log.d("VeiculoDebug", "DAO: Iniciando transação para definir $veiculoId como padrão.")
 
         db.collection("veiculo")
             .whereEqualTo("usuarioId", usuarioId)
@@ -68,7 +67,7 @@ object VeiculoDao {
                 }
 
                 val novoPadraoRef = db.collection("veiculo").document(veiculoId)
-                Log.d("VeiculoDebug", "DAO: Adicionando ao batch -> marcar ${veiculoId}")
+                Log.d("VeiculoDebug", "DAO: Adicionando ao batch -> marcar $veiculoId")
                 batch.update(novoPadraoRef, "padrao", true)
 
                 batch.commit()

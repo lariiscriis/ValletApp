@@ -4,31 +4,31 @@
         <!-- Cores principais usando sua paleta -->
         <item name="colorPrimary">@color/verdeescuro</item>
         <item name="colorPrimaryVariant">@color/verdeescuro</item>
-        <item name="colorOnPrimary">@color/branco</item>
+        <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/verdeclaro</item>
         <item name="colorSecondaryVariant">@color/verdeescuro</item>
-        <item name="colorOnSecondary">@color/branco</item>
+        <item name="colorOnSecondary">@color/white</item>
 
         <!-- Barra do celular em verde escuro -->
         <item name="android:statusBarColor">@color/verdeclaro</item>
 
         <!-- Cor de fundo usando branco da paleta -->
-        <item name="android:windowBackground">@color/branco</item>
+        <item name="android:windowBackground">@color/white</item>
 
         <!-- Cores de destaque e clique -->
         <item name="colorControlActivated">@color/verdeclaro</item>
         <item name="colorControlHighlight">@color/verdeclaro</item>
 
         <!-- Para Material 3 -->
-        <item name="android:colorBackground">@color/branco</item>
-        <item name="android:navigationBarColor">@color/branco</item>
+        <item name="android:colorBackground">@color/white</item>
+        <item name="android:navigationBarColor">@color/white</item>
     </style>
 
     <style name="Theme.ValletProjeto" parent="Base.Theme.ValletProjeto" />
 
-    <style name="CustomBottomNavigationViewIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+<!--    <style name="CustomBottomNavigationViewIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">@color/cinza</item>
-    </style>
+    </style>-->
 
     <style name="DialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog">
         <item name="android:windowBackground">@drawable/form_background</item>

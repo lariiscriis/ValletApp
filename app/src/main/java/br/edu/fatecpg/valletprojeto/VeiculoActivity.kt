@@ -3,6 +3,7 @@ package br.edu.fatecpg.valletprojeto
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,6 +50,15 @@ class VeiculoActivity : AppCompatActivity() {
     fun carregarVeiculosDoUsuario() {
         viewModel.listarVeiculosDoUsuario(
             onSuccess = { lista ->
+                // Controle do Estado Vazio (Empty State)
+                if (lista.isEmpty()) {
+                    binding.rvCarList.visibility = View.GONE
+                    binding.llEmptyState.visibility = View.VISIBLE
+                } else {
+                    binding.rvCarList.visibility = View.VISIBLE
+                    binding.llEmptyState.visibility = View.GONE
+                }
+
                 veiculosAdapter.submitList(lista)
             },
             onFailure = { erro ->
@@ -66,7 +76,11 @@ class VeiculoActivity : AppCompatActivity() {
             onToggleClick = { veiculo ->
                 val userId = FirebaseAuth.getInstance().currentUser?.uid
                 if (userId != null) {
-                    viewModel.definirVeiculoPadrao(veiculo.id, userId) { sucesso -> }
+                    viewModel.definirVeiculoPadrao(veiculo.id, userId) { sucesso ->
+                        if (sucesso) {
+                            carregarVeiculosDoUsuario()
+                        }
+                    }
                 }
             },
             onItemClick = { veiculo ->
@@ -77,12 +91,12 @@ class VeiculoActivity : AppCompatActivity() {
                     putExtra("modelo", veiculo.modelo)
                     putExtra("apelido", veiculo.apelido)
                     putExtra("ano", veiculo.ano)
-                    putExtra("km", veiculo.km)
                     putExtra("tipo", veiculo.tipo)
+                    putExtra("cor", veiculo.cor)
+                    putExtra("padrao", veiculo.padrao)
                 }
                 editarVeiculoLauncher.launch(intent)
             }
-
         )
         binding.rvCarList.apply {
             layoutManager = LinearLayoutManager(this@VeiculoActivity)
@@ -100,8 +114,9 @@ class VeiculosAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(veiculo: Veiculo) {
-            binding.txvApelidoVeiculo.text = veiculo.modelo
-            binding.txvDetalhesVeiculo.text = "${veiculo.marca} - ${veiculo.ano}"
+            binding.txvApelidoVeiculo.text = if (!veiculo.apelido.isNullOrEmpty()) veiculo.apelido else veiculo.modelo
+
+            binding.txvDetalhesVeiculo.text = "${veiculo.marca} ${veiculo.modelo} - ${veiculo.ano}"
             binding.txvPlacaVeiculo.text = veiculo.placa
 
             binding.ivVehicleIcon.setImageResource(
@@ -112,10 +127,13 @@ class VeiculosAdapter(
                 }
             )
 
+            // Controle da Badge "Veículo principal" e ícone de Favorito
             if (veiculo.padrao) {
-                binding.ivFavoriteToggle.setImageResource(R.drawable.btn_star_on)
+                binding.llBadgePrincipal.visibility = View.VISIBLE
+                binding.ivFavoriteToggle.setImageResource(R.drawable.ic_heart_filled)
             } else {
-                binding.ivFavoriteToggle.setImageResource(R.drawable.btn_star_off)
+                binding.llBadgePrincipal.visibility = View.GONE
+                binding.ivFavoriteToggle.setImageResource(R.drawable.ic_heart_outline)
             }
 
             binding.ivFavoriteToggle.setOnClickListener {

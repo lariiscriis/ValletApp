@@ -19,8 +19,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import br.edu.fatecpg.valletprojeto.EditarVeiculoActivity
 import br.edu.fatecpg.valletprojeto.R
-import br.edu.fatecpg.valletprojeto.dao.UsuarioDao
-import br.edu.fatecpg.valletprojeto.dao.VeiculoDao
 import br.edu.fatecpg.valletprojeto.databinding.ActivityVeiculoBinding
 import br.edu.fatecpg.valletprojeto.databinding.ItemCardVeiculoBinding
 import br.edu.fatecpg.valletprojeto.model.Veiculo
@@ -34,7 +32,7 @@ class VeiculoListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: VeiculoViewModel by activityViewModels {
-        VeiculoViewModelFactory(UsuarioDao(), VeiculoDao)
+        VeiculoViewModelFactory()
     }
 
     private lateinit var veiculosAdapter: VeiculosAdapter
@@ -60,6 +58,9 @@ class VeiculoListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
+        parentFragmentManager.setFragmentResultListener("atualizar_lista", viewLifecycleOwner) { _, _ ->
+            carregarVeiculosDoUsuario()
+        }
         carregarVeiculosDoUsuario()
 
         binding.fabAddCar.setOnClickListener {
@@ -107,8 +108,9 @@ class VeiculoListFragment : Fragment() {
                     putExtra("modelo", veiculo.modelo)
                     putExtra("apelido", veiculo.apelido)
                     putExtra("ano", veiculo.ano)
-                    putExtra("km", veiculo.km)
                     putExtra("tipo", veiculo.tipo)
+                    putExtra("cor", veiculo.cor)
+                    putExtra("padrao", veiculo.padrao)
                 }
                 editarVeiculoLauncher.launch(intent)
             }
@@ -135,22 +137,20 @@ class VeiculosAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(veiculo: Veiculo) {
+            binding.txvApelidoVeiculo.visibility = View.VISIBLE
+
             if (veiculo.apelido.isNullOrEmpty()) {
-                binding.txvApelidoVeiculo.visibility = View.GONE
-                binding.txvDetalhesVeiculo.text = "${veiculo.marca} ${veiculo.modelo} - ${veiculo.ano}"
-                binding.txvDetalhesVeiculo.setTextColor(ContextCompat.getColor(itemView.context, R.color.verdeescuro))
-                binding.txvDetalhesVeiculo.textSize = 18f
-                binding.txvPlacaVeiculo.text = veiculo.placa
-                binding.txvPlacaVeiculo.textSize = 18f
+                binding.txvApelidoVeiculo.text = veiculo.modelo
             } else {
-                binding.txvApelidoVeiculo.visibility = View.VISIBLE
                 binding.txvApelidoVeiculo.text = veiculo.apelido
-                binding.txvDetalhesVeiculo.text = "${veiculo.marca} ${veiculo.modelo} - ${veiculo.ano}"
-                binding.txvDetalhesVeiculo.setTextColor(Color.parseColor("#444444"))
-                binding.txvDetalhesVeiculo.textSize = 16f
-                binding.txvPlacaVeiculo.text = veiculo.placa
-                binding.txvPlacaVeiculo.textSize = 16f
             }
+
+            binding.txvDetalhesVeiculo.text = "${veiculo.marca} ${veiculo.modelo} - ${veiculo.ano}"
+
+            binding.txvDetalhesVeiculo.setTextColor(Color.parseColor("#637365"))
+            binding.txvDetalhesVeiculo.textSize = 12f
+
+            binding.txvPlacaVeiculo.text = veiculo.placa
 
             binding.ivVehicleIcon.setImageResource(
                 if (veiculo.tipo.equals("Moto", ignoreCase = true)) {
@@ -161,9 +161,11 @@ class VeiculosAdapter(
             )
 
             if (veiculo.padrao) {
-                binding.ivFavoriteToggle.setImageResource(R.drawable.btn_star_on)
+                binding.llBadgePrincipal.visibility = View.VISIBLE
+                binding.ivFavoriteToggle.setImageResource(R.drawable.ic_heart_filled)
             } else {
-                binding.ivFavoriteToggle.setImageResource(R.drawable.btn_star_off)
+                binding.llBadgePrincipal.visibility = View.GONE
+                binding.ivFavoriteToggle.setImageResource(R.drawable.ic_heart_outline)
             }
 
             binding.ivFavoriteToggle.setOnClickListener {

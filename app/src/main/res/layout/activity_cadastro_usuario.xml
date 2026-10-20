@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F0F2EB"
+    tools:context=".CadastroUsuarioActivity">
+
+    <!-- ÁREA SUPERIOR COM O BOTÃO DE VOLTAR -->
+
+    <!-- CARD DO CADASTRO -->
+    <FrameLayout
+        android:id="@+id/topArea"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/wavesRegister"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/waves_register"
+            android:scaleType="centerCrop"
+            android:contentDescription="@null" />
+
+        <ImageView
+            android:id="@+id/btnVoltar"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="56dp"
+            android:clickable="true"
+            android:contentDescription="Voltar"
+            android:focusable="true"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/white"
+            tools:ignore="TouchTargetSizeCheck" />
+    </FrameLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cadastroCard"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="120dp"
+        app:cardBackgroundColor="#F0F2EB"
+        app:cardCornerRadius="32dp"
+        app:cardElevation="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:clipToPadding="false">
+
+            <LinearLayout
+                android:id="@+id/layout_cadastro_usuario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="28dp"
+                android:paddingTop="28dp"
+                android:paddingEnd="28dp"
+                android:paddingBottom="24dp">
+
+                <!-- Logo e Título -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="160dp"
+                        android:layout_height="70dp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/op2_logo"
+                        android:contentDescription="@null" />
+
+<!--                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:text="Vallet"
+                        android:textColor="#3B5942"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />-->
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/poppins"
+                    android:gravity="center"
+                    android:text="Crie sua conta e tenha acesso\na todas as funcionalidades."
+                    android:textColor="#637365"
+                    android:textSize="13sp" />
+
+                <!-- NOME -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="20dp">
+
+                    <EditText
+                        android:id="@+id/edt_nome"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/input_pill"
+                        android:backgroundTint="#FFFFFF"
+                        android:fontFamily="@font/poppins"
+                        android:hint="Nome completo"
+                        android:inputType="textPersonName"
+                        android:paddingStart="52dp"
+                        android:paddingEnd="20dp"
+                        android:textColor="#3B5942"
+                        android:textColorHint="#97A697"
+                        android:textSize="14sp"
+                        android:singleLine="true"
+                        tools:ignore="Autofill" />
+
+                    <ImageView
+                        android:id="@+id/nomeimg"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="start|center_vertical"
+                        android:layout_marginStart="18dp"
+                        android:src="@drawable/nome"
+                        app:tint="#637365"
+                        android:contentDescription="@null" />
+                </FrameLayout>
+
+                <!-- EMAIL -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="12dp">
+
+                    <EditText
+                        android:id="@+id/edt_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/input_pill"
+                        android:backgroundTint="#FFFFFF"
+                        android:fontFamily="@font/poppins"
+                        android:hint="E-mail"
+                        android:inputType="textEmailAddress"
+                        android:paddingStart="52dp"
+                        android:paddingEnd="20dp"
+                        android:textColor="#3B5942"
+                        android:textColorHint="#97A697"
+                        android:textSize="14sp"
+                        android:singleLine="true"
+                        tools:ignore="Autofill" />
+
+                    <ImageView
+                        android:id="@+id/emailimg"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="start|center_vertical"
+                        android:layout_marginStart="18dp"
+                        android:src="@drawable/email"
+                        app:tint="#637365"
+                        android:contentDescription="@null" />
+                </FrameLayout>
+
+                <!-- CNH / CELULAR (Mantido campo CNH conforme solicitado, com suporte visual padronizado) -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="12dp">
+
+                    <EditText
+                        android:id="@+id/edt_cnh"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/input_pill"
+                        android:backgroundTint="#FFFFFF"
+                        android:fontFamily="@font/poppins"
+                        android:hint="CNH"
+                        android:inputType="text"
+                        android:paddingStart="52dp"
+                        android:paddingEnd="20dp"
+                        android:textColor="#3B5942"
+                        android:textColorHint="#97A697"
+                        android:textSize="14sp"
+                        android:singleLine="true"
+                        tools:ignore="Autofill" />
+
+                    <ImageView
+                        android:id="@+id/cnhimg"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="start|center_vertical"
+                        android:layout_marginStart="18dp"
+                        android:src="@drawable/cnh"
+                        app:tint="#637365"
+                        android:contentDescription="@null" />
+                </FrameLayout>
+
+                <!-- SENHA -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="12dp">
+
+                    <EditText
+                        android:id="@+id/edt_senha"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/input_pill"
+                        android:backgroundTint="#FFFFFF"
+                        android:fontFamily="@font/poppins"
+                        android:hint="Senha"
+                        android:inputType="textPassword"
+                        android:paddingStart="52dp"
+                        android:paddingEnd="52dp"
+                        android:textColor="#3B5942"
+                        android:textColorHint="#97A697"
+                        android:textSize="14sp"
+                        android:singleLine="true"
+                        tools:ignore="Autofill" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="start|center_vertical"
+                        android:layout_marginStart="18dp"
+                        android:src="@drawable/senha"
+                        app:tint="#637365"
+                        android:contentDescription="@null" />
+
+                    <ImageView
+                        android:id="@+id/senhaimg"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="end|center_vertical"
+                        android:layout_marginEnd="18dp"
+                        android:src="@drawable/ic_eye_off"
+                        android:contentDescription="@null" />
+                </FrameLayout>
+
+                <!-- BOTÃO CADASTRAR -->
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/btn_cadastrar"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/button_login"
+                    android:backgroundTint="#3B5942"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text="Criar conta →"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textAllCaps="false"
+                    android:elevation="0dp" />
+
+                <!-- TERMOS DE USO -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="@font/poppins"
+                    android:gravity="center"
+                    android:text="Ao continuar, você concorda com nossos\nTermos de Uso e Política de Privacidade."
+                    android:textColor="#97A697"
+                    android:textSize="11sp" />
+
+                <!-- LINHA / DIVISOR -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="#CBD9C5" />
+
+                <!-- VOLTAR PARA LOGIN -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins"
+                        android:text="Já tem uma conta? "
+                        android:textColor="#637365"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/botaoLogin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:fontFamily="@font/poppins_semibold"
+                        android:text="Entrar"
+                        android:textColor="#3B5942"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        tools:ignore="TouchTargetSizeCheck" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.cardview.widget.CardView>
+
+    <!-- LOADING -->
+    <FrameLayout
+        android:id="@+id/progressOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F0F2EB"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ProgressBar
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:indeterminateTint="#3B5942" />
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
