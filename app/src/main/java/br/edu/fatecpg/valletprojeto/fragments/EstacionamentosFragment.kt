@@ -86,6 +86,7 @@ class EstacionamentosFragment : Fragment() {
                     Toast.makeText(requireContext(), "Abrindo vagas para ${targetParking.nome}", Toast.LENGTH_SHORT).show()
                     val intent = Intent(requireContext(), VagaActivity::class.java)
                     intent.putExtra("estacionamentoId", targetParking.id)
+                    intent.putExtra("estacionamentoNome", targetParking.nome)
                     startActivity(intent)
                 } else {
                     Toast.makeText(requireContext(), "Nenhum estacionamento encontrado para reserva", Toast.LENGTH_SHORT).show()
@@ -270,15 +271,16 @@ class EstacionamentosFragment : Fragment() {
     }
 
     private fun observeViewModel() {
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            if (isLoading) {
-            } else {
-                handler.postDelayed({
-                    if (isAdded) {
-                        hideLoadingState()
-                        showContentGradually()
-                    }
-                }, 500)
+        viewModel.navigateToVagas.observe(viewLifecycleOwner, Observer { event ->
+            event.getContentIfNotHandled()?.let { estacionamentoId ->
+                val estacionamentoNome = viewModel.parkings.value?.find { it.id == estacionamentoId }?.nome
+                    ?: viewModel.favoriteParkings.value?.find { it.id == estacionamentoId }?.nome
+                    ?: "Estacionamento"
+
+                val intent = Intent(requireContext(), VagaActivity::class.java)
+                intent.putExtra("estacionamentoId", estacionamentoId)
+                intent.putExtra("estacionamentoNome", estacionamentoNome)
+                startActivity(intent)
             }
         })
 

@@ -1,54 +1,86 @@
 package br.edu.fatecpg.valletprojeto.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import br.edu.fatecpg.valletprojeto.databinding.ItemVagaBinding
+import br.edu.fatecpg.valletprojeto.R
+import br.edu.fatecpg.valletprojeto.databinding.ItemListaVagasBinding
 import br.edu.fatecpg.valletprojeto.model.Vaga
 
 class VagasAdapter(
-    private val onVagaClick: (Vaga) -> Unit
+    private val onVagaSelecionada: (Vaga) -> Unit
 ) : ListAdapter<Vaga, VagasAdapter.VagaViewHolder>(DiffCallback) {
-    inner class VagaViewHolder(private val binding: ItemVagaBinding) : RecyclerView.ViewHolder(binding.root) {
+
+    var vagaSelecionadaId: String? = null
+
+    inner class VagaViewHolder(private val binding: ItemListaVagasBinding) : RecyclerView.ViewHolder(binding.root) {
+
         fun bind(vaga: Vaga) {
-            binding.tvTitulo.text = "${vaga.numero}"
-            binding.tvLocalizacao.text = vaga.localizacao
-            binding.tvPreco.text = "R$ %.2f/h".format(vaga.preco)
+            binding.tvSpotNumber.text = vaga.numero
 
-            binding.btnEdit.visibility = View.GONE
-            binding.btnExcluir.visibility = View.GONE
-            binding.root.setOnClickListener { onVagaClick(vaga) }
+            val isSelected = vaga.id == vagaSelecionadaId
+            val isMoto = vaga.tipo.lowercase().contains("moto")
 
+            when {
+                !vaga.disponivel -> {
+                    // VAGA OCUPADA
+                    binding.ivVehicle.setImageResource(
+                        if (isMoto) R.drawable.moto_vagaocupada else R.drawable.carro_vagaocupada
+                    )
+                    binding.ivVehicle.visibility = View.VISIBLE
 
+                    binding.tvSpotStatus.text = " Ocupada"
+                    binding.cardVaga.setCardBackgroundColor(Color.parseColor("#F0F2ED"))
+                    binding.tvSpotNumber.setTextColor(Color.parseColor("#778078"))
+                    binding.tvSpotStatus.setTextColor(Color.parseColor("#929992"))
+                }
+                isSelected -> {
+                    // VAGA SELECIONADA
+                    binding.ivVehicle.visibility = View.INVISIBLE
+
+                    binding.tvSpotStatus.text = "Selecionada"
+                    binding.cardVaga.setCardBackgroundColor(Color.parseColor("#3B5942"))
+                    binding.tvSpotNumber.setTextColor(Color.WHITE)
+                    binding.tvSpotStatus.setTextColor(Color.WHITE)
+                }
+                else -> {
+                    // VAGA LIVRE
+                    binding.ivVehicle.visibility = View.INVISIBLE
+
+                    binding.tvSpotStatus.text = " Livre"
+                    binding.cardVaga.setCardBackgroundColor(Color.parseColor("#CBD9C5"))
+                    binding.tvSpotNumber.setTextColor(Color.parseColor("#3B5942"))
+                    binding.tvSpotStatus.setTextColor(Color.parseColor("#637365"))
+                }
+            }
+
+            binding.root.setOnClickListener {
+                if (vaga.disponivel) {
+                    vagaSelecionadaId = vaga.id
+                    notifyDataSetChanged()
+                    onVagaSelecionada(vaga)
+                }
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VagaViewHolder {
-        val binding = ItemVagaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = ItemListaVagasBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return VagaViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: VagaViewHolder, position: Int) {
-        val vaga = getItem(position)
-        holder.bind(vaga)
-
+        holder.bind(getItem(position))
     }
 
     companion object {
         private val DiffCallback = object : DiffUtil.ItemCallback<Vaga>() {
-            override fun areItemsTheSame(oldItem: Vaga, newItem: Vaga): Boolean {
-                return oldItem.id == newItem.id
-            }
-
-            override fun areContentsTheSame(oldItem: Vaga, newItem: Vaga): Boolean {
-                return oldItem == newItem &&
-                        oldItem.disponivel == newItem.disponivel &&
-                        oldItem.numero == newItem.numero &&
-                        oldItem.preco == newItem.preco
-            }
+            override fun areItemsTheSame(oldItem: Vaga, newItem: Vaga): Boolean = oldItem.id == newItem.id
+            override fun areContentsTheSame(oldItem: Vaga, newItem: Vaga): Boolean = oldItem == newItem
         }
     }
 }

@@ -24,4 +24,9 @@
         <color name="vallet_status_closed_text">#A85050</color>
         <color name="vallet_text_primary">#1D1D1D</color>
         <color name="vallet_icon_bg">#E5ECE6</color>
+
+        <color name="vallet_spot_free_bg">#FFFFFF</color>
+        <color name="vallet_spot_free_stroke">#CBD9C5</color>
+        <color name="vallet_spot_selected_bg">#3B5942</color>
+        <color name="vallet_spot_occupied_bg">#E5ECE6</color>
 </resources>
