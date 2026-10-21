@@ -156,7 +156,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:fontFamily="@font/poppins_semibold"
-                    android:text="Outros Estacionamentos"
+                    android:text="Estacionamentos Próximos"
                     android:textColor="@color/vallet_green_dark"
                     android:textSize="18sp"
                     android:visibility="gone" />

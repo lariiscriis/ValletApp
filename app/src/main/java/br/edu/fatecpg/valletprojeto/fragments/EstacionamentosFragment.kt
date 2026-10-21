@@ -199,21 +199,28 @@ class EstacionamentosFragment : Fragment() {
     }
 
     private fun showContentGradually() {
-        handler.postDelayed({
-            if (isAdded) {
-                binding.loadingFavorites.visibility = View.GONE
-                binding.txvFavoritesTitle.visibility = View.VISIBLE
-                binding.rvFavorites.visibility = View.VISIBLE
-            }
-        }, 300)
+        if (_binding == null || !isAdded) return
 
-        handler.postDelayed({
-            if (isAdded) {
-                binding.loadingOtherParkings.visibility = View.GONE
-                binding.txvOtherParkingsTitle.visibility = View.VISIBLE
-                binding.rvOtherParkings.visibility = View.VISIBLE
-            }
-        }, 600)
+        val favorites = viewModel.favoriteParkings.value.orEmpty()
+        val parkings = viewModel.parkings.value.orEmpty()
+
+        binding.loadingState.visibility = View.GONE
+        binding.contentState.visibility = View.VISIBLE
+
+        binding.loadingFavorites.visibility = View.GONE
+        binding.loadingOtherParkings.visibility = View.GONE
+
+        binding.txvFavoritesTitle.visibility =
+            if (favorites.isNotEmpty()) View.VISIBLE else View.GONE
+
+        binding.rvFavorites.visibility =
+            if (favorites.isNotEmpty()) View.VISIBLE else View.GONE
+
+        binding.txvOtherParkingsTitle.visibility =
+            if (parkings.isNotEmpty()) View.VISIBLE else View.GONE
+
+        binding.rvOtherParkings.visibility =
+            if (parkings.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
     private fun updateLoadingStep(step: String) {
@@ -271,6 +278,14 @@ class EstacionamentosFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading == false && isAdded && _binding != null) {
+                hideLoadingState()
+                showContentGradually()
+            }
+        }
+
         viewModel.navigateToVagas.observe(viewLifecycleOwner, Observer { event ->
             event.getContentIfNotHandled()?.let { estacionamentoId ->
                 val estacionamentoNome = viewModel.parkings.value?.find { it.id == estacionamentoId }?.nome
@@ -282,13 +297,15 @@ class EstacionamentosFragment : Fragment() {
                 intent.putExtra("estacionamentoNome", estacionamentoNome)
                 startActivity(intent)
             }
+
+
         })
 
         viewModel.parkings.observe(viewLifecycleOwner, Observer { parkings ->
             simpleAdapter.submitList(parkings)
             updateLoadingStep("${parkings.size} estacionamentos carregados")
 
-            if (parkings.isEmpty() && !viewModel.isLoading.value!!) {
+            if (parkings.isEmpty() && viewModel.isLoading.value != true) {
                 binding.loadingOtherParkings.visibility = View.GONE
                 binding.txvOtherParkingsTitle.visibility = View.VISIBLE
                 binding.rvOtherParkings.visibility = View.VISIBLE
@@ -299,7 +316,7 @@ class EstacionamentosFragment : Fragment() {
             favoriteAdapter.submitList(favorites)
             updateLoadingStep("${favorites.size} favoritos carregados")
 
-            if (favorites.isEmpty() && !viewModel.isLoading.value!!) {
+            if (favorites.isEmpty() && viewModel.isLoading.value != true) {
                 binding.loadingFavorites.visibility = View.GONE
                 binding.txvFavoritesTitle.visibility = View.GONE
                 binding.rvFavorites.visibility = View.GONE
