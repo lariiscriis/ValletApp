@@ -132,18 +132,33 @@ class ReservaActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupGifAnimation() {
+    private fun carregarImagemVeiculo(tipo: String) {
+        val imagemResId = if (tipo.equals("Moto", ignoreCase = true) || tipo.equals("Motocicleta", ignoreCase = true)) {
+            R.drawable.moto_vagaocupada
+        } else {
+            R.drawable.carro_vagaocupada
+        }
+
         Glide.with(this)
-            .asGif()
-            .load(R.drawable.reserva_carro)
+            .load(imagemResId)
             .into(binding.gifCarro)
     }
 
+    private fun setupGifAnimation() {
+        val pulseAnimation = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.pulse_animation)
+        binding.circuloFundoAnimado.startAnimation(pulseAnimation)
+    }
+
     private fun setupListeners() {
+        binding.btnVoltar.setOnClickListener {
+            finish()
+        }
+
         binding.sliderTempo.addOnChangeListener { _, value, _ ->
             val horas = value.toInt()
             binding.tvTempoSelecionado.text = String.format("%02d:00", horas)
         }
+
         binding.btnReservar.setOnClickListener {
             val horasSelecionadas = binding.sliderTempo.value.toInt()
             if (estacionamentoNome != null) {
@@ -174,9 +189,12 @@ class ReservaActivity : AppCompatActivity() {
                     binding.layoutConfigReserva.visibility = View.VISIBLE
                     binding.btnReservar.visibility = View.VISIBLE
 
-                    binding.tvVagaNumero.text = "Vaga ${state.vaga.numero}"
-                    binding.tvVagaDetalhes.text = "Tipo: ${state.vaga.tipo} • Local: ${state.vaga.localizacao}"
-                    binding.tvVeiculoInfo.text = "Veículo: ${state.veiculo.modelo} (${state.veiculo.placa})"
+                    binding.tvVagaNumero.text = "${state.vaga.numero}"
+                    // Erro de linha quebrada e traço corrigido aqui:
+                    binding.tvVagaDetalhes.text = "${state.vaga.tipo} • ${state.vaga.localizacao}"
+                    binding.tvVeiculoInfo.text = "${state.veiculo.modelo} (${state.veiculo.placa})"
+
+                    carregarImagemVeiculo(state.vaga.tipo)
                 }
 
                 is ReservaUIState.Active -> {
@@ -187,20 +205,21 @@ class ReservaActivity : AppCompatActivity() {
                     binding.btnFinalizar.visibility = View.VISIBLE
                     binding.btnCancelar.visibility = View.VISIBLE
 
-                    binding.tvVagaNumero.text = "Vaga ${state.vaga.numero}"
-                    binding.tvVagaDetalhes.text = "Tipo: ${state.vaga.tipo} • Local: ${state.vaga.localizacao}"
-                    binding.tvVeiculoInfo.text = "Veículo: ${state.veiculo.modelo} (${state.veiculo.placa})"
+                    binding.tvVagaNumero.text = "${state.vaga.numero}"
+                    // Erro de linha quebrada corrigido aqui também:
+                    binding.tvVagaDetalhes.text = "${state.vaga.tipo} • ${state.vaga.localizacao}"
+                    binding.tvVeiculoInfo.text = "${state.veiculo.modelo} (${state.veiculo.placa})"
+
+                    carregarImagemVeiculo(state.vaga.tipo)
 
                     val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
                     val inicioStr = sdf.format(state.reserva.inicioReserva!!.toDate())
                     val fimStr = sdf.format(state.reserva.fimReserva!!.toDate())
-                    binding.tvHorarioReserva.text = "Reserva das $inicioStr às $fimStr"
+                    binding.tvHorarioReserva.text = "$inicioStr às $fimStr"
 
                     binding.btnRenovar.setOnClickListener { viewModel.renovarReserva(state.reserva) }
                     binding.btnCancelar.setOnClickListener { viewModel.cancelarReserva(state.vaga) }
 
-                    // Finalizar Reserva: abre a tela de pagamento (mock) para encerrar
-                    // a reserva antes do horário final, passando os dados atuais.
                     binding.btnFinalizar.setOnClickListener {
                         val intent = Intent(this, PagamentoActivity::class.java).apply {
                             putExtra("vagaId", state.vaga.id)

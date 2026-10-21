@@ -29,4 +29,6 @@
         <color name="vallet_spot_free_stroke">#CBD9C5</color>
         <color name="vallet_spot_selected_bg">#3B5942</color>
         <color name="vallet_spot_occupied_bg">#E5ECE6</color>
+
+        <color name="red_cancel">#D32F2F</color>
 </resources>
