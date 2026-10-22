@@ -1,205 +1,307 @@
-<!-- activity_reserva.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/vallet_background"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="false"
+    android:paddingBottom="24dp"
     android:fillViewport="true">
-<!--    android:layout_marginTop="24dp"-->
-<!--    android:layout_marginBottom="24dp">-->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:paddingStart="24dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="24dp">
 
-        <!-- Card de Informações da Vaga e Veículo (permanece o mesmo ) -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- ================= CABEÇALHO (VOLTAR + TÍTULO) ================= -->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="8dp">
 
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="16dp"
-            app:strokeColor="@color/cinza"
-            app:strokeWidth="1dp">
+            <!-- Botão de Voltar -->
+            <ImageView
+                android:id="@+id/btn_voltar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center_vertical|start"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="12dp"
+                android:src="@drawable/ic_arrow_back"
+                app:tint="@color/vallet_green_dark"
+                android:contentDescription="Seta para voltar" />
 
+            <!-- Informações do Veículo Centradas -->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/tv_vaga_numero"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/verdeescuro"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    tools:text="Vaga A-01" />
-
-                <TextView
-                    android:id="@+id/tv_vaga_detalhes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    tools:text="Tipo: Carro • Local: Térreo" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="12dp"
-                    android:background="?android:attr/listDivider" />
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tv_veiculo_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
-                    android:gravity="center_vertical"
-                    tools:text="Veículo: Fiat Mobi (ABC-1234 )" />
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/vallet_green_dark"
+                    android:textSize="24sp"
+                    tools:text="Fiat Mobi" />
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Veículo Selecionado"
+                    android:textColor="@color/vallet_green"
+                    android:textSize="13sp" />
             </LinearLayout>
-
-        </com.google.android.material.card.MaterialCardView>
-
-
-
-
-        <!-- Círculo com o carro (sempre visível) -->
-        <FrameLayout
-            android:layout_width="220dp"
-            android:layout_height="220dp"
-            android:layout_marginBottom="16dp"
-            android:background="@drawable/circle_progress_background">
-
-            <ImageView
-                android:id="@+id/gif_carro"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_gravity="center"
-                tools:src="@drawable/reserva_carro"/>
         </FrameLayout>
 
-        <!-- Container para o seletor de tempo OU o timer -->
+        <!-- ================= ANEL CENTRAL COM O CARRO ================= -->
+        <FrameLayout
+            android:layout_width="210dp"
+            android:layout_height="210dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp">
+
+            <!-- Fundo que pulsa -->
+            <View
+                android:id="@+id/circulo_fundo_animado"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/circle_progress_background" />
+
+            <!-- Carro  -->
+            <ImageView
+                android:id="@+id/gif_carro"
+                android:layout_width="130dp"
+                android:layout_height="130dp"
+                android:layout_gravity="center"
+                android:contentDescription="Veículo"
+                android:src="@drawable/carro_vagaocupada" />
+        </FrameLayout>
+
+        <!-- ================= SELEÇÃO DE TEMPO / TIMER ================= -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true">
 
-            <!-- Grupo de Seleção de Tempo (visível ANTES da reserva) -->
             <LinearLayout
                 android:id="@+id/layout_config_reserva"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal">
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Selecione o tempo da reserva"
-                    android:layout_marginBottom="8dp"/>
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Selecione a Duração"
+                    android:textColor="@color/vallet_green"
+                    android:textSize="13sp" />
+
+                <!-- Texto informando o limite máximo de horas -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="sans-serif"
+                    android:text="Máximo de 4 horas permitidas"
+                    android:textColor="@color/vallet_green_muted"
+                    android:textSize="11sp" />
 
                 <TextView
                     android:id="@+id/tv_tempo_selecionado"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="36sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/preto"
-                    tools:text="01:00" />
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/vallet_green_dark"
+                    android:textSize="40sp"
+                    tools:text="01:00 min" />
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/slider_tempo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:contentDescription="@string/slider"
                     android:stepSize="1.0"
                     android:value="1.0"
                     android:valueFrom="1.0"
                     android:valueTo="4.0"
-                    app:haloColor="@color/verdeclaro"
-                    app:thumbColor="@color/verdeescuro"
-                    app:thumbStrokeColor="@color/preto"
-                    app:tickColor="@color/verdeescuro"
-                    app:tickColorActive="@color/verdeescuro"
-                    app:trackColorActive="@color/verdeclaro"
-                    app:trackColorInactive="@color/cinza" />
+                    app:haloColor="@color/vallet_green_light"
+                    app:thumbColor="@color/vallet_green_dark"
+                    app:thumbStrokeColor="@color/white"
+                    app:thumbStrokeWidth="2dp"
+                    app:tickColor="@color/vallet_green_dark"
+                    app:tickColorActive="@color/white"
+                    app:trackColorActive="@color/vallet_green_dark"
+                    app:trackColorInactive="@color/vallet_green_light" />
             </LinearLayout>
 
-            <!-- Grupo do Timer (visível DURANTE a reserva) -->
             <LinearLayout
                 android:id="@+id/layout_timer_reserva"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:gravity="center_horizontal"
-                android:visibility="gone">
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tempo Restante"/>
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Tempo Restante"
+                    android:textColor="@color/vallet_green"
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/tv_timer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="48sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/preto"
-                    tools:text="59:59" />
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/vallet_green_dark"
+                    android:textSize="44sp"
+                    tools:text="30 : 20 min" />
 
                 <TextView
                     android:id="@+id/tv_horario_reserva"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Reserva das 14:00 às 15:00" />
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/vallet_green"
+                    android:textSize="13sp"
+                    tools:text="12:10 PM - 01 Dec 2021" />
             </LinearLayout>
-
         </FrameLayout>
 
         <View
-            android:layout_width="100dp"
-            android:layout_height="100dp"/>
-
-        <!-- ===================== BOTÕES DE AÇÃO ===================== -->
-
-        <!-- Verificar Rota: sempre visível, largura total -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_verificar_rota"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="20dp"
-            android:text="Verificar Rota"
-            android:textAllCaps="false"
-            app:cornerRadius="16dp"
-            app:icon="@drawable/ic_parking"
-            app:iconGravity="textStart"
-            app:iconPadding="8dp"
-            app:backgroundTint="@color/verdeclaro" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:minHeight="16dp" />
 
-        <!-- Confirmar Reserva: visível apenas ANTES da reserva ser criada -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_reservar"
+        <!-- ================= CARD DA VAGA ================= -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginTop="14dp"
-            android:text="Confirmar Reserva"
-            android:textAllCaps="false"
-            app:cornerRadius="16dp"
-            app:backgroundTint="@color/verdeescuro" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@color/vallet_green_dark"
+            app:cardCornerRadius="20dp"
+            app:strokeWidth="0dp">
 
-        <!-- Renovar + Finalizar: lado a lado, visíveis com a reserva ATIVA -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vaga / Zona"
+                        android:textColor="@color/vallet_green_light"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/tv_vaga_numero"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        tools:text="A-013" />
+
+                    <TextView
+                        android:id="@+id/tv_vaga_detalhes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:fontFamily="sans-serif"
+                        android:textColor="@color/vallet_green_light"
+                        android:textSize="11sp"
+                        tools:text="Tipo: Carro • Local: Térreo" />
+                </LinearLayout>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btn_card_mapa"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="14dp"
+                    app:strokeWidth="0dp">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_parking"
+                        app:tint="@color/vallet_green_dark" />
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ================= BOTÕES DE AÇÃO  ================= -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_verificar_rota"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:fontFamily="sans-serif-bold"
+                android:text="Rota"
+                android:textAllCaps="false"
+                android:textColor="@color/vallet_green_dark"
+                app:cornerRadius="20dp"
+                app:icon="@drawable/ic_parking"
+                app:iconTint="@color/vallet_green_dark"
+                app:strokeColor="@color/vallet_green_dark" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_reservar"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1.5"
+                android:fontFamily="sans-serif-bold"
+                android:text="Confirmar"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/vallet_green_dark"
+                app:cornerRadius="20dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
@@ -207,51 +309,36 @@
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
-                android:layout_weight="1"
                 android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:fontFamily="sans-serif-bold"
                 android:text="Renovar"
                 android:textAllCaps="false"
-                android:textSize="13sp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                app:cornerRadius="16dp"
+                android:textColor="@color/vallet_green_dark"
+                android:visibility="gone"
+                app:cornerRadius="20dp"
                 app:icon="@drawable/ic_schedule"
-                app:iconGravity="textStart"
-                app:iconPadding="4dp"
-                app:iconSize="16dp"
-                app:strokeColor="@color/verdeescuro"
-                android:textColor="@color/verdeescuro"
-                android:visibility="gone" />
+                app:iconTint="@color/vallet_green_dark"
+                app:strokeColor="@color/vallet_green_dark"
+                tools:visibility="visible" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_finalizar"
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_weight="1"
-                android:layout_marginStart="6dp"
+                android:fontFamily="sans-serif-bold"
                 android:text="Finalizar"
                 android:textAllCaps="false"
-                android:textSize="13sp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="4dp"
-                app:cornerRadius="16dp"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                app:backgroundTint="@color/vallet_green_dark"
+                app:cornerRadius="20dp"
                 app:icon="@drawable/ic_flag"
-                app:iconGravity="textStart"
-                app:iconPadding="4dp"
-                app:iconSize="16dp"
-                app:backgroundTint="@color/verdeescuro"
-                android:visibility="gone" />
+                app:iconTint="@color/white"
+                tools:visibility="visible" />
         </LinearLayout>
 
-        <!-- Cancelar Reserva: ação destrutiva, visual discreto, separada das demais -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cancelar"
             style="@style/Widget.MaterialComponents.Button.TextButton"
@@ -259,21 +346,21 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Cancelar Reserva"
+            android:background="@drawable/bg_status_fechado"
             android:textAllCaps="false"
+            android:textColor="@color/red_cancel"
+            android:visibility="gone"
             app:icon="@drawable/ic_cancel"
             app:iconGravity="textStart"
-            app:iconSize="16dp"
-            app:iconTint="@android:color/holo_red_dark"
-            android:textColor="@android:color/holo_red_dark"
-            android:textSize="13sp"
-            android:visibility="gone"/>
+            app:iconTint="@color/red_cancel"
+            tools:visibility="visible" />
 
         <ProgressBar
             android:id="@+id/progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
     </LinearLayout>
 </ScrollView>

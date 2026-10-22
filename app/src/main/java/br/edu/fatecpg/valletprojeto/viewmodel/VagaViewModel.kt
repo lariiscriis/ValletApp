@@ -60,7 +60,6 @@ class VagaViewModel : ViewModel() {
 
         var query: Query = vagasCollection
             .whereEqualTo("estacionamentoId", estacionamentoId)
-            .whereEqualTo("disponivel", true)
 
         if (tipo != null) {
             query = if (tipo.equals("Preferencial", ignoreCase = true)) {

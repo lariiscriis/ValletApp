@@ -1,670 +1,412 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/white">
+    android:background="@color/vallet_background">
 
-    <LinearLayout
+    <!-- ===================== ETAPA 1: SELEÇÃO DE PAGAMENTO ===================== -->
+    <ScrollView
+        android:id="@+id/layout_etapa_1_pagamento"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingBottom="32dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="visible">
 
-        <!-- ===================== TOPO ===================== -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_header_shape"
-            android:paddingHorizontal="20dp"
-            android:paddingTop="20dp"
-            android:paddingBottom="28dp">
+            android:paddingBottom="24dp">
 
-            <ImageButton
-                android:id="@+id/btn_voltar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/bg_icon_chip"
-                android:backgroundTint="#FFF"
-                android:padding="8dp"
-                android:src="@drawable/ic_arrow_back"
-                app:tint="@color/verdeescuro"
-                android:contentDescription="Voltar" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Pagamento"
-                android:textColor="@color/white"
-                android:textSize="26sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Finalize sua reserva com segurança"
-                android:textColor="#FFF"
-                android:textSize="13sp" />
-        </LinearLayout>
-
-        <!-- ===================== CONTEÚDO ===================== -->
-        <LinearLayout
-            android:id="@+id/layout_conteudo_pagamento"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
-
-            <!-- Resumo da reserva -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- Cabeçalho Compactado -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/white"
-                app:cardCornerRadius="16dp"
-                app:strokeColor="@color/cinza"
-                app:strokeWidth="1dp">
+                android:background="@drawable/bg_header_vallet"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="32dp">
 
-                <LinearLayout
+                <ImageButton
+                    android:id="@+id/btn_voltar"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_icone_chip"
+                    android:backgroundTint="@color/vallet_surface"
+                    android:contentDescription="Voltar"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="@color/vallet_green_dark" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Pagamento"
+                    android:textColor="@color/vallet_surface"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_conteudo_pagamento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="-24dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="20dp">
+
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    app:cardBackgroundColor="@color/vallet_surface"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Resumo da reserva"
-                        android:textColor="@color/verdeescuro"
-                        android:textStyle="bold"
-                        android:textSize="16sp"
-                        android:layout_marginBottom="10dp" />
+                        android:orientation="vertical"
+                        android:padding="20dp">
 
-                    <TextView android:id="@+id/tv_resumo_estacionamento"
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        tools:text="Estacionamento: Vallet Center" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:text="Detalhes da reserva"
+                            android:textColor="@color/vallet_text"
+                            android:textSize="15sp"
+                            android:textStyle="bold" />
 
-                    <TextView android:id="@+id/tv_resumo_vaga"
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        tools:text="Vaga: A-01" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="6dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Local" android:textColor="@color/vallet_text_secondary" android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_resumo_estacionamento" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/vallet_text" android:textSize="13sp" android:textStyle="bold" tools:text="Vallet Center" />
+                        </LinearLayout>
 
-                    <TextView android:id="@+id/tv_resumo_veiculo"
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        tools:text="Veículo: Fiat Mobi • ABC-1234" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="6dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Vaga" android:textColor="@color/vallet_text_secondary" android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_resumo_vaga" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/vallet_text" android:textSize="13sp" android:textStyle="bold" tools:text="A-01" />
+                        </LinearLayout>
 
-                    <TextView android:id="@+id/tv_resumo_horario"
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        tools:text="Horário: 14:00 - 15:00" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="6dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Veículo" android:textColor="@color/vallet_text_secondary" android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_resumo_veiculo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/vallet_text" android:textSize="13sp" android:textStyle="bold" tools:text="Fiat Mobi" />
+                        </LinearLayout>
 
-                    <TextView android:id="@+id/tv_resumo_tempo_utilizado"
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        tools:text="Tempo utilizado: 1h" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="6dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Período" android:textColor="@color/vallet_text_secondary" android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_resumo_horario" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/vallet_text" android:textSize="13sp" android:textStyle="bold" tools:text="14:00 - 15:00" />
+                        </LinearLayout>
 
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginBottom="12dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Tempo cobrado" android:textColor="@color/vallet_text_secondary" android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_resumo_tempo_utilizado" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/vallet_text" android:textSize="13sp" android:textStyle="bold" tools:text="1h" />
+                        </LinearLayout>
+
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/vallet_card_stroke" android:layout_marginBottom="12dp"/>
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Total a pagar" android:textColor="@color/vallet_text" android:textSize="16sp" android:textStyle="bold"/>
+                            <TextView android:id="@+id/tv_valor_total" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/vallet_green_dark" android:textSize="22sp" android:textStyle="bold" tools:text="R$ 24,00" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="12dp"
+                    android:text="Como deseja pagar?"
+                    android:textColor="@color/vallet_text"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <!-- Opções de Pagamento -->
+                <LinearLayout android:id="@+id/card_pix" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:background="@drawable/bg_card_opcao_padrao" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_icone_chip"><ImageView android:layout_width="20dp" android:layout_height="20dp" android:layout_gravity="center" android:src="@drawable/ic_pix" app:tint="@color/vallet_green_dark" /></FrameLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PIX" android:textColor="@color/vallet_text" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pagamento instantâneo" android:textColor="@color/vallet_text_secondary" android:textSize="12sp" />
+                    </LinearLayout>
+                    <ImageView android:id="@+id/iv_check_pix" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_check_circle" app:tint="@color/vallet_green_dark" android:visibility="invisible" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Valor total -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/verdeescuro"
-                app:cardCornerRadius="16dp">
+                <LinearLayout android:id="@+id/card_credito" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="8dp" android:background="@drawable/bg_card_opcao_padrao" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_icone_chip"><ImageView android:layout_width="20dp" android:layout_height="20dp" android:layout_gravity="center" android:src="@drawable/ic_credit_card" app:tint="@color/vallet_green_dark" /></FrameLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cartão de crédito" android:textColor="@color/vallet_text" android:textSize="14sp" android:textStyle="bold" />
+                    </LinearLayout>
+                    <ImageView android:id="@+id/iv_check_credito" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_check_circle" app:tint="@color/vallet_green_dark" android:visibility="invisible" />
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/card_debito" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="16dp" android:background="@drawable/bg_card_opcao_padrao" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp">
+                    <FrameLayout android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_icone_chip"><ImageView android:layout_width="20dp" android:layout_height="20dp" android:layout_gravity="center" android:src="@drawable/ic_credit_card" app:tint="@color/vallet_green_dark" /></FrameLayout>
+                    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Cartão de débito" android:textColor="@color/vallet_text" android:textSize="14sp" android:textStyle="bold" />
+                    </LinearLayout>
+                    <ImageView android:id="@+id/iv_check_debito" android:layout_width="20dp" android:layout_height="20dp" android:src="@drawable/ic_check_circle" app:tint="@color/vallet_green_dark" android:visibility="invisible" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_explicacao_pix"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="O QR Code será gerado na próxima etapa."
+                    android:textColor="@color/vallet_text_secondary"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
 
                 <LinearLayout
+                    android:id="@+id/layout_campos_cartao"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Número do cartão">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_numero_cartao" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="number" android:maxLength="19" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:hint="Nome impresso">
+                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_nome_cartao" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textCapWords" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="horizontal">
+                        <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="6dp" android:layout_weight="1" android:hint="Validade">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_validade_cartao" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="number" android:maxLength="5" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputLayout style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:layout_weight="1" android:hint="CVV">
+                            <com.google.android.material.textfield.TextInputEditText android:id="@+id/et_cvv_cartao" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="numberPassword" android:maxLength="4" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_confirmar_pagamento"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:layout_marginTop="24dp"
+                    android:text="Confirmar pagamento"
+                    android:textAllCaps="false"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/vallet_green_dark"
+                    app:cornerRadius="12dp" />
+
+                <ProgressBar
+                    android:id="@+id/progress_bar_pagamento"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ===================== ETAPA 2: TELA PIX REFORMULADA ===================== -->
+    <ScrollView
+        android:id="@+id/layout_etapa_2_pix"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="gone">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingBottom="32dp">
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_header_vallet" android:orientation="vertical" android:paddingHorizontal="24dp" android:paddingTop="20dp" android:paddingBottom="40dp">
+                <ImageButton android:id="@+id/btn_voltar_pix" android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_icone_chip" android:backgroundTint="@color/vallet_surface" android:src="@drawable/ic_arrow_back" app:tint="@color/vallet_green_dark" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="PIX" android:textColor="@color/vallet_surface" android:textSize="24sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Escaneie ou copie o código abaixo" android:textColor="@color/vallet_green_light" android:textSize="14sp" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/layout_pix_gerado" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="-24dp" android:orientation="vertical" android:paddingHorizontal="24dp">
+
+                <!-- QR Code Central -->
+                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" app:cardBackgroundColor="@color/vallet_surface" app:cardCornerRadius="16dp" app:cardElevation="2dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="vertical" android:padding="24dp">
+                        <ImageView android:id="@+id/iv_qr_code_pagamento" android:layout_width="200dp" android:layout_height="200dp" android:scaleType="fitCenter" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- NOVO BLOCO: Copia e Cola -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/bg_card_opcao_padrao"
+                    android:orientation="vertical"
                     android:padding="20dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Total a pagar"
-                        android:textColor="@color/white"
-                        android:textSize="14sp" />
+                        android:text="Código Pix (Copia e Cola)"
+                        android:textColor="@color/vallet_text"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tv_valor_total"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:textColor="@color/white"
-                        android:textSize="34sp"
-                        android:textStyle="bold"
-                        tools:text="R$ 10,00" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Forma de pagamento -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="10dp"
-                android:text="Forma de pagamento"
-                android:textColor="@color/preto"
-                android:textStyle="bold"
-                android:textSize="16sp" />
-
-            <!-- PIX -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_pix"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/white">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="14dp">
-
-                    <FrameLayout
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/bg_icon_chip">
-                        <ImageView
-                            android:layout_width="22dp" android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_pix" app:tint="@color/verdeescuro"
-                            android:contentDescription="PIX" />
-                    </FrameLayout>
+                        android:text="Copie o código e cole no aplicativo do seu banco."
+                        android:textColor="@color/vallet_text_secondary"
+                        android:textSize="13sp" />
 
                     <LinearLayout
-                        android:layout_width="0dp" android:layout_height="wrap_content"
-                        android:layout_weight="1" android:layout_marginStart="14dp"
-                        android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="PIX" android:textStyle="bold" android:textSize="15sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Pagamento instantâneo" android:textSize="12sp" android:textColor="@color/cinza" />
-                    </LinearLayout>
-
-                    <ImageView android:id="@+id/iv_check_pix"
-                        android:layout_width="22dp" android:layout_height="22dp"
-                        android:src="@drawable/ic_check_circle" app:tint="@color/verdeescuro"
-                        android:visibility="invisible"
-                        android:contentDescription="Selecionado" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Crédito -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_credito"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/white">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="14dp">
-
-                    <FrameLayout
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/bg_icon_chip">
-                        <ImageView
-                            android:layout_width="22dp" android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_credit_card" app:tint="@color/verdeescuro"
-                            android:contentDescription="Cartão de crédito" />
-                    </FrameLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp" android:layout_height="wrap_content"
-                        android:layout_weight="1" android:layout_marginStart="14dp"
-                        android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Cartão de crédito" android:textStyle="bold" android:textSize="15sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Pague com cartão" android:textSize="12sp" android:textColor="@color/cinza" />
-                    </LinearLayout>
-
-                    <ImageView android:id="@+id/iv_check_credito"
-                        android:layout_width="22dp" android:layout_height="22dp"
-                        android:src="@drawable/ic_check_circle" app:tint="@color/verdeescuro"
-                        android:visibility="invisible"
-                        android:contentDescription="Selecionado" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Débito -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_debito"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/white">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="14dp">
-
-                    <FrameLayout
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/bg_icon_chip">
-                        <ImageView
-                            android:layout_width="22dp" android:layout_height="22dp"
-                            android:layout_gravity="center"
-                            android:src="@drawable/ic_credit_card" app:tint="@color/verdeescuro"
-                            android:contentDescription="Cartão de débito" />
-                    </FrameLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp" android:layout_height="wrap_content"
-                        android:layout_weight="1" android:layout_marginStart="14dp"
-                        android:orientation="vertical">
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Cartão de débito" android:textStyle="bold" android:textSize="15sp" />
-                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                            android:text="Pague com cartão" android:textSize="12sp" android:textColor="@color/cinza" />
-                    </LinearLayout>
-
-                    <ImageView android:id="@+id/iv_check_debito"
-                        android:layout_width="22dp" android:layout_height="22dp"
-                        android:src="@drawable/ic_check_circle" app:tint="@color/verdeescuro"
-                        android:visibility="invisible"
-                        android:contentDescription="Selecionado" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Explicação PIX (bug do círculo gigante corrigido: agora usa bg_info_box) -->
-            <TextView
-                android:id="@+id/tv_explicacao_pix"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:padding="12dp"
-                android:background="@drawable/bg_info_box"
-                android:text="Você receberá um QR Code para realizar o pagamento."
-                android:textSize="13sp"
-                android:visibility="gone" />
-
-            <!-- Campos de cartão -->
-            <LinearLayout
-                android:id="@+id/layout_campos_cartao"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Número do cartão"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_numero_cartao"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:maxLength="19" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginTop="16dp"
+                        android:background="@drawable/bg_pix_code_box"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="8dp"
+                        android:paddingVertical="8dp">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:hint="Nome impresso no cartão"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_nome_cartao"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textCapWords" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        android:hint="Validade (MM/AA)"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/et_validade_cartao"
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:id="@+id/tv_codigo_pix_copia_cola"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:maxLength="5" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:layout_weight="1"
+                            android:ellipsize="end"
+                            android:fontFamily="monospace"
+                            android:maxLines="3"
+                            android:textIsSelectable="true"
+                            android:textColor="@color/vallet_text"
+                            android:textSize="14sp"
+                            tools:text="00020126580014br.gov.bcb.pix.0136123e4567-e89b-12d3-a456-426655440000..." />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        android:hint="CVV"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/et_cvv_cartao"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="numberPassword"
-                            android:maxLength="4" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                        <!-- Novo Botão Copiar Dedicado -->
+                        <ImageButton
+                            android:id="@+id/btn_copiar_pix"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginStart="8dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:src="@drawable/ic_content_copy"
+                            app:tint="@color/vallet_green_dark" />
+                    </LinearLayout>
                 </LinearLayout>
+
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:gravity="center" android:text="Confirmação automática em segundos." android:textColor="@color/vallet_text_secondary" android:textSize="13sp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/btn_simular_confirmacao_webhook" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="[DEV] Simular pagamento aprovado" android:textColor="@color/vallet_green_dark" />
             </LinearLayout>
-
-            <!-- Botão confirmar -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_confirmar_pagamento"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="24dp"
-                android:text="Confirmar pagamento"
-                android:textAllCaps="false"
-                android:textSize="16sp"
-                app:cornerRadius="16dp"
-                app:icon="@drawable/ic_payments"
-                app:iconGravity="textStart"
-                app:backgroundTint="@color/verdeescuro" />
-
-            <ProgressBar
-                android:id="@+id/progress_bar_pagamento"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:visibility="gone" />
-
         </LinearLayout>
+    </ScrollView>
 
-        <!-- ===================== TELA DE SUCESSO ===================== -->
+    <!-- ===================== ETAPA 3: SUCESSO ===================== -->
+    <ScrollView
+        android:id="@+id/layout_etapa_3_sucesso"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="gone">
+
         <LinearLayout
             android:id="@+id/layout_sucesso"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp"
             android:gravity="center_horizontal"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:src="@drawable/ic_check_circle"
-                app:tint="@color/verdeescuro"
-                android:contentDescription="Sucesso" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Pagamento confirmado!"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/preto" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="Seu pagamento foi processado com sucesso."
-                android:textSize="13sp"
-                android:textColor="@color/cinza" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                app:cardCornerRadius="16dp"
-                app:strokeColor="@color/cinza"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView android:id="@+id/tv_sucesso_estacionamento"
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        tools:text="Estacionamento: Vallet Center" />
-                    <TextView android:id="@+id/tv_sucesso_vaga"
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        tools:text="Vaga: A-01" />
-                    <TextView android:id="@+id/tv_sucesso_veiculo"
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dp"
-                        tools:text="Veículo: Fiat Mobi • ABC-1234" />
-                    <TextView android:id="@+id/tv_sucesso_valor"
-                        android:layout_width="match_parent" android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        tools:text="Valor pago: R$ 10,00" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="QR Code para saída"
-                android:textStyle="bold"
-                android:textSize="16sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="14dp"
-                android:text="Apresente este código na saída do estacionamento."
-                android:textSize="12sp"
-                android:textColor="@color/cinza" />
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center_horizontal"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeColor="@color/cinza"
-                app:strokeWidth="1dp">
-
-                <ImageView
-                    android:id="@+id/iv_qr_code"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="10dp"
-                    android:contentDescription="QR Code de saída" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_simular_leitura"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="20dp"
-                android:text="Simular leitura do QR Code"
-                android:textAllCaps="false"
-                app:cornerRadius="14dp"
-                app:icon="@drawable/ic_directions_car"
-                app:iconGravity="textStart"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-        </LinearLayout>
-
-        <!-- ===================== SAÍDA LIBERADA ===================== -->
-        <LinearLayout
-            android:id="@+id/layout_saida_liberada"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center_vertical"
-            android:padding="32dp"
-            android:visibility="gone">
+            android:padding="24dp">
 
-            <!-- Ícone com anel de pulso atrás -->
             <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal">
-
-                <View
-                    android:id="@+id/view_pulso"
-                    android:layout_width="120dp"
-                    android:layout_height="120dp"
-                    android:background="@drawable/bg_icon_chip"
-                    android:backgroundTint="@color/verdeclaro" />
-
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_icone_chip">
                 <ImageView
-                    android:id="@+id/iv_exit_icon"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:layout_gravity="center"
-                    android:padding="4dp"
-                    android:background="@drawable/bg_icon_chip"
-                    android:backgroundTint="@color/verdeescuro"
                     android:src="@drawable/ic_exit_to_app"
-                    app:tint="@color/white"
-                    android:contentDescription="Saída liberada" />
+                    app:tint="@color/vallet_green_dark" />
             </FrameLayout>
 
             <TextView
                 android:id="@+id/tv_saida_titulo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="24dp"
-                android:text="Obrigado por usar o Vallet!"
+                android:layout_marginTop="16dp"
+                android:text="Pagamento confirmado!"
+                android:textColor="@color/vallet_text"
                 android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="@color/preto"
-                android:gravity="center" />
+                android:textStyle="bold" />
+
+            <!-- QR CODE COM BORDAS ESTILO "SCANNER" (REFERÊNCIA IMAGEM) -->
+            <FrameLayout
+                android:layout_width="280dp"
+                android:layout_height="280dp"
+                android:layout_marginTop="32dp">
+
+                <!-- As bordas nos 4 cantos -->
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_qr_frame" />
+
+                <!-- O QR Code Centralizado -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="230dp"
+                    android:layout_height="230dp"
+                    android:layout_gravity="center"
+                    app:cardBackgroundColor="@color/vallet_surface"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <ImageView
+                        android:id="@+id/iv_qr_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="8dp"
+                        android:contentDescription="QR Code de saída" />
+                </com.google.android.material.card.MaterialCardView>
+            </FrameLayout>
 
             <TextView
-                android:id="@+id/tv_saida_subtitulo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="6dp"
-                android:text="Pagamento confirmado. Sua saída está liberada."
-                android:textSize="13sp"
-                android:textColor="@color/cinza"
-                android:gravity="center" />
-
-            <!-- Mini resumo: tempo total x valor pago -->
-            <LinearLayout
-                android:id="@+id/layout_saida_resumo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="6dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    android:background="@drawable/bg_info_box">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="14dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Tempo total"
-                            android:textSize="12sp"
-                            android:textColor="@color/cinza" />
-
-                        <TextView
-                            android:id="@+id/tv_saida_tempo_total"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/verdeescuro"
-                            tools:text="1h" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="6dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    android:background="@drawable/bg_info_box">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="14dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Valor pago"
-                            android:textSize="12sp"
-                            android:textColor="@color/cinza" />
-
-                        <TextView
-                            android:id="@+id/tv_saida_valor_pago"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/verdeescuro"
-                            tools:text="R$ 10,00" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-            </LinearLayout>
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="Apresente este código na saída."
+                android:textColor="@color/vallet_text_secondary"
+                android:textSize="14sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_concluir"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="52dp"
                 android:layout_marginTop="32dp"
                 android:text="Concluir"
                 android:textAllCaps="false"
-                app:cornerRadius="16dp"
-                app:backgroundTint="@color/verdeescuro" />
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/vallet_green_dark"
+                app:cornerRadius="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_simular_leitura"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="[DEV] Simular cancela aberta"
+                android:textColor="@color/vallet_green_dark" />
+
+            <!-- Mantidos para não quebrar Kotlin -->
+            <LinearLayout android:id="@+id/layout_saida_liberada" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone">
+                <TextView android:id="@+id/tv_sucesso_estacionamento" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <TextView android:id="@+id/tv_sucesso_vaga" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <TextView android:id="@+id/tv_sucesso_veiculo" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <TextView android:id="@+id/tv_saida_tempo_total" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <TextView android:id="@+id/tv_saida_valor_pago" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <TextView android:id="@+id/tv_sucesso_valor" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            </LinearLayout>
 
         </LinearLayout>
-
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</FrameLayout>

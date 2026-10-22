@@ -1,34 +1,32 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.ValletProjeto" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Cores principais usando sua paleta -->
-        <item name="colorPrimary">@color/verdeescuro</item>
-        <item name="colorPrimaryVariant">@color/verdeescuro</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/verdeclaro</item>
-        <item name="colorSecondaryVariant">@color/verdeescuro</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <!-- Cores principais usando a paleta Vallet -->
+        <item name="colorPrimary">@color/vallet_green_dark</item>
+        <item name="colorPrimaryVariant">@color/vallet_green_dark</item>
+        <item name="colorOnPrimary">@color/vallet_surface</item>
+        <item name="colorSecondary">@color/vallet_green</item>
+        <item name="colorSecondaryVariant">@color/vallet_green_dark</item>
+        <item name="colorOnSecondary">@color/vallet_surface</item>
 
-        <!-- Barra do celular em verde escuro -->
-        <item name="android:statusBarColor">@color/verdeclaro</item>
+        <item name="android:statusBarColor">@color/vallet_background</item>
+        <item name="android:windowLightStatusBar">true</item>
 
-        <!-- Cor de fundo usando branco da paleta -->
-        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowBackground">@color/vallet_background</item>
 
-        <!-- Cores de destaque e clique -->
-        <item name="colorControlActivated">@color/verdeclaro</item>
-        <item name="colorControlHighlight">@color/verdeclaro</item>
+        <item name="colorControlActivated">@color/vallet_green_dark</item>
+        <item name="colorControlHighlight">@color/vallet_green_muted</item>
 
-        <!-- Para Material 3 -->
-        <item name="android:colorBackground">@color/white</item>
-        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:colorBackground">@color/vallet_background</item>
+        <item name="android:navigationBarColor">@color/vallet_surface</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
     </style>
 
     <style name="Theme.ValletProjeto" parent="Base.Theme.ValletProjeto" />
 
-<!--    <style name="CustomBottomNavigationViewIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/cinza</item>
-    </style>-->
+    <!--    <style name="CustomBottomNavigationViewIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+            <item name="android:color">@color/vallet_green_muted</item>
+        </style>-->
 
     <style name="DialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog">
         <item name="android:windowBackground">@drawable/form_background</item>
@@ -36,28 +34,23 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:windowSoftInputMode">stateAlwaysVisible</item>
-        <item name="android:statusBarColor">@color/verdeescuro</item>
+        <item name="android:statusBarColor">@color/vallet_green_dark</item>
 
-        <!-- Cores de destaque e clique -->
-        <item name="colorControlActivated">@color/verdeclaro</item>
-        <item name="colorControlHighlight">@color/verdeclaro</item>
+        <item name="colorControlActivated">@color/vallet_green_dark</item>
+        <item name="colorControlHighlight">@color/vallet_green_muted</item>
 
-        <!-- Cores do dialog -->
-        <item name="colorPrimary">@color/verdeescuro</item>
-        <item name="colorSecondary">@color/verdeclaro</item>
+        <item name="colorPrimary">@color/vallet_green_dark</item>
+        <item name="colorSecondary">@color/vallet_green</item>
     </style>
 
     <style name="TextInputStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <!-- Remove o windowBackground que não é necessário aqui -->
-        <item name="boxStrokeColor">@color/verdeescuro</item>
-        <item name="hintTextColor">@color/cinza</item>
+        <item name="boxStrokeColor">@color/vallet_green_dark</item>
+        <item name="hintTextColor">@color/vallet_green_muted</item>
         <item name="boxCornerRadiusTopStart">8dp</item>
         <item name="boxCornerRadiusTopEnd">8dp</item>
         <item name="boxCornerRadiusBottomStart">8dp</item>
         <item name="boxCornerRadiusBottomEnd">8dp</item>
-        <item name="startIconTint">@color/verdeescuro</item>
-
-        <!-- Cores para estados usando selector -->
+        <item name="startIconTint">@color/vallet_green_dark</item>
     </style>
 
 </resources>

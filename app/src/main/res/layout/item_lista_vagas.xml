@@ -1,41 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="100dp"
-    android:layout_height="120dp"
-    android:layout_margin="8dp"
-    android:clickable="true"
-    android:focusable="true"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp"
-    app:strokeColor="#E0E0E0"
-    app:strokeWidth="1dp"
-    tools:ignore="DuplicateClickableBoundsCheck">
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:padding="4dp">
 
-    <LinearLayout
+    <!-- Card principal -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_vaga"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="vertical">
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp"
+        app:strokeWidth="3dp"
+        app:strokeColor="@color/vallet_surface"
+        app:cardBackgroundColor="#F4F6F2">
 
-        <TextView
-            android:id="@+id/tvSpotNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#333333"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="12dp">
 
-        <TextView
-            android:id="@+id/tvSpotStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="#4CAF50"
-            android:textSize="16sp" />
-    </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+            <!-- Veículo -->
+            <ImageView
+                android:id="@+id/iv_vehicle"
+                android:layout_width="130dp"
+                android:layout_height="70dp"
+                android:layout_marginStart="-32dp"
+                android:rotation="90"
+                android:scaleType="fitCenter"
+                android:contentDescription="Veículo na vaga"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:visibility="gone"
+                tools:visibility="visible"
+                tools:src="@drawable/carro_vagaocupada" />
+
+            <!-- Número da Vaga -->
+            <TextView
+                android:id="@+id/tvSpotNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/vallet_green_dark"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:elevation="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tvSpotStatus"
+                app:layout_constraintVertical_chainStyle="packed"
+                tools:text="A-1" />
+
+            <!-- Status (Com elevation) -->
+            <TextView
+                android:id="@+id/tvSpotStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/vallet_green"
+                android:textSize="12sp"
+                android:elevation="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvSpotNumber"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="● Livre" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</FrameLayout>

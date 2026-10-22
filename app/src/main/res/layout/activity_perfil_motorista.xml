@@ -1,333 +1,469 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="24dp">
+    android:background="@color/vallet_background"
+    android:fitsSystemWindows="true">
 
-    <com.google.android.material.card.MaterialCardView
+    <!-- Fundo de ondas decorativo -->
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:alpha="0.25"
+        android:scaleType="centerCrop"
+        android:src="@drawable/layered_waves_haikei__4_"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingBottom="40dp"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:cardBackgroundColor="@android:color/white"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:cardPreventCornerOverlap="true"
-        android:layout_margin="8dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ScrollView
-            android:id="@+id/scrollView"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:clipToPadding="false">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingTop="24dp">
 
-            <LinearLayout
+            <!-- 1. BARRA SUPERIOR -->
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
+                android:layout_marginBottom="12dp">
 
-                <!-- Header Section -->
+                <!-- Botão Voltar -->
+                <ImageView
+                    android:id="@+id/btnVoltar"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="10dp"
+                    android:src="@drawable/chevron_right"
+                    android:rotation="180"
+
+                    app:tint="@color/vallet_green_dark"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Botão Sair da Conta  -->
                 <LinearLayout
+                    android:id="@+id/btnSairConta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_status_fechado"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:ignore="TouchTargetSizeCheck">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="Sair"
+                        android:textColor="@color/vallet_status_closed_text"
+                        android:textSize="14sp" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_exit_to_app"
+                        app:tint="@color/vallet_status_closed_text" />
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 2. CARD PRINCIPAL DO USUÁRIO -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/vallet_surface"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/vallet_green_light"
+                app:strokeWidth="1dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical">
+                    android:padding="20dp">
 
-                    <!-- Profile Picture with Shadow -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        android:layout_marginBottom="16dp"
-                        app:cardCornerRadius="60dp"
-                        app:cardElevation="8dp"
-                        app:strokeColor="#E0E0E0"
-                        app:strokeWidth="1dp">
+                    <!-- Foto de Perfil -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cv_profile_pic"
+                        android:layout_width="104dp"
+                        android:layout_height="104dp"
+                        app:cardCornerRadius="52dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/vallet_green_light"
+                        app:strokeWidth="2dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
                             android:id="@+id/imgFotoPerfil"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:contentDescription="Foto de Perfil"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/homemfundo2" />
-                    </com.google.android.material.card.MaterialCardView>
+                            tools:src="@drawable/homemfundo2" />
+                    </androidx.cardview.widget.CardView>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:fontFamily="@font/poppins_medium"
-                        android:letterSpacing="0.1"
-                        android:text="DADOS PESSOAIS"
-                        android:textColor="@color/verdeescuro"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                    <!-- Ícone de Câmera -->
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:background="@drawable/bg_camera_badge"
+                        android:padding="6dp"
+                        android:src="@drawable/camera"
+                        app:layout_constraintBottom_toBottomOf="@id/cv_profile_pic"
+                        app:layout_constraintEnd_toEndOf="@id/cv_profile_pic"
+                        app:tint="@color/vallet_surface" />
 
-                    <!-- Personal Info Items -->
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/txtNome"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="João Silva"
-                        android:textColor="@android:color/black"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/txtEmail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:drawableStart="@drawable/email"
-                        android:drawablePadding="8dp"
-                        android:drawableTint="@color/verdeclaro"
-                        android:text="joao@gmail.com"
-                        android:textColor="#757575"
-                        android:textSize="16sp" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/txtCnh"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:drawableStart="@drawable/cnh"
-                        android:drawablePadding="8dp"
-                        android:drawableTint="@color/verdeclaro"
-                        android:text="CNH: 1234567890"
-                        android:textColor="#757575"
-                        android:textSize="16sp" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/txtTelefone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:drawableStart="@drawable/telefone"
-                        android:drawablePadding="8dp"
-                        android:drawableTint="@color/verdeclaro"
-                        android:text="(11) 99999-0000"
-                        android:textColor="#757575"
-                        android:textSize="16sp" />
-
-                    <com.google.android.material.chip.Chip
-                        android:id="@+id/txtTipoConta"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Motorista"
-                        android:textColor="@android:color/white"
-                        app:chipBackgroundColor="@color/verdeescuro"
-                        app:chipCornerRadius="16dp"
-                        app:chipStrokeWidth="0dp" />
-                </LinearLayout>
-
-                <!-- Divider -->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#EEEEEE"
-                    android:layout_marginVertical="16dp"/>
-
-                <!-- Reservations History Section -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:fontFamily="@font/poppins_medium"
-                    android:letterSpacing="0.1"
-                    android:text="HISTÓRICO DE RESERVAS"
-                    android:textColor="@color/verdeescuro"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="#EEEEEE"
-                    app:strokeWidth="1dp"
-                    app:cardBackgroundColor="@color/cinza"
-                    android:layout_marginBottom="24dp">
-
+                    <!-- Informações do Usuário -->
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="@color/white"
+                        android:layout_marginStart="16dp"
+                        android:gravity="center_vertical"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        app:layout_constraintBottom_toBottomOf="@id/cv_profile_pic"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/cv_profile_pic"
+                        app:layout_constraintTop_toTopOf="@id/cv_profile_pic">
 
                         <TextView
-                            android:id="@+id/txtHistoricoReservas"
-                            android:layout_width="match_parent"
+                            android:id="@+id/txtNome"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:lineSpacingExtra="6dp"
-                            android:text="Última vaga: Estacionamento A\n12:00 às 14:00"
-                            android:textColor="@color/preto"
-                            android:textSize="16sp" />
-
-                        <Button
-                            android:id="@+id/btnVerHistorico"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            android:layout_marginTop="8dp"
-                            android:backgroundTint="@color/verdeescuro"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="VER HISTÓRICO COMPLETO"
-                            android:textColor="@color/white" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                            android:textColor="@color/vallet_green_dark"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            tools:text="João Silva" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:fontFamily="@font/poppins_medium"
-                    android:letterSpacing="0.1"
-                    android:text="ESTATÍSTICAS"
-                    android:textColor="@color/verdeescuro"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/txtEmail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/poppins"
+                            android:textColor="@color/vallet_text_secondary"
+                            android:textSize="13sp"
+                            tools:text="joao@gmail.com" />
+
+                        <TextView
+                            android:id="@+id/txtTipoConta"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_badge_principal"
+                            android:fontFamily="@font/poppins_medium"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="4dp"
+                            android:text="Usuário Vallet"
+                            android:textColor="@color/vallet_green_dark"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <!-- Botão Editar Perfil -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/btnEditarPerfil"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="20dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
+                        app:cardBackgroundColor="@color/vallet_icon_bg"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/cv_profile_pic">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:layout_marginEnd="8dp"
+                                android:src="@drawable/edit"
+                                app:tint="@color/vallet_green_dark" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/poppins_medium"
+                                android:text="Editar perfil"
+                                android:textColor="@color/vallet_green_dark"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- 3. SEÇÃO DE INFORMAÇÕES PESSOAIS -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Informações pessoais"
+                android:textColor="@color/vallet_green_dark"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardBackgroundColor="@color/vallet_surface"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/vallet_green_light"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="24dp">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
+                    <!-- Linha Nome -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="1dp"
-                        app:cardBackgroundColor="#F5F5F5"
-                        android:layout_marginEnd="8dp">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_icon_box"
+                            android:padding="10dp"
+                            android:src="@drawable/icons8_person"
+                            app:tint="@color/vallet_green" />
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <TextView
-                                android:id="@+id/txtTotalReservas"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="12"
-                                android:textColor="@color/verdeclaro"
-                                android:textSize="20sp"
-                                android:textStyle="bold" />
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Reservas"
-                                android:textColor="#757575"
-                                android:textSize="14sp" />
+                                android:fontFamily="@font/poppins"
+                                android:text="Nome completo"
+                                android:textColor="@color/vallet_green_muted"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/txtInfoNome"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/poppins_medium"
+                                android:textColor="@color/vallet_text_primary"
+                                android:textSize="14sp"
+                                tools:text="João Silva" />
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="54dp"
+                        android:layout_marginVertical="4dp"
+                        android:background="@color/vallet_background" />
+
+                    <!-- Linha E-mail -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="1dp"
-                        app:cardBackgroundColor="#F5F5F5"
-                        android:layout_marginStart="8dp">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_icon_box"
+                            android:padding="10dp"
+                            android:src="@drawable/email"
+                            app:tint="@color/vallet_green" />
 
                         <LinearLayout
-                            android:layout_width="match_parent"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <TextView
-                                android:id="@+id/txtTempoTotalUso"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="34h"
-                                android:textColor="@color/verdeclaro"
-                                android:textSize="20sp"
-                                android:textStyle="bold" />
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Horas totais"
-                                android:textColor="#757575"
-                                android:textSize="14sp" />
+                                android:fontFamily="@font/poppins"
+                                android:text="E-mail"
+                                android:textColor="@color/vallet_green_muted"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/txtInfoEmail"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/poppins_medium"
+                                android:textColor="@color/vallet_text_primary"
+                                android:textSize="14sp"
+                                tools:text="joao@gmail.com" />
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="54dp"
+                        android:layout_marginVertical="4dp"
+                        android:background="@color/vallet_background" />
+
+                    <!-- Linha Telefone -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_icon_box"
+                            android:padding="10dp"
+                            android:src="@drawable/phone_calling_svgrepo_com"
+                            app:tint="@color/vallet_green" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/poppins"
+                                android:text="Telefone"
+                                android:textColor="@color/vallet_green_muted"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/txtTelefone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/poppins_medium"
+                                android:textColor="@color/vallet_text_primary"
+                                android:textSize="14sp"
+                                tools:text="(11) 98765-4321" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="54dp"
+                        android:layout_marginVertical="4dp"
+                        android:background="@color/vallet_background" />
+
+                    <!-- Linha CNH -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingVertical="8dp">
+
+                        <ImageView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/bg_icon_box"
+                            android:padding="10dp"
+                            android:src="@drawable/card_2_svgrepo_com"
+                            app:tint="@color/vallet_green" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/poppins"
+                                android:text="Documento (CNH)"
+                                android:textColor="@color/vallet_green_muted"
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:id="@+id/txtCnh"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/poppins_medium"
+                                android:textColor="@color/vallet_text_primary"
+                                android:textSize="14sp"
+                                tools:text="1234567890" />
+                        </LinearLayout>
+                    </LinearLayout>
+
                 </LinearLayout>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:fontFamily="@font/poppins_medium"
-                    android:letterSpacing="0.1"
-                    android:text="LOCAIS MAIS FREQUENTES"
-                    android:textColor="@color/verdeescuro"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/txtLocaisMaisFrequentados"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text=" Shopping X\n• Centro Y"
-                    android:textSize="16sp"
-                    android:textColor="@color/preto"
-                    android:layout_marginBottom="10dp"
-                    android:lineSpacingExtra="6dp"/>
+            </com.google.android.material.card.MaterialCardView>
 
-                <!-- Edit Profile Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnEditarPerfil"
-                    style="@style/Widget.MaterialComponents.Button"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/poppins_medium"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:text="EDITAR PERFIL"
-                    android:textAllCaps="true"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp"
-                    app:backgroundTint="@color/verdeescuro"
-                    app:cornerRadius="28dp"
-                    app:rippleColor="@color/verdeescuro" />
-            </LinearLayout>
-        </ScrollView>
-    </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Overlay de Carregamento -->
     <FrameLayout
         android:id="@+id/progressOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#fff"
+        android:background="#80F0F2EB"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="64dp"
             android:layout_height="64dp"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/vallet_green_dark" />
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
