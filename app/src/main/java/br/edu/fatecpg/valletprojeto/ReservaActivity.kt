@@ -28,28 +28,36 @@ class ReservaActivity : AppCompatActivity() {
 
     private var vagaAtivaParaPagamento: Vaga? = null
 
+    private var estacionamentoLat: Double? = null
+    private var estacionamentoLon: Double? = null
+    private var estacionamentoNome: String? = null
+
+    // Capturando o valor real da hora do BD
+    private var estacionamentoValorHora: Double = 10.0
+
     private val pagamentoLauncher =
         registerForActivityResult(
             androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
         ) { result ->
-
             if (result.resultCode == RESULT_OK) {
                 vagaAtivaParaPagamento?.let { vaga ->
-                    viewModel.finalizarReservaAposPagamento(vaga) {
 
+                    // CORREÇÃO CRÍTICA: Força a Vaga a ficar "Livre" no Firestore.
+                    // Isso conserta o bug de ela continuar ocupada fantasma após o pagamento.
+                    db.collection("vagas").document(vaga.id)
+                        .update("status", "Livre")
+                        .addOnSuccessListener {
+                            Log.d("ReservaActivity", "Vaga liberada com sucesso no BD")
+                        }
+
+                    viewModel.finalizarReservaAposPagamento(vaga) {
                         val intent = Intent(this, DashboardActivity::class.java)
                         startActivity(intent)
-
                         finish()
                     }
                 }
             }
         }
-
-
-    private var estacionamentoLat: Double? = null
-    private var estacionamentoLon: Double? = null
-    private var estacionamentoNome: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,7 +86,7 @@ class ReservaActivity : AppCompatActivity() {
                     estacionamentoNome!!
                 )
             } else {
-                Toast.makeText(this, "Carregando dados do estacionamento, tente novamente.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Carregando dados, tente novamente.", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -97,14 +105,18 @@ class ReservaActivity : AppCompatActivity() {
                     estacionamentoLon = document.getDouble("longitude")
                     estacionamentoNome = document.getString("nome")
 
-                    Log.d("ReservaActivity", "Dados do Estacionamento carregados: $estacionamentoNome")
+                    val valorBd = document.getDouble("valorHora") ?: document.getDouble("valor_hora")
+                    if (valorBd != null) {
+                        estacionamentoValorHora = valorBd
+                    }
+
+                    Log.d("ReservaActivity", "Estacionamento: $estacionamentoNome | Valor: R$ $estacionamentoValorHora")
                 } else {
                     Toast.makeText(this, "Estacionamento não encontrado.", Toast.LENGTH_LONG).show()
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("ReservaActivity", "Erro ao buscar dados do estacionamento", e)
-                Toast.makeText(this, "Erro ao carregar dados do estacionamento.", Toast.LENGTH_LONG).show()
             }
     }
 
@@ -165,7 +177,7 @@ class ReservaActivity : AppCompatActivity() {
                 viewModel.criarReserva(vagaId!!, estacionamentoId!!,
                     estacionamentoNome!!, horasSelecionadas)
             } else {
-                Toast.makeText(this, "Nome do estacionamento não carregado. Tente novamente.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Nome não carregado. Tente novamente.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -190,8 +202,7 @@ class ReservaActivity : AppCompatActivity() {
                     binding.btnReservar.visibility = View.VISIBLE
 
                     binding.tvVagaNumero.text = "${state.vaga.numero}"
-                    // Erro de linha quebrada e traço corrigido aqui:
-                    binding.tvVagaDetalhes.text = "${state.vaga.tipo} • ${state.vaga.localizacao}"
+                    binding.tvVagaDetalhes.text = "${state.vaga.tipo}\n${state.vaga.localizacao}"
                     binding.tvVeiculoInfo.text = "${state.veiculo.modelo} (${state.veiculo.placa})"
 
                     carregarImagemVeiculo(state.vaga.tipo)
@@ -206,8 +217,7 @@ class ReservaActivity : AppCompatActivity() {
                     binding.btnCancelar.visibility = View.VISIBLE
 
                     binding.tvVagaNumero.text = "${state.vaga.numero}"
-                    // Erro de linha quebrada corrigido aqui também:
-                    binding.tvVagaDetalhes.text = "${state.vaga.tipo} • ${state.vaga.localizacao}"
+                    binding.tvVagaDetalhes.text = "${state.vaga.tipo}\n${state.vaga.localizacao}"
                     binding.tvVeiculoInfo.text = "${state.veiculo.modelo} (${state.veiculo.placa})"
 
                     carregarImagemVeiculo(state.vaga.tipo)
@@ -232,6 +242,12 @@ class ReservaActivity : AppCompatActivity() {
                             putExtra("horarioInicioTexto", inicioStr)
                             putExtra("horarioFimTexto", fimStr)
                             putExtra("horaInicioMillis", state.reserva.inicioReserva!!.toDate().time)
+
+                            // ENVIANDO O PREÇO PARA A TELA DE PAGAMENTO!
+                            putExtra("valorHora", estacionamentoValorHora)
+
+                            putExtra("reservaId", state.reserva.id)
+                            putExtra("usuarioId", com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid)
                         }
 
                         pagamentoLauncher.launch(intent)
@@ -254,5 +270,4 @@ class ReservaActivity : AppCompatActivity() {
             binding.tvTimer.text = tempo
         }
     }
-
 }

@@ -10,4 +10,12 @@ object RetrofitClient {
                 .build()
 
         val viaCepService: ViaCepService = retrofit.create(ViaCepService::class.java)
+
+        // Nova conexão com a API do Vallet (FastAPI)
+        val valletRetrofit: Retrofit = Retrofit.Builder()
+                .baseUrl("http://SEU-ENDERECO-IP:8000/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+        val valletApiService: ValletApiService = valletRetrofit.create(ValletApiService::class.java)
 }

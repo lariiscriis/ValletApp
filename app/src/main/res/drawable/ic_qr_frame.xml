@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="280dp"
+    android:height="280dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <!-- Canto Superior Esquerdo -->
+    <path
+        android:pathData="M 25,5 L 15,5 Q 5,5 5,15 L 5,25"
+        android:strokeColor="@color/vallet_green_dark"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"/>
+    <!-- Canto Superior Direito -->
+    <path
+        android:pathData="M 75,5 L 85,5 Q 95,5 95,15 L 95,25"
+        android:strokeColor="@color/vallet_green_dark"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"/>
+    <!-- Canto Inferior Esquerdo -->
+    <path
+        android:pathData="M 25,95 L 15,95 Q 5,95 5,85 L 5,75"
+        android:strokeColor="@color/vallet_green_dark"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"/>
+    <!-- Canto Inferior Direito -->
+    <path
+        android:pathData="M 75,95 L 85,95 Q 95,95 95,85 L 95,75"
+        android:strokeColor="@color/vallet_green_dark"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"/>
+</vector>
