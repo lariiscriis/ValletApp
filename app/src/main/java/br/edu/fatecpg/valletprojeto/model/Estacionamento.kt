@@ -2,7 +2,6 @@ package br.edu.fatecpg.valletprojeto.model
 
 import android.location.Location
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 data class Estacionamento(
     var id: String = "",
@@ -33,8 +32,8 @@ data class Estacionamento(
     val horarioFechamento: String = "7:00",
     val valorHora: Double? = null,
     val geohash: String? = null,
-    val isFavorite: Boolean = false
-
+    val isFavorite: Boolean = false,
+    val funciona24h: Boolean = false
 )
 {
 
@@ -61,6 +60,7 @@ data class Estacionamento(
     }
 
     fun estaAberto(): Boolean {
+        if (funciona24h) return true
         return try {
             val now = Calendar.getInstance()
             var currentMinutes = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)
