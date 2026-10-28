@@ -84,6 +84,17 @@
                     android:src="@drawable/ic_mic"
                     app:tint="@color/vallet_green_dark"
                     tools:ignore="TouchTargetSizeCheck" />
+
+                <ImageButton
+                    android:id="@+id/btn_filter_radius"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_nav_ripple"
+                    android:contentDescription="Escolher raio de distância"
+                    android:src="@drawable/ic_schedule"
+                    app:tint="@color/vallet_green_dark"
+                    tools:ignore="TouchTargetSizeCheck" />
             </LinearLayout>
 
             <!-- Loading Favoritos -->

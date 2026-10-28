@@ -42,6 +42,13 @@ class EstacionamentosViewModel(application: Application) : AndroidViewModel(appl
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
+    var currentRadiusKm: Double = 5.0
+
+    fun setRadius(radiusKm: Double) {
+        currentRadiusKm = radiusKm
+        loadData(useLocation = true)
+    }
+
     private var allParkingsMasterList: List<Estacionamento> = listOf()
     private val _navigateToVagas = MutableLiveData<Event<String>>()
     val navigateToVagas: LiveData<Event<String>> = _navigateToVagas
@@ -135,9 +142,9 @@ class EstacionamentosViewModel(application: Application) : AndroidViewModel(appl
     }
 
     private suspend fun fetchParkingsNear(location: Location): List<Estacionamento> = withContext(Dispatchers.IO) {
-        Log.d("EstacionamentosViewModel", "Executando fetchParkingsNear em ${Thread.currentThread().name}")
+        Log.d("EstacionamentosViewModel", "Executando fetchParkingsNear com raio de $currentRadiusKm km")
         val center = GeoLocation(location.latitude, location.longitude)
-        val radiusInM = 100 * 1000.0
+        val radiusInM = currentRadiusKm * 1000.0
 
         val bounds = GeoFireUtils.getGeoHashQueryBounds(center, radiusInM)
         val tasks = bounds.map { bound ->

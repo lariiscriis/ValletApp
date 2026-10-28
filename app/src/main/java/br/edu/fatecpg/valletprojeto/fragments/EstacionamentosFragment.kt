@@ -275,6 +275,28 @@ class EstacionamentosFragment : Fragment() {
                 Toast.makeText(requireContext(), "Reconhecimento de voz não disponível", Toast.LENGTH_SHORT).show()
             }
         }
+
+        binding.btnFilterRadius.setOnClickListener {
+            mostrarDialogoRaio()
+        }
+    }
+
+    private fun mostrarDialogoRaio() {
+        val raios = arrayOf("1 km", "2 km", "3 km", "4 km", "5 km")
+        val valores = doubleArrayOf(1.0, 2.0, 3.0, 4.0, 5.0)
+
+        val currentIndex = valores.indexOfFirst { it == viewModel.currentRadiusKm }.coerceAtLeast(4)
+
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Escolher raio de distância")
+            .setSingleChoiceItems(raios, currentIndex) { dialog, which ->
+                val selectedRadius = valores[which]
+                viewModel.setRadius(selectedRadius)
+                Toast.makeText(requireContext(), "Raio alterado para ${raios[which]}", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
     }
 
     private fun observeViewModel() {
