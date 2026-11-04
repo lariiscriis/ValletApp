@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@drawable/op2_backgroung"
+            android:src="@drawable/op2_background"
             android:contentDescription="@null" />
 
         <!-- Logo e Título Vallet -->

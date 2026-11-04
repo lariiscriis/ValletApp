@@ -8,3 +8,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+/manage.py
+/.vscode/settings.json
