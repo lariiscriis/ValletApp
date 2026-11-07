@@ -2,8 +2,6 @@ package br.edu.fatecpg.valletprojeto
 
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
@@ -55,7 +53,7 @@ class PagamentoActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         lerExtrasDaIntent()
-        calcularValorDinâmico()
+        calcularValorDinamico()
         preencherResumo()
         setupSelecaoFormaPagamento()
         setupBotaoConfirmar()
@@ -82,7 +80,7 @@ class PagamentoActivity : AppCompatActivity() {
         intent.getStringExtra("usuarioId")?.let { usuarioIdExtra = it }
     }
 
-    private fun calcularValorDinâmico() {
+    private fun calcularValorDinamico() {
         val tempoUtilizadoMinutos = max(1L, (System.currentTimeMillis() - horaInicioMillis) / 60_000)
         horasCobradas = ceil(tempoUtilizadoMinutos / 60.0).toInt().coerceAtLeast(1)
         valorTotal = horasCobradas * valorPorHora
@@ -166,8 +164,8 @@ class PagamentoActivity : AppCompatActivity() {
         binding.btnConfirmarPagamento.isEnabled = false
         binding.progressBarPagamento.visibility = View.VISIBLE
 
-        val usuarioId = if (usuarioIdExtra.isNotEmpty()) usuarioIdExtra else "teste"
-        val reservaId = if (reservaIdExtra.isNotEmpty()) reservaIdExtra else "teste"
+        val usuarioId = usuarioIdExtra.ifEmpty { "teste" }
+        val reservaId = reservaIdExtra.ifEmpty { "teste" }
 
         val requisicao = RequisicaoPagamento(valorTotal, "pix", usuarioId, reservaId)
 
@@ -176,7 +174,7 @@ class PagamentoActivity : AppCompatActivity() {
                 binding.progressBarPagamento.visibility = View.GONE
                 if (response.isSuccessful && response.body() != null) {
                     val resposta = response.body()!!
-                    exibirQrCode(resposta.qr_code, resposta.qr_code_base64)
+                    exibirQrCode(resposta.qrCode, resposta.qrCodeBase64)
                 } else {
                     exibirQrCodeSimulado()
                 }
@@ -236,7 +234,7 @@ class PagamentoActivity : AppCompatActivity() {
         }
 
         binding.btnCopiarPix.setOnClickListener {
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("Código Pix", codigoCopiaCola)
             clipboard.setPrimaryClip(clip)
             Toast.makeText(this, "Código Pix copiado!", Toast.LENGTH_SHORT).show()

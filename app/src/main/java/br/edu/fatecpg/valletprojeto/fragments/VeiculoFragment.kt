@@ -54,7 +54,7 @@ class VeiculoFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val factory = VeiculoViewModelFactory()
-        viewModel = ViewModelProvider(this, factory).get(VeiculoViewModel::class.java)
+        viewModel = ViewModelProvider(this, factory)[VeiculoViewModel::class.java]
 
         setupDropdowns()
 

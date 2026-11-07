@@ -378,7 +378,9 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
                 db.collection("vaga").document(vagaId).update("disponivel", false).await()
                 val reservaCriada = novaReserva.apply { id = docRef.id }
 
-                enviarNotificacaoReservaCriada(getApplication(), vagaId, estacionamentoNome)
+                // Independente dos avisos locais: uma falha na API não desfaz a reserva.
+                agendarNotificacaoInicioGestor(docRef.id, userId)
+                enviarNotificacaoReservaCriada(getApplication(), vagaId, estacionamentoNome, estacionamentoId)
                 agendarNotificacoes(getApplication(), reservaCriada)
 
                 _temReservaAtiva.value = true
@@ -389,7 +391,31 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
-    private fun enviarNotificacaoReservaCriada(context: Context, vagaId: String, estacionamentoNome: String) {
+    private fun agendarNotificacaoInicioGestor(reservaId: String, usuarioId: String) {
+        val trabalho = OneTimeWorkRequestBuilder<ReservaNotificationWorker>()
+            .setInputData(workDataOf(
+                "tipo" to "inicio_gestor",
+                "reservaId" to reservaId,
+                "usuarioId" to usuarioId
+            ))
+            .setConstraints(Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build())
+            .setBackoffCriteria(androidx.work.BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
+            // Não usa reserva_ID: renovar/cancelar avisos locais não cancela este evento.
+            .addTag("notificacao_inicio_gestor")
+            .build()
+        WorkManager.getInstance(getApplication()).enqueueUniqueWork(
+            "notificar_inicio_gestor_$reservaId", ExistingWorkPolicy.KEEP, trabalho
+        )
+    }
+
+    private fun enviarNotificacaoReservaCriada(
+        context: Context,
+        vagaId: String,
+        estacionamentoNome: String,
+        estacionamentoId: String
+    ) {
         viewModelScope.launch {
             try {
                 // 🔥 BUSCAR O NÚMERO DA VAGA
@@ -400,9 +426,10 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
                     putExtra("vagaId", vagaId)
                     putExtra("numeroVaga", numeroVaga) // 🔥 ENVIAR O NÚMERO
                     putExtra("estacionamentoNome", estacionamentoNome)
+                    putExtra("estacionamentoId", estacionamentoId)
                 }
                 context.sendBroadcast(intent)
-                Log.d("Notificacoes", "Notificação de reserva criada enviada para vaga: $numeroVaga")
+                Log.d("Notificacoes", "Broadcast local de reserva criada enviado para vaga: $numeroVaga")
             } catch (e: Exception) {
                 Log.e("Notificacoes", "Erro ao buscar número da vaga: ${e.message}")
                 // Fallback com ID
@@ -410,6 +437,7 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
                     putExtra("vagaId", vagaId)
                     putExtra("numeroVaga", vagaId)
                     putExtra("estacionamentoNome", estacionamentoNome)
+                    putExtra("estacionamentoId", estacionamentoId)
                 }
                 context.sendBroadcast(intent)
             }
@@ -638,3 +666,4 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
         timer?.cancel()
     }
 }
+

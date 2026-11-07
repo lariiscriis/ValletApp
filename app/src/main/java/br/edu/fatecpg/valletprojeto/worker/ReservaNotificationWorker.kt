@@ -2,6 +2,10 @@ package br.edu.fatecpg.valletprojeto.worker
 
 import android.app.NotificationManager
 import android.content.Context
+import com.google.firebase.auth.FirebaseAuth
+import br.edu.fatecpg.valletprojeto.service.RetrofitClient
+import kotlinx.coroutines.CancellationException
+import java.io.IOException
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
@@ -28,6 +32,12 @@ class ReservaNotificationWorker(
 
         Log.d("ReservaNotificationWorker", "Executando worker: tipo=$tipoNotificacao, reservaId=$reservaId, vagaId=$vagaId")
 
+        // O início é um evento histórico. Deve ser enviado mesmo se a reserva
+        // já foi finalizada durante uma falha de rede.
+        if (tipoNotificacao == "inicio_gestor") {
+            return enviarInicioAoGestor(reservaId)
+        }
+
         // VERIFICAR SE A RESERVA AINDA EXISTE E ESTÁ ATIVA
         if (reservaId != null) {
             try {
@@ -45,6 +55,53 @@ class ReservaNotificationWorker(
             "aviso" -> enviarNotificacaoAviso(vagaId, estacionamentoId)
             "expirada" -> enviarNotificacaoExpirada(vagaId)
             else -> Result.failure()
+        }
+    }
+
+    private suspend fun enviarInicioAoGestor(reservaId: String?): Result {
+        if (reservaId.isNullOrBlank()) return Result.failure()
+        if (runAttemptCount >= 8) {
+            Log.e("ReservaNotificationWorker", "Limite de tentativas para notificar início: $reservaId")
+            return Result.failure()
+        }
+        val usuario = FirebaseAuth.getInstance().currentUser ?: return Result.retry()
+        if (usuario.uid != inputData.getString("usuarioId")) {
+            Log.w("ReservaNotificationWorker", "Conta alterada; evento não será enviado por outro usuário")
+            return Result.failure()
+        }
+        return try {
+            val token = usuario.getIdToken(runAttemptCount > 0).await().token
+                ?: return Result.retry()
+            val resposta = RetrofitClient.valletApiService.notificarInicioReserva(
+                reservaId, "Bearer $token"
+            )
+            try {
+                when {
+                    resposta.isSuccessful -> {
+                        Log.i("ReservaNotificationWorker", "Início registrado na central do gestor: $reservaId")
+                        Result.success()
+                    }
+                    resposta.code() in listOf(401, 408, 429) || resposta.code() >= 500 -> {
+                        Log.w("ReservaNotificationWorker", "Falha temporária HTTP ${resposta.code()} para início $reservaId")
+                        Result.retry()
+                    }
+                    else -> {
+                        Log.e("ReservaNotificationWorker", "Início não registrado: HTTP ${resposta.code()}. Confira API, vínculo e permissão")
+                        Result.failure()
+                    }
+                }
+            } finally {
+                resposta.body()?.close()
+                resposta.errorBody()?.close()
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: IOException) {
+            Log.w("ReservaNotificationWorker", "API indisponível; nova tentativa de notificar início", e)
+            Result.retry()
+        } catch (e: Exception) {
+            Log.e("ReservaNotificationWorker", "Falha na autenticação ou configuração da API para notificar início", e)
+            Result.retry()
         }
     }
 
@@ -129,3 +186,4 @@ class ReservaNotificationWorker(
         return Result.success()
     }
 }
+

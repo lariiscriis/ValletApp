@@ -1,7 +1,6 @@
 package br.edu.fatecpg.valletprojeto.fragments
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DiffUtil
@@ -25,6 +23,7 @@ import br.edu.fatecpg.valletprojeto.model.Veiculo
 import br.edu.fatecpg.valletprojeto.viewmodel.VeiculoViewModel
 import br.edu.fatecpg.valletprojeto.viewmodel.VeiculoViewModelFactory
 import com.google.firebase.auth.FirebaseAuth
+import androidx.core.graphics.toColorInt
 
 class VeiculoListFragment : Fragment() {
 
@@ -140,7 +139,7 @@ class VeiculosAdapter(
         fun bind(veiculo: Veiculo) {
             binding.txvApelidoVeiculo.visibility = View.VISIBLE
 
-            if (veiculo.apelido.isNullOrEmpty()) {
+            if (veiculo.apelido.isEmpty()) {
                 binding.txvApelidoVeiculo.text = veiculo.modelo
             } else {
                 binding.txvApelidoVeiculo.text = veiculo.apelido
@@ -148,7 +147,7 @@ class VeiculosAdapter(
 
             binding.txvDetalhesVeiculo.text = "${veiculo.marca} ${veiculo.modelo} - ${veiculo.ano}"
 
-            binding.txvDetalhesVeiculo.setTextColor(Color.parseColor("#637365"))
+            binding.txvDetalhesVeiculo.setTextColor("#637365".toColorInt())
             binding.txvDetalhesVeiculo.textSize = 12f
 
             binding.txvPlacaVeiculo.text = veiculo.placa

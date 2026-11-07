@@ -22,7 +22,6 @@ import br.edu.fatecpg.valletprojeto.ReservaActivity
 import br.edu.fatecpg.valletprojeto.adapter.HistoricoReservasAdapter
 import br.edu.fatecpg.valletprojeto.databinding.FragmentMotoristaDashboardBinding
 import br.edu.fatecpg.valletprojeto.model.Vaga
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
