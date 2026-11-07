@@ -1,8 +1,8 @@
 package br.edu.fatecpg.valletprojeto
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 import br.edu.fatecpg.valletprojeto.model.Vaga
+import androidx.core.net.toUri
 
 class ReservaActivity : AppCompatActivity() {
 
@@ -42,14 +43,7 @@ class ReservaActivity : AppCompatActivity() {
             if (result.resultCode == RESULT_OK) {
                 vagaAtivaParaPagamento?.let { vaga ->
 
-                    // CORREÇÃO CRÍTICA: Força a Vaga a ficar "Livre" no Firestore.
-                    // Isso conserta o bug de ela continuar ocupada fantasma após o pagamento.
-                    db.collection("vagas").document(vaga.id)
-                        .update("status", "Livre")
-                        .addOnSuccessListener {
-                            Log.d("ReservaActivity", "Vaga liberada com sucesso no BD")
-                        }
-
+                    // O ViewModel finaliza e libera a coleção "vaga" no mesmo lote.
                     viewModel.finalizarReservaAposPagamento(vaga) {
                         val intent = Intent(this, DashboardActivity::class.java)
                         startActivity(intent)
@@ -64,7 +58,7 @@ class ReservaActivity : AppCompatActivity() {
         binding = ActivityReservaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(this).get(ReservaViewModel::class.java)
+        viewModel = ViewModelProvider(this)[ReservaViewModel::class.java]
 
         vagaId = intent.getStringExtra("vagaId")
         estacionamentoId = intent.getStringExtra("estacionamentoId")
@@ -120,13 +114,14 @@ class ReservaActivity : AppCompatActivity() {
             }
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
     fun abrirRotaParaEstacionamento(
         context: Context,
         destinoLatitude: Double,
         destinoLongitude: Double,
         nomeDestino: String
     ) {
-        val gmmIntentUri = Uri.parse("google.navigation:q=$destinoLatitude,$destinoLongitude")
+        val gmmIntentUri = "google.navigation:q=$destinoLatitude,$destinoLongitude".toUri()
         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
         mapIntent.setPackage("com.google.android.apps.maps")
         if (mapIntent.resolveActivity(context.packageManager) != null) {
@@ -134,7 +129,7 @@ class ReservaActivity : AppCompatActivity() {
         } else {
             val webIntent = Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$destinoLatitude,$destinoLongitude&destination_place_id=$nomeDestino" )
+                "https://www.google.com/maps/dir/?api=1&destination=$destinoLatitude,$destinoLongitude&destination_place_id=$nomeDestino".toUri()
             )
             if (webIntent.resolveActivity(context.packageManager) != null) {
                 context.startActivity(webIntent)
@@ -161,6 +156,7 @@ class ReservaActivity : AppCompatActivity() {
         binding.circuloFundoAnimado.startAnimation(pulseAnimation)
     }
 
+    @SuppressLint("DefaultLocale")
     private fun setupListeners() {
         binding.btnVoltar.setOnClickListener {
             finish()
@@ -182,6 +178,7 @@ class ReservaActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupObservers() {
         viewModel.uiState.observe(this) { state ->
             binding.progressBar.visibility = View.GONE
@@ -201,7 +198,7 @@ class ReservaActivity : AppCompatActivity() {
                     binding.layoutConfigReserva.visibility = View.VISIBLE
                     binding.btnReservar.visibility = View.VISIBLE
 
-                    binding.tvVagaNumero.text = "${state.vaga.numero}"
+                    binding.tvVagaNumero.text = state.vaga.numero
                     binding.tvVagaDetalhes.text = "${state.vaga.tipo}\n${state.vaga.localizacao}"
                     binding.tvVeiculoInfo.text = "${state.veiculo.modelo} (${state.veiculo.placa})"
 
@@ -216,7 +213,7 @@ class ReservaActivity : AppCompatActivity() {
                     binding.btnFinalizar.visibility = View.VISIBLE
                     binding.btnCancelar.visibility = View.VISIBLE
 
-                    binding.tvVagaNumero.text = "${state.vaga.numero}"
+                    binding.tvVagaNumero.text = state.vaga.numero
                     binding.tvVagaDetalhes.text = "${state.vaga.tipo}\n${state.vaga.localizacao}"
                     binding.tvVeiculoInfo.text = "${state.veiculo.modelo} (${state.veiculo.placa})"
 
@@ -241,7 +238,7 @@ class ReservaActivity : AppCompatActivity() {
                             putExtra("veiculoPlaca", state.veiculo.placa)
                             putExtra("horarioInicioTexto", inicioStr)
                             putExtra("horarioFimTexto", fimStr)
-                            putExtra("horaInicioMillis", state.reserva.inicioReserva!!.toDate().time)
+                            putExtra("horaInicioMillis", state.reserva.inicioReserva.toDate().time)
 
                             // ENVIANDO O PREÇO PARA A TELA DE PAGAMENTO!
                             putExtra("valorHora", estacionamentoValorHora)

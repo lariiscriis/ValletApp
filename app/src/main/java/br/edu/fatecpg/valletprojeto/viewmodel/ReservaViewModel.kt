@@ -574,7 +574,7 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
                 batch.update(
                     reservaDoc.reference,
                     "status",
-                    "cancelada"
+                    "finalizada"
                 )
 
                 // Libera a vaga
