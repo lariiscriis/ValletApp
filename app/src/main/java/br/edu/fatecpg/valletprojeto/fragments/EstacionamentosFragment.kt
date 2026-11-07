@@ -239,7 +239,11 @@ class EstacionamentosFragment : Fragment() {
                 viewModel.onEstacionamentoClicked(estacionamento)
             }
         )
-        binding.rvOtherParkings.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvOtherParkings.layoutManager = object : LinearLayoutManager(requireContext()) {
+            override fun canScrollVertically(): Boolean = false
+        }
+        binding.rvOtherParkings.isNestedScrollingEnabled = false
+        binding.rvOtherParkings.setHasFixedSize(false)
         binding.rvOtherParkings.adapter = simpleAdapter
 
         favoriteAdapter = FavoriteParkingAdapter(
@@ -250,7 +254,11 @@ class EstacionamentosFragment : Fragment() {
                 viewModel.onEstacionamentoClicked(estacionamento)
             }
         )
-        binding.rvFavorites.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        binding.rvFavorites.layoutManager = object : LinearLayoutManager(requireContext()) {
+            override fun canScrollVertically(): Boolean = false
+        }
+        binding.rvFavorites.isNestedScrollingEnabled = false
+        binding.rvFavorites.setHasFixedSize(false)
         binding.rvFavorites.adapter = favoriteAdapter
     }
 
@@ -326,22 +334,16 @@ class EstacionamentosFragment : Fragment() {
         viewModel.parkings.observe(viewLifecycleOwner, Observer { parkings ->
             simpleAdapter.submitList(parkings)
             updateLoadingStep("${parkings.size} estacionamentos carregados")
-
-            if (parkings.isEmpty() && viewModel.isLoading.value != true) {
-                binding.loadingOtherParkings.visibility = View.GONE
-                binding.txvOtherParkingsTitle.visibility = View.VISIBLE
-                binding.rvOtherParkings.visibility = View.VISIBLE
+            if (viewModel.isLoading.value != true) {
+                showContentGradually()
             }
         })
 
         viewModel.favoriteParkings.observe(viewLifecycleOwner, Observer { favorites ->
             favoriteAdapter.submitList(favorites)
             updateLoadingStep("${favorites.size} favoritos carregados")
-
-            if (favorites.isEmpty() && viewModel.isLoading.value != true) {
-                binding.loadingFavorites.visibility = View.GONE
-                binding.txvFavoritesTitle.visibility = View.GONE
-                binding.rvFavorites.visibility = View.GONE
+            if (viewModel.isLoading.value != true) {
+                showContentGradually()
             }
         })
 
@@ -361,13 +363,6 @@ class EstacionamentosFragment : Fragment() {
             }
         })
 
-        viewModel.navigateToVagas.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let { estacionamentoId ->
-                val intent = Intent(requireContext(), VagaActivity::class.java)
-                intent.putExtra("estacionamentoId", estacionamentoId)
-                startActivity(intent)
-            }
-        })
     }
 
     private fun verificarPermissaoLocalizacao() {

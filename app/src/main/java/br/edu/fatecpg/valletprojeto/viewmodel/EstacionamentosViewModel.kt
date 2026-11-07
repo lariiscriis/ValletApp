@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -50,6 +51,10 @@ class EstacionamentosViewModel(application: Application) : AndroidViewModel(appl
     }
 
     private var allParkingsMasterList: List<Estacionamento> = listOf()
+    private var favoriteIds: Set<String> = emptySet()
+    private var currentSearchQuery: String = ""
+    private val favoriteChangesInFlight = mutableSetOf<String>()
+    private var favoriteRevision = 0L
     private val _navigateToVagas = MutableLiveData<Event<String>>()
     val navigateToVagas: LiveData<Event<String>> = _navigateToVagas
 
@@ -105,6 +110,7 @@ class EstacionamentosViewModel(application: Application) : AndroidViewModel(appl
                     Log.d("EstacionamentosViewModel", "Localização obtida: $userLocation")
                 }
 
+                val revisionAtLoad = favoriteRevision
                 val favoriteIdsDeferred = async { fetchFavoriteIds() }
                 val parkingsDeferred = async {
                     if (userLocation != null) {
@@ -115,7 +121,7 @@ class EstacionamentosViewModel(application: Application) : AndroidViewModel(appl
                     }
                 }
 
-                val favoriteIds = favoriteIdsDeferred.await()
+                val loadedFavoriteIds = favoriteIdsDeferred.await()
                 val allFetchedParkings = parkingsDeferred.await()
                 Log.d("EstacionamentosViewModel", "Busca concluída. ${allFetchedParkings.size} estacionamentos encontrados.")
 
@@ -124,12 +130,12 @@ class EstacionamentosViewModel(application: Application) : AndroidViewModel(appl
                     est.copy(distanciaMetros = distancia)
                 }.sortedBy { it.distanciaMetros ?: Int.MAX_VALUE }
 
-                allParkingsMasterList = processedParkings
-                val (favorites, others) = allParkingsMasterList.partition { it.id in favoriteIds }
-
-                Log.d("EstacionamentosViewModel", "Separando ${favorites.size} favoritos e ${others.size} outros.")
-                _favoriteParkings.postValue(favorites)
-                _parkings.postValue(others)
+                allParkingsMasterList = processedParkings.distinctBy { it.id }
+                // Não sobrescreve uma alteração concluída durante o carregamento.
+                if (favoriteRevision == revisionAtLoad) {
+                    favoriteIds = loadedFavoriteIds
+                }
+                publicarListas()
 
             } catch (e: Exception) {
                 Log.e("EstacionamentosViewModel", "Erro em loadData", e)
@@ -178,7 +184,7 @@ class EstacionamentosViewModel(application: Application) : AndroidViewModel(appl
 
         Log.d("EstacionamentosViewModel", "Documentos filtrados por distância: ${matchingDocs.size}")
 
-        matchingDocs.mapNotNull { doc ->
+        matchingDocs.distinctBy { it.id }.mapNotNull { doc ->
             doc.toObject(Estacionamento::class.java)?.copy(id = doc.id)
         }
     }
@@ -215,67 +221,80 @@ class EstacionamentosViewModel(application: Application) : AndroidViewModel(appl
 
     fun toggleFavoriteStatus(estacionamento: Estacionamento) {
         val userId = auth.currentUser?.uid ?: return
-        val isCurrentlyFavorite = _favoriteParkings.value?.any { it.id == estacionamento.id } == true
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val favoritoRef = db.collection("favoritos")
-                .whereEqualTo("usuarioId", userId)
-                .whereEqualTo("estacionamentoId", estacionamento.id)
-
-            if (isCurrentlyFavorite) {
-                favoritoRef.get().await().documents.firstOrNull()?.reference?.delete()?.await()
-            } else {
-                db.collection("favoritos").add(
-                    mapOf("usuarioId" to userId, "estacionamentoId" to estacionamento.id)
-                ).await()
-            }
+        if (estacionamento.id.isBlank() || !favoriteChangesInFlight.add(estacionamento.id)) {
+            return
         }
+        val remover = estacionamento.id in favoriteIds
 
-        val currentFavorites = _favoriteParkings.value?.toMutableList() ?: mutableListOf()
-        val currentOthers = _parkings.value?.toMutableList() ?: mutableListOf()
+        viewModelScope.launch {
+            try {
+                val collection = db.collection("favoritos")
+                val existentes = collection
+                    .whereEqualTo("usuarioId", userId)
+                    .whereEqualTo("estacionamentoId", estacionamento.id)
+                    .get()
+                    .await()
 
-        if (isCurrentlyFavorite) {
-            currentFavorites.removeAll { it.id == estacionamento.id }
-            currentOthers.add(0, estacionamento)
-            _favoriteParkings.postValue(currentFavorites)
-            _parkings.postValue(currentOthers.sortedBy { it.distanciaMetros ?: Int.MAX_VALUE })
-        } else {
-            currentOthers.removeAll { it.id == estacionamento.id }
-            currentFavorites.add(estacionamento)
-            _parkings.postValue(currentOthers)
-            _favoriteParkings.postValue(currentFavorites)
+                if (remover) {
+                    // Remove também duplicatas antigas desse vínculo.
+                    if (!existentes.isEmpty) {
+                        val batch = db.batch()
+                        existentes.documents.forEach { batch.delete(it.reference) }
+                        batch.commit().await()
+                    }
+                } else if (existentes.isEmpty) {
+                    // ID estável evita criar outro documento para o mesmo vínculo.
+                    collection.document("${userId}_${estacionamento.id}")
+                        .set(mapOf("usuarioId" to userId, "estacionamentoId" to estacionamento.id))
+                        .await()
+                }
+
+                if (auth.currentUser?.uid != userId) return@launch
+                favoriteIds = if (remover) {
+                    favoriteIds - estacionamento.id
+                } else {
+                    favoriteIds + estacionamento.id
+                }
+                favoriteRevision++
+                // Executado na Main: não perde outros favoritos com postValue pendente.
+                publicarListas()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Log.e("EstacionamentosViewModel", "Erro ao alterar favorito", e)
+                _toastMessage.value = Event("Não foi possível alterar o favorito. Tente novamente.")
+            } finally {
+                favoriteChangesInFlight.remove(estacionamento.id)
+            }
         }
     }
 
     fun searchParkings(query: String) {
-        val filteredList = if (query.isBlank()) {
-            allParkingsMasterList.filterNot { it.id in (_favoriteParkings.value?.map { fav -> fav.id } ?: emptySet()) }
-        } else {
-            allParkingsMasterList.filter {
-                (it.nome.contains(query, ignoreCase = true) || it.enderecoCompleto.contains(query, ignoreCase = true)) &&
-                        it.id !in (_favoriteParkings.value?.map { fav -> fav.id } ?: emptySet())
+        currentSearchQuery = query.trim()
+        publicarListas()
+    }
+
+    private fun publicarListas() {
+        val lista = allParkingsMasterList
+            .distinctBy { it.id }
+            .map { it.copy(isFavorite = it.id in favoriteIds) }
+            .filter {
+                currentSearchQuery.isBlank() ||
+                        it.nome.contains(currentSearchQuery, ignoreCase = true) ||
+                        it.enderecoCompleto.contains(currentSearchQuery, ignoreCase = true)
             }
-        }
-        _parkings.value = filteredList
+            .sortedBy { it.distanciaMetros ?: Int.MAX_VALUE }
+
+        val (favoritos, outros) = lista.partition { it.id in favoriteIds }
+        _favoriteParkings.value = favoritos
+        _parkings.value = outros
     }
 
     private fun updateParkingInLists(updatedParking: Estacionamento) {
-        val currentFavorites = _favoriteParkings.value?.toMutableList() ?: mutableListOf()
-        val currentOthers = _parkings.value?.toMutableList() ?: mutableListOf()
-
-        val favIndex = currentFavorites.indexOfFirst { it.id == updatedParking.id }
-        if (favIndex != -1) {
-            currentFavorites[favIndex] = updatedParking
-            _favoriteParkings.postValue(currentFavorites)
-            return
+        allParkingsMasterList = allParkingsMasterList.map {
+            if (it.id == updatedParking.id) updatedParking else it
         }
-
-        val otherIndex = currentOthers.indexOfFirst { it.id == updatedParking.id }
-        if (otherIndex != -1) {
-            currentOthers[otherIndex] = updatedParking
-            _parkings.postValue(currentOthers)
-            return
-        }
+        publicarListas()
     }
 }
 
