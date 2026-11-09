@@ -26,6 +26,7 @@
         <receiver android:name=".receiver.ReservaAvisoReceiver" android:enabled="true" android:exported="false"/>
         <receiver android:name=".receiver.ReservaExpiradaReceiver" android:enabled="true" android:exported="false"/>
         <receiver android:name=".receiver.ReservaCriadaReceiver" android:enabled="true" android:exported="false"/>
+        <activity android:name=".CadastroFotoUsuarioActivity" android:exported="false"/>
         <activity android:name=".VeiculoActivity" android:exported="false"/>
         <activity android:name=".PaginaDeReservaVagas" android:exported="false"/>
         <activity android:name=".PerfilActivity" android:exported="false"/>

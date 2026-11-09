@@ -44,10 +44,10 @@
                 <ImageView
                     android:layout_width="160dp"
                     android:layout_height="70dp"
-                    android:layout_marginStart="-15dp"
+                    android:layout_marginStart="-2dp"
                     android:scaleType="fitStart"
                     android:adjustViewBounds="true"
-                    android:src="@drawable/op2_logo"
+                    android:src="@drawable/allet"
                     android:contentDescription="Logo Vallet" />
 
 <!--                <TextView

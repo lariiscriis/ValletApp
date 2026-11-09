@@ -7,6 +7,25 @@
     android:background="@color/vallet_background"
     android:fitsSystemWindows="true">
 
+    <include
+        android:id="@+id/cadastro_progresso"
+        layout="@layout/view_progresso_cadastro"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <include
+        android:id="@+id/cadastro_bolinhas"
+        layout="@layout/view_bolinhas_cadastro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <!-- Topbar Customizada -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_topbar"
@@ -14,7 +33,7 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="24dp"
         android:paddingVertical="16dp"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/cadastro_progresso">
 
         <ImageView
             android:id="@+id/iv_back"
@@ -51,7 +70,7 @@
         android:clipToPadding="false"
         android:fillViewport="true"
         android:paddingBottom="100dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cadastro_bolinhas"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cl_topbar">
@@ -426,7 +445,7 @@
         android:textColor="@color/vallet_surface"
         android:textSize="16sp"
         app:cornerRadius="27dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cadastro_bolinhas"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

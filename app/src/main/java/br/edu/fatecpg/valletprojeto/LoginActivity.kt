@@ -454,296 +454,27 @@ class LoginActivity : AppCompatActivity(),
     // BUSCAR USUÁRIO NO FIRESTORE
     // =============================================================
 
-    private fun checkUser(
-        uid: String,
-        email: String
-    ) {
+    private val roteador by lazy { br.edu.fatecpg.valletprojeto.onboarding.RoteadorCadastro(this) }
 
-        Log.d(
-            "Firestore",
-            "Buscando usuário por UID: $uid"
-        )
-
-        updateLoadingStep(
-            "Buscando dados do usuário..."
-        )
-
-        var isTimedOut = false
-
-        val timeoutRunnable = Runnable {
-
-            isTimedOut = true
-            auth.signOut()
-            resetLoadingState()
-
-            AlertDialog.Builder(this)
-                .setTitle("⏱️ Tempo Esgotado")
-                .setMessage(
-                    "A conexão está muito lenta. " +
-                            "Deseja tentar novamente?"
-                )
-                .setPositiveButton("Tentar Novamente") { _, _ ->
-
-                    val emailAtual = binding.editTextText
-                        .text
-                        .toString()
-                        .trim()
-
-                    val senhaAtual = binding.editTextSenha
-                        .text
-                        .toString()
-                        .trim()
-
-                    if (
-                        validateCredentials(
-                            emailAtual,
-                            senhaAtual
-                        )
-                    ) {
-                        startLoginProcess(
-                            emailAtual,
-                            senhaAtual
-                        )
-                    }
-                }
-                .setNegativeButton("Cancelar") { _, _ ->
-
-                    auth.signOut()
-                }
-                .setCancelable(false)
-                .show()
-        }
-
-        mainHandler.postDelayed(
-            timeoutRunnable,
-            20000
-        )
-
-        db.collection("usuario")
-            .document(uid)
-            .get(com.google.firebase.firestore.Source.SERVER)
-            .addOnSuccessListener { documentSnapshot ->
-
-                mainHandler.removeCallbacks(
-                    timeoutRunnable
-                )
-
-                if (isTimedOut) {
-
-                    Log.w(
-                        "Firestore",
-                        "⚠️ Resposta recebida após timeout"
-                    )
-
-                    return@addOnSuccessListener
-                }
-
-                updateLoadingStep(
-                    "Processando informações..."
-                )
-
-                if (!documentSnapshot.exists()) {
-
-                    Log.e(
-                        "Firestore",
-                        "❌ Nenhum usuário encontrado com UID: $uid"
-                    )
-
-                    resetLoadingState()
-
-                    handleUserNotFound()
-
-                    return@addOnSuccessListener
-                }
-
-                Log.d(
-                    "Firestore",
-                    "✅ Usuário encontrado! ID: ${documentSnapshot.id}"
-                )
-
-                updateLoadingStep(
-                    "Preparando ambiente..."
-                )
-
-                val tipoUsuario = documentSnapshot.getString("tipo_user")
-                    ?.trim()?.lowercase(java.util.Locale.ROOT)
-                if (tipoUsuario != "motorista") {
-                    auth.signOut()
-                    resetLoadingState()
-                    AlertDialog.Builder(this)
-                        .setTitle("Acesso restrito")
-                        .setMessage("Este aplicativo é exclusivo para motoristas. Administradores devem acessar o Desktop.")
-                        .setPositiveButton("OK", null)
-                        .show()
-                    return@addOnSuccessListener
-                }
-                if (auth.currentUser?.uid != uid) return@addOnSuccessListener
-
-                redirectToHome(
-                    uid,
-                    email
-                )
-            }
-            .addOnFailureListener { e ->
-
-                mainHandler.removeCallbacks(
-                    timeoutRunnable
-                )
-
-                if (isTimedOut) {
-
-                    Log.w(
-                        "Firestore",
-                        "⚠️ Erro recebido após timeout"
-                    )
-
-                    return@addOnFailureListener
-                }
-
-                auth.signOut()
-                resetLoadingState()
-
-                Log.e(
-                    "Firestore",
-                    "❌ Erro na consulta: ${e.message}"
-                )
-
-                val errorMsg = when {
-
-                    e.message?.contains(
-                        "offline",
-                        ignoreCase = true
-                    ) == true ->
-                        "Sem conexão com a internet"
-
-                    e.message?.contains(
-                        "permission",
-                        ignoreCase = true
-                    ) == true ->
-                        "🔒 Permissão negada. Verifique as regras de segurança."
-
-                    e.message?.contains(
-                        "deadline",
-                        ignoreCase = true
-                    ) == true ->
-                        "Servidor não respondeu a tempo"
-
-                    else ->
-                        "Erro ao conectar: ${e.message}"
-                }
-
-                AlertDialog.Builder(this)
-                    .setTitle("Erro de Conexão")
-                    .setMessage(
-                        "$errorMsg\n\nDeseja tentar novamente?"
-                    )
-                    .setPositiveButton(
-                        "Tentar Novamente"
-                    ) { _, _ ->
-
-                        val emailAtual =
-                            binding.editTextText
-                                .text
-                                .toString()
-                                .trim()
-
-                        val senhaAtual =
-                            binding.editTextSenha
-                                .text
-                                .toString()
-                                .trim()
-
-                        if (
-                            validateCredentials(
-                                emailAtual,
-                                senhaAtual
-                            )
-                        ) {
-
-                            startLoginProcess(
-                                emailAtual,
-                                senhaAtual
-                            )
+    private fun checkUser(uid: String, email: String) {
+        isLoading = true
+        showButtonLoading()
+        disableUI()
+        updateLoadingStep("Verificando perfil e veículos...")
+        roteador.verificar(
+            carregando = { carregando ->
+                if (!carregando && !isFinishing) resetLoadingState()
+            },
+            destinoAtual = { destino ->
+                if (destino == br.edu.fatecpg.valletprojeto.onboarding.DestinoCadastro.DASHBOARD) {
+                    gerarESalvarTokenFCM(uid) {
+                        if (auth.currentUser?.uid == uid && !isFinishing && !isDestroyed) {
+                            roteador.abrir(destino)
                         }
                     }
-                    .setNegativeButton(
-                        "Cancelar"
-                    ) { _, _ ->
-
-                        auth.signOut()
-                    }
-                    .setCancelable(false)
-                    .show()
+                } else roteador.abrir(destino)
             }
-    }
-
-    // =============================================================
-    // USUÁRIO NÃO ENCONTRADO
-    // =============================================================
-
-    private fun handleUserNotFound() {
-
-        auth.signOut()
-
-        AlertDialog.Builder(this)
-            .setTitle("Usuário Não Encontrado")
-            .setMessage(
-                "Não foi possível encontrar seus dados " +
-                        "no sistema. Deseja fazer o cadastro?"
-            )
-            .setPositiveButton("Fazer Cadastro") { _, _ ->
-
-                startActivity(
-                    Intent(
-                        this,
-                        CadastroUsuarioActivity::class.java
-                    )
-                )
-            }
-            .setNegativeButton(
-                "Cancelar",
-                null
-            )
-            .show()
-    }
-
-    // =============================================================
-    // REDIRECIONAR PARA HOME
-    // =============================================================
-
-    private fun redirectToHome(
-        uid: String,
-        email: String
-    ) {
-
-        Log.d(
-            "LOGIN",
-            "🚀 Iniciando processo de redirecionamento"
         )
-
-        updateLoadingStep(
-            "Obtendo permissões de notificação..."
-        )
-
-
-        // Gera e salva o token antes de navegar
-        gerarESalvarTokenFCM(uid) {
-            if (auth.currentUser?.uid != uid || isFinishing || isDestroyed) return@gerarESalvarTokenFCM
-
-            val intent = Intent(
-                this,
-                DashboardActivity::class.java
-            )
-
-            intent.putExtra(
-                "email_usuario",
-                email
-            )
-
-            startActivity(intent)
-
-            finish()
-        }
     }
 
     // =============================================================
@@ -941,56 +672,9 @@ class LoginActivity : AppCompatActivity(),
     // =============================================================
 
     override fun onStart() {
-
         super.onStart()
-
-        val current =
-            FirebaseAuth
-                .getInstance()
-                .currentUser
-
-        if (current != null) {
-
-            Log.d(
-                "Login",
-                "🔄 Usuário já logado, verificando sessão..."
-            )
-
-            updateLoadingStep(
-                "Restaurando sua sessão..."
-            )
-
-            mainHandler.postDelayed({
-
-                if (isLoading) {
-
-                    resetLoadingState()
-
-                    AlertDialog.Builder(this)
-                        .setTitle("Sessão Expirada")
-                        .setMessage(
-                            "Não foi possível restaurar sua sessão. " +
-                                    "Faça login novamente."
-                        )
-                        .setPositiveButton("OK") { _, _ ->
-
-                            auth.signOut()
-                        }
-                        .setCancelable(false)
-                        .show()
-                }
-
-            }, 25000)
-
-            checkUser(
-                current.uid,
-                current.email ?: ""
-            )
-
-        } else {
-
-            isLoading = false
-        }
+        val current = auth.currentUser
+        if (current != null && !isLoading) checkUser(current.uid, current.email.orEmpty())
     }
 
     // =============================================================

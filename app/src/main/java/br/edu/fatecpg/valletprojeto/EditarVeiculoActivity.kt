@@ -138,7 +138,7 @@ class EditarVeiculoActivity : AppCompatActivity() {
     }
 
     private fun atualizarVeiculo() {
-        val novaPlaca = binding.editPlaca.text.toString().trim()
+        val novaPlaca = br.edu.fatecpg.valletprojeto.onboarding.ValidacaoCadastro.placaNormalizada(binding.editPlaca.text.toString())
         val novaMarca = binding.editMarca.text.toString().trim()
         val novoModelo = binding.editModelo.text.toString().trim()
         val novoApelido = binding.editApelido.text.toString().trim()
@@ -164,6 +164,11 @@ class EditarVeiculoActivity : AppCompatActivity() {
             return
         }
 
+        if (!br.edu.fatecpg.valletprojeto.onboarding.ValidacaoCadastro.placaValida(novaPlaca, novoTipo)) {
+            binding.editPlaca.error = if (novoTipo == "moto") "Use LLLNNNN (ABC1234)" else "Use LLLNLNN (ABC1D23)"
+            binding.editPlaca.requestFocus()
+            return
+        }
         if (fotoSelecionadaUri != null) {
             val file = File(cacheDir, "upload_veiculo_edit.jpg")
             try {

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cadastro_progresso"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/vallet_background"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+    <TextView
+        android:id="@+id/cadastro_etapa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityLiveRegion="polite"
+        android:fontFamily="@font/poppins_medium"
+        android:textColor="@color/vallet_green"
+        android:textSize="12sp" />
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/cadastro_barra"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginTop="4dp"
+        android:indeterminate="false"
+        android:max="100"
+        app:indicatorColor="@color/vallet_green_dark"
+        app:trackColor="@color/vallet_green_light"
+        app:trackCornerRadius="2dp"
+        app:trackThickness="4dp" />
+</LinearLayout>

@@ -9,7 +9,14 @@
     android:background="#F0F2EB"
     tools:context=".CadastroUsuarioActivity">
 
-    <!-- ÁREA SUPERIOR COM O BOTÃO DE VOLTAR -->
+    <include
+        android:id="@+id/cadastro_progresso"
+        layout="@layout/view_progresso_cadastro"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- CARD DO CADASTRO -->
     <FrameLayout
@@ -19,13 +26,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/cadastro_progresso">
 
         <ImageView
             android:id="@+id/wavesRegister"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/waves_register"
+            android:src="@drawable/cadastro_background"
             android:scaleType="centerCrop"
             android:contentDescription="@null" />
 
@@ -39,7 +46,7 @@
             android:contentDescription="Voltar"
             android:focusable="true"
             android:src="@drawable/ic_arrow_back"
-            app:tint="@color/white"
+            app:tint="@color/vallet_green"
             tools:ignore="TouchTargetSizeCheck" />
     </FrameLayout>
 
@@ -51,7 +58,7 @@
         app:cardBackgroundColor="#F0F2EB"
         app:cardCornerRadius="32dp"
         app:cardElevation="12dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cadastro_progresso"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -84,24 +91,14 @@
                         android:layout_width="160dp"
                         android:layout_height="70dp"
                         android:adjustViewBounds="true"
-                        android:src="@drawable/op2_logo"
+                        android:src="@drawable/allet"
                         android:contentDescription="@null" />
-
-<!--                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:fontFamily="@font/poppins_semibold"
-                        android:text="Vallet"
-                        android:textColor="#3B5942"
-                        android:textSize="26sp"
-                        android:textStyle="bold" />-->
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="1dp"
                     android:fontFamily="@font/poppins"
                     android:gravity="center"
                     android:text="Crie sua conta e tenha acesso\na todas as funcionalidades."
@@ -137,7 +134,7 @@
                         android:layout_height="20dp"
                         android:layout_gravity="start|center_vertical"
                         android:layout_marginStart="18dp"
-                        android:src="@drawable/nome"
+                        android:src="@drawable/icons8_person"
                         app:tint="#637365"
                         android:contentDescription="@null" />
                 </FrameLayout>
@@ -176,7 +173,7 @@
                         android:contentDescription="@null" />
                 </FrameLayout>
 
-                <!-- CNH / CELULAR (Mantido campo CNH conforme solicitado, com suporte visual padronizado) -->
+                <!-- CNH -->
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
@@ -206,6 +203,41 @@
                         android:layout_gravity="start|center_vertical"
                         android:layout_marginStart="18dp"
                         android:src="@drawable/cnh"
+                        app:tint="#637365"
+                        android:contentDescription="@null" />
+                </FrameLayout>
+
+                <!-- TELEFONE -->
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="12dp">
+
+                    <EditText
+                        android:id="@+id/edt_telefone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/input_pill"
+                        android:backgroundTint="#FFFFFF"
+                        android:fontFamily="@font/poppins"
+                        android:hint="Telefone com DDD"
+                        android:inputType="phone"
+                        android:maxLength="20"
+                        android:paddingStart="52dp"
+                        android:paddingEnd="20dp"
+                        android:singleLine="true"
+                        android:textColor="#3B5942"
+                        android:textColorHint="#97A697"
+                        android:textSize="14sp"
+                        tools:ignore="Autofill" />
+
+                    <ImageView
+                        android:id="@+id/telefoneimg"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="start|center_vertical"
+                        android:layout_marginStart="18dp"
+                        android:src="@drawable/phone_calling_svgrepo_com"
                         app:tint="#637365"
                         android:contentDescription="@null" />
                 </FrameLayout>
@@ -266,6 +298,13 @@
                     android:textSize="16sp"
                     android:textAllCaps="false"
                     android:elevation="0dp" />
+
+                <include
+                    android:id="@+id/cadastro_bolinhas"
+                    layout="@layout/view_bolinhas_cadastro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal" />
 
                 <!-- TERMOS DE USO -->
                 <TextView

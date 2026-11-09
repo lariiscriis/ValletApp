@@ -24,6 +24,13 @@ class VeiculoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityVeiculoBinding
     private val viewModel: VeiculoViewModel by viewModels()
     private lateinit var veiculosAdapter: VeiculosAdapter
+    private val roteador by lazy { br.edu.fatecpg.valletprojeto.onboarding.RoteadorCadastro(this) }
+    private val cadastroInicial get() = intent.getBooleanExtra(EXTRA_CADASTRO_INICIAL, false)
+
+    companion object {
+        const val EXTRA_CADASTRO_INICIAL = "cadastro_inicial"
+        private const val TAG_CADASTRO = "cadastro_inicial_veiculo"
+    }
 
     private val editarVeiculoLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -37,6 +44,33 @@ class VeiculoActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityVeiculoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        if (cadastroInicial) {
+            binding.fabAddCar.visibility = View.GONE
+            binding.tvTitle.visibility = View.GONE
+            binding.tvSubtitle.visibility = View.GONE
+            binding.rvCarList.visibility = View.GONE
+            binding.llEmptyState.visibility = View.GONE
+            onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() = continuarDepois()
+            })
+            // Também valida restaurações do processo e entradas antigas nesta Activity.
+            roteador.verificar(carregando = {
+                binding.progressOverlay.visibility = if (it) View.VISIBLE else View.GONE
+            }, destinoAtual = { destino ->
+                if (destino == br.edu.fatecpg.valletprojeto.onboarding.DestinoCadastro.VEICULO) {
+                    binding.fragmentContainer.visibility = View.VISIBLE
+                    if (supportFragmentManager.findFragmentByTag(TAG_CADASTRO) == null) {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, VeiculoFragment().apply {
+                                arguments = Bundle().apply { putBoolean(EXTRA_CADASTRO_INICIAL, true) }
+                            }, TAG_CADASTRO)
+                            .commit()
+                    }
+                } else roteador.abrir(destino)
+            })
+            return
+        }
 
         binding.fabAddCar.setOnClickListener {
             val veiculoFragment = VeiculoFragment()
@@ -68,7 +102,21 @@ class VeiculoActivity : AppCompatActivity() {
     }
 
     fun onVeiculoCadastrado() {
-        carregarVeiculosDoUsuario()
+        if (cadastroInicial) {
+            // Só chamado após confirmação do salvamento; confirma novamente o estado persistido.
+            roteador.verificar(carregando = {
+                binding.progressOverlay.visibility = if (it) View.VISIBLE else View.GONE
+            })
+        } else carregarVeiculosDoUsuario()
+    }
+
+    fun continuarDepois() {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Continuar depois?")
+            .setMessage("Seu cadastro será retomado na etapa de veículo ao abrir o Vallet.")
+            .setPositiveButton("Continuar depois") { _, _ -> moveTaskToBack(true) }
+            .setNegativeButton("Ficar", null)
+            .show()
     }
 
     private fun setupRecyclerView() {

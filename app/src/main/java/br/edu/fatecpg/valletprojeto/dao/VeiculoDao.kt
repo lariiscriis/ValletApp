@@ -5,6 +5,7 @@ import br.edu.fatecpg.valletprojeto.model.Veiculo
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Source
 
 object VeiculoDao {
 
@@ -89,13 +90,14 @@ object VeiculoDao {
 
     fun listarVeiculosDoUsuario(
         onSuccess: (List<Veiculo>) -> Unit,
-        onFailure: (String) -> Unit
+        onFailure: (String) -> Unit,
+        source: Source = Source.DEFAULT
     ) {
         val userId = auth.currentUser?.uid ?: return onFailure("Usuário não autenticado")
 
         db.collection("veiculo")
             .whereEqualTo("usuarioId", userId)
-            .get()
+            .get(source)
             .addOnSuccessListener { result ->
                 val lista = mutableListOf<Veiculo>()
                 for (doc in result.documents) {
