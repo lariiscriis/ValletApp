@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/vallet_background"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="false">
 
     <!-- Fundo de ondas decorativo -->
     <ImageView
@@ -53,45 +53,6 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- RODAPÉ COM BOTÕES -->
-    <LinearLayout
-        android:id="@+id/ll_bottom_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="24dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSalvar"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:layout_marginBottom="12dp"
-            android:backgroundTint="@color/vallet_green_dark"
-            android:fontFamily="@font/poppins_semibold"
-            android:text="SALVAR ALTERAÇÕES"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            app:cornerRadius="27dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCancelar"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:fontFamily="@font/poppins_semibold"
-            android:text="CANCELAR"
-            android:textColor="@color/vallet_green_dark"
-            android:textSize="14sp"
-            app:cornerRadius="27dp"
-            app:strokeColor="@color/vallet_green_muted"
-            app:strokeWidth="1dp" />
-    </LinearLayout>
-
     <!-- CONTEÚDO CENTRAL -->
     <ScrollView
         android:layout_width="0dp"
@@ -99,7 +60,7 @@
         android:clipToPadding="false"
         android:fillViewport="true"
         android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@id/ll_bottom_buttons"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cl_header">
@@ -392,6 +353,42 @@
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+    <!-- RODAPÉ COM BOTÕES -->
+    <LinearLayout
+        android:id="@+id/ll_bottom_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="8dp"
+        android:paddingBottom="32dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSalvar"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginBottom="12dp"
+            android:backgroundTint="@color/vallet_green_dark"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="SALVAR ALTERAÇÕES"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            app:cornerRadius="27dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelar"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:fontFamily="@font/poppins_semibold"
+            android:text="CANCELAR"
+            android:textColor="@color/vallet_green_dark"
+            android:textSize="14sp"
+            app:cornerRadius="27dp"
+            app:strokeColor="@color/vallet_green_muted"
+            app:strokeWidth="1dp" />
+    </LinearLayout>
+
 
         </LinearLayout>
     </ScrollView>

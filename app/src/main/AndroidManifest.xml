@@ -27,15 +27,15 @@
         <receiver android:name=".receiver.ReservaExpiradaReceiver" android:enabled="true" android:exported="false"/>
         <receiver android:name=".receiver.ReservaCriadaReceiver" android:enabled="true" android:exported="false"/>
         <activity android:name=".CadastroFotoUsuarioActivity" android:exported="false"/>
-        <activity android:name=".VeiculoActivity" android:exported="false"/>
+        <activity android:name=".VeiculoActivity" android:windowSoftInputMode="adjustResize" android:exported="false"/>
         <activity android:name=".PaginaDeReservaVagas" android:exported="false"/>
         <activity android:name=".PerfilActivity" android:exported="false"/>
-        <activity android:name=".EditarPerfilActivity" android:exported="false"/>
+        <activity android:name=".EditarPerfilActivity" android:windowSoftInputMode="adjustResize" android:exported="false"/>
         <activity android:name=".ReservaActivity" android:exported="false"/>
         <activity android:name=".HistoricoReservasActivity" android:exported="false"/>
         <activity android:name=".VagaActivity" android:exported="false"/>
-        <activity android:name=".EditarVeiculoActivity" android:exported="false"/>
-        <activity android:name=".DashboardActivity" android:exported="false"/>
+        <activity android:name=".EditarVeiculoActivity" android:windowSoftInputMode="adjustResize" android:exported="false"/>
+        <activity android:name=".DashboardActivity" android:windowSoftInputMode="adjustResize" android:exported="false"/>
         <activity android:name=".IntroCadastroVeiculo" android:exported="false"/>
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
@@ -43,9 +43,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity" android:exported="true"/>
-        <activity android:name=".CadastroUsuarioActivity" android:exported="true"/>
-        <activity android:name=".PagamentoActivity" android:exported="false" android:theme="@style/Theme.ValletProjeto"/>
+        <activity android:name=".LoginActivity" android:windowSoftInputMode="adjustResize" android:exported="true"/>
+        <activity android:name=".CadastroUsuarioActivity" android:windowSoftInputMode="adjustResize" android:exported="true"/>
+        <activity android:name=".PagamentoActivity" android:windowSoftInputMode="adjustResize" android:exported="false" android:theme="@style/Theme.ValletProjeto"/>
         <meta-data android:name="preloaded_fonts" android:resource="@array/preloaded_fonts"/>
     </application>
 </manifest>

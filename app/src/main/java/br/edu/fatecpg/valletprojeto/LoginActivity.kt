@@ -11,8 +11,6 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import br.edu.fatecpg.valletprojeto.databinding.ActivityLoginBinding
 import com.google.android.gms.security.ProviderInstaller
 import com.google.firebase.auth.FirebaseAuth
@@ -156,24 +154,7 @@ class LoginActivity : AppCompatActivity(),
     // =============================================================
 
     private fun setupWindowInsets() {
-
-        ViewCompat.setOnApplyWindowInsetsListener(
-            findViewById(R.id.main)
-        ) { v, insets ->
-
-            val systemBars = insets.getInsets(
-                WindowInsetsCompat.Type.systemBars()
-            )
-
-            v.setPadding(
-                systemBars.left,
-                systemBars.top,
-                systemBars.right,
-                systemBars.bottom
-            )
-
-            insets
-        }
+        br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
     }
 
     // =============================================================

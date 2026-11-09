@@ -2,6 +2,7 @@ package br.edu.fatecpg.valletprojeto
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,8 +43,10 @@ class VeiculoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityVeiculoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
 
         if (cadastroInicial) {
             binding.fabAddCar.visibility = View.GONE

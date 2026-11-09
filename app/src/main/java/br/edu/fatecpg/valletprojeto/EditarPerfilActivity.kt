@@ -2,6 +2,7 @@ package br.edu.fatecpg.valletprojeto
 
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -38,8 +39,10 @@ class EditarPerfilActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityEditarPerfilBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
 
         carregarDadosParaEdicao()
 

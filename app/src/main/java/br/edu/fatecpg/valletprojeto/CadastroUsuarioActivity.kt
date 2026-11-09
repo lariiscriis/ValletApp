@@ -7,8 +7,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import br.edu.fatecpg.valletprojeto.databinding.ActivityCadastroUsuarioBinding
 import br.edu.fatecpg.valletprojeto.model.Usuario
@@ -32,11 +30,7 @@ class CadastroUsuarioActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityCadastroUsuarioBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
-            insets
-        }
+        br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
         IndicadoresCadastro.mostrar(binding.root, 2)
         binding.botaoLogin.setOnClickListener {
             if (!ocupado()) {

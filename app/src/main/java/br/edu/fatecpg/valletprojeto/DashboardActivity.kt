@@ -2,6 +2,7 @@ package br.edu.fatecpg.valletprojeto
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import android.speech.RecognizerIntent
 import android.widget.ImageView
 import android.widget.TextView
@@ -42,14 +43,11 @@ class DashboardActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityDashboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
-            val systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
-            binding.root.setPadding(0, systemBars.top, 0, systemBars.bottom)
-            insets
-        }
+        br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
 
         NotificationUtils.createNotificationChannel(this)
         carregarDadosUsuario()

@@ -1,6 +1,7 @@
 package br.edu.fatecpg.valletprojeto
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -40,8 +41,10 @@ class EditarVeiculoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityEditarVeiculoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
 
         veiculoId = intent.getStringExtra("veiculoId")
 

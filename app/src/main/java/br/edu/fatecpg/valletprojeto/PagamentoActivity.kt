@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -49,8 +50,10 @@ class PagamentoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityPagamentoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
 
         lerExtrasDaIntent()
         calcularValorDinamico()

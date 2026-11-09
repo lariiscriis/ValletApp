@@ -33,6 +33,7 @@ class VeiculoFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (cadastroInicial) isCancelable = false
+        if (showsDialog) setStyle(STYLE_NO_TITLE, R.style.Theme_ValletProjeto)
         fotoSelecionadaUri = savedInstanceState?.getString("foto_uri")?.let(android.net.Uri::parse)
     }
 
@@ -62,6 +63,8 @@ class VeiculoFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Quando embutido, a Activity já trata os insets; o diálogo possui outra janela.
+        if (showsDialog) br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
 
         val factory = VeiculoViewModelFactory()
         viewModel = ViewModelProvider(this, factory)[VeiculoViewModel::class.java]
@@ -119,8 +122,11 @@ class VeiculoFragment : DialogFragment() {
     override fun onStart() {
         super.onStart()
         dialog?.window?.apply {
+            androidx.core.view.WindowCompat.setDecorFitsSystemWindows(this, false)
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
             setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
             setBackgroundDrawableResource(android.R.color.transparent)
+            androidx.core.view.ViewCompat.requestApplyInsets(binding.root)
         }
     }
 

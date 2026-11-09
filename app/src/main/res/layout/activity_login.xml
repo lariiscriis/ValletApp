@@ -9,6 +9,19 @@
     android:background="#F0F2EB"
     tools:context=".LoginActivity">
 
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/form_scroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:clipToPadding="false"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
     <!-- ÁREA SUPERIOR COM A IMAGEM DE FUNDO -->
     <FrameLayout
         android:id="@+id/topArea"
@@ -77,21 +90,18 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/loginCard"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="220dp"
         app:cardBackgroundColor="#F0F2EB"
         app:cardCornerRadius="32dp"
         app:cardElevation="12dp"
+        app:layout_constraintVertical_bias="0"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:clipToPadding="false">
+
 
             <LinearLayout
                 android:id="@+id/layout_login_usuario"
@@ -294,8 +304,9 @@
                     android:textAllCaps="false" />
 
             </LinearLayout>
-        </ScrollView>
     </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- LOADING DA TELA -->
     <FrameLayout
