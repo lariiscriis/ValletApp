@@ -19,7 +19,6 @@ import br.edu.fatecpg.valletprojeto.model.Vaga
 import br.edu.fatecpg.valletprojeto.viewmodel.ReservaUIState
 import br.edu.fatecpg.valletprojeto.viewmodel.ReservaViewModel
 import br.edu.fatecpg.valletprojeto.viewmodel.VagaViewModel
-import com.google.android.material.chip.Chip
 
 class VagaActivity : AppCompatActivity() {
 
@@ -73,7 +72,7 @@ class VagaActivity : AppCompatActivity() {
         setupFilterListeners()
         setupReservaObserver()
 
-        viewModel.fetchVagasComFiltro(estacionamentoId!!)
+        viewModel.fetchVagasComFiltro(estacionamentoId!!, tipoFiltro = filtroSelecionado())
 
         binding.btnReservar.isEnabled = false
         binding.btnReservar.alpha = 0.5f
@@ -319,28 +318,14 @@ class VagaActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.veiculoPadraoTipo.observe(this) { tipo ->
-            if (
-                binding.chipGroupTipoVaga.checkedChipId == View.NO_ID
-            ) {
-                when (tipo?.lowercase()) {
-                    "carro" -> binding.chipCarro.isChecked = true
-                    "moto" -> binding.chipMoto.isChecked = true
-                    else -> binding.chipTodos.isChecked = true
-                }
-
-                atualizarCoresDosFiltros(
-                    binding.chipGroupTipoVaga.checkedChipId
-                )
-            }
-
-            atualizarIconeEntrada(tipo ?: "carro")
+        viewModel.veiculoPadraoTipo.observe(this) {
+            atualizarIconeEntrada(filtroSelecionado())
         }
     }
 
     private fun setupFilterListeners() {
         binding.chipGroupTipoVaga.setOnCheckedStateChangeListener {
-                group, checkedIds ->
+                _, checkedIds ->
 
             val checkedId = checkedIds.firstOrNull()
                 ?: return@setOnCheckedStateChangeListener
@@ -351,8 +336,7 @@ class VagaActivity : AppCompatActivity() {
 
             atualizarCoresDosFiltros(checkedId)
 
-            val chip = group.findViewById<Chip>(checkedId)
-            val filtroTexto = chip.text.toString()
+            val filtroTexto = filtroSelecionado(checkedId)
 
             atualizarIconeEntrada(filtroTexto)
 
@@ -363,11 +347,20 @@ class VagaActivity : AppCompatActivity() {
         }
     }
 
+    private fun filtroSelecionado(
+        checkedId: Int = binding.chipGroupTipoVaga.checkedChipId
+    ): String = when (checkedId) {
+        R.id.chip_carro -> "carro"
+        R.id.chip_moto -> "moto"
+        R.id.chip_preferencial -> "preferencial"
+        else -> "todos"
+    }
+
     private fun atualizarIconeEntrada(tipoSelecionado: String) {
-        val tipo = tipoSelecionado.lowercase()
+        val tipo = tipoSelecionado.trim().lowercase()
 
         val isMoto = tipo == "moto" ||
-            (tipo !in listOf("carro", "moto") && viewModel.veiculoPadraoTipo.value?.lowercase() == "moto")
+            (tipo !in listOf("carro", "moto") && viewModel.veiculoPadraoTipo.value?.trim()?.lowercase() == "moto")
 
         if (isMoto) {
             binding.ivCarroEntrada.setImageResource(

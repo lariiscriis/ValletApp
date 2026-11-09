@@ -7,7 +7,6 @@ import br.edu.fatecpg.valletprojeto.model.Vaga
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.Query
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -24,14 +23,30 @@ class VagaViewModel : ViewModel() {
     val veiculoPadraoTipo = MutableLiveData<String?>()
 
     private var listenerRegistration: ListenerRegistration? = null
+    private var estacionamentoAtual: String? = null
+    private var geracaoListener = 0
+    private val filtroVagas = FiltroVagas()
+
+    init {
+        // O veículo padrão só define o ícone de entrada, nunca o filtro de vagas.
+        viewModelScope.launch {
+            veiculoPadraoTipo.value = buscarVeiculoPadraoTipo()
+        }
+    }
 
     fun fetchVagasComFiltro(estacionamentoId: String, tipoFiltro: String? = null, precoMax: Double? = null) {
-        viewModelScope.launch {
-            val tipoVaga = tipoFiltro ?: buscarVeiculoPadraoTipo()
-            val tipoFinal = if (tipoVaga.equals("Todos", ignoreCase = true)) null else tipoVaga
-
-            aplicarListenerComFiltros(estacionamentoId, tipoFinal, precoMax)
+        if (estacionamentoAtual != estacionamentoId) {
+            filtroVagas.atualizarVagas(emptyList())
         }
+
+        vagas.value = filtroVagas.selecionarFiltro(tipoFiltro, precoMax)
+
+        // Trocar o chip não precisa aguardar outra consulta ao Firestore.
+        if (estacionamentoAtual == estacionamentoId && listenerRegistration != null) {
+            return
+        }
+
+        observarVagas(estacionamentoId)
     }
 
     private suspend fun buscarVeiculoPadraoTipo(): String? = withContext(Dispatchers.IO) {
@@ -44,47 +59,34 @@ class VagaViewModel : ViewModel() {
                 .get()
                 .await()
 
-            val tipo = veiculoSnapshot.documents.firstOrNull()?.getString("tipo")
-
-            withContext(Dispatchers.Main) {
-                veiculoPadraoTipo.value = tipo
-            }
-            tipo
+            veiculoSnapshot.documents.firstOrNull()?.getString("tipo")?.trim()
         } catch (e: Exception) {
             null
         }
     }
 
-    private fun aplicarListenerComFiltros(estacionamentoId: String, tipo: String?, precoMax: Double?) {
+    private fun observarVagas(estacionamentoId: String) {
         listenerRegistration?.remove()
+        estacionamentoAtual = estacionamentoId
+        val geracaoAtual = ++geracaoListener
 
-        var query: Query = vagasCollection
+        // A fonte sempre contém todas as vagas, livres e ocupadas.
+        listenerRegistration = vagasCollection
             .whereEqualTo("estacionamentoId", estacionamentoId)
+            .addSnapshotListener { snapshot, error ->
+                if (geracaoAtual != geracaoListener) return@addSnapshotListener
 
-        if (tipo != null) {
-            query = if (tipo.equals("Preferencial", ignoreCase = true)) {
-                query.whereEqualTo("preferencial", true)
-            } else {
-                query.whereEqualTo("tipo", tipo.lowercase())
+                if (error != null) {
+                    errorMessage.value = "Erro ao buscar vagas: ${error.message}"
+                    return@addSnapshotListener
+                }
+
+                val lista = snapshot?.documents?.mapNotNull { doc ->
+                    doc.toObject(Vaga::class.java)?.apply { id = doc.id }
+                } ?: emptyList()
+
+                vagas.value = filtroVagas.atualizarVagas(lista)
             }
-        }
-
-        if (precoMax != null && precoMax > 0) {
-            query = query.whereLessThanOrEqualTo("preco", precoMax)
-        }
-
-        listenerRegistration = query.addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                errorMessage.value = "Erro ao buscar vagas: ${error.message}"
-                return@addSnapshotListener
-            }
-
-            val lista = snapshot?.documents?.mapNotNull { doc ->
-                doc.toObject(Vaga::class.java)?.apply { id = doc.id }
-            } ?: emptyList()
-
-            vagas.value = lista
-        }
     }
 
     fun verificarSeTemVagas(estacionamentoId: String, onResult: (Boolean) -> Unit) {
@@ -104,5 +106,33 @@ class VagaViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         listenerRegistration?.remove()
+    }
+}
+
+// Preserva a seleção do filtro enquanto os dados são carregados ou atualizados.
+internal class FiltroVagas {
+    private var todasAsVagas: List<Vaga> = emptyList()
+    private var tipoFiltro = "todos"
+    private var precoMax: Double? = null
+
+    fun atualizarVagas(vagas: List<Vaga>): List<Vaga> {
+        todasAsVagas = vagas.toList()
+        return filtrar()
+    }
+
+    fun selecionarFiltro(tipo: String? = null, precoMax: Double? = null): List<Vaga> {
+        if (tipo != null) tipoFiltro = tipo.trim().lowercase()
+        this.precoMax = precoMax
+        return filtrar()
+    }
+
+    private fun filtrar(): List<Vaga> = todasAsVagas.filter { vaga ->
+        val correspondeAoTipo = when (tipoFiltro) {
+            "todos" -> true
+            "preferencial" -> vaga.preferencial
+            else -> vaga.tipo.trim().equals(tipoFiltro, ignoreCase = true)
+        }
+        val limite = precoMax
+        correspondeAoTipo && (limite == null || limite <= 0 || vaga.preco <= limite)
     }
 }

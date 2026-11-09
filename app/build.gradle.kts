@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
-    id("kotlin-kapt")
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -91,7 +91,7 @@ dependencies {
 
     // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
-    kapt("com.github.bumptech.glide:compiler:4.16.0")
+    ksp("com.github.bumptech.glide:ksp:4.16.0")
 
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
@@ -102,7 +102,4 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-kapt {
-    correctErrorTypes = true
-    useBuildCache = true
-}
+
