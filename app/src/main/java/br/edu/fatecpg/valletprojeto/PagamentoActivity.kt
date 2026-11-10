@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
+import br.edu.fatecpg.valletprojeto.ui.prepararVoltar
 import androidx.activity.enableEdgeToEdge
 import android.view.View
 import android.widget.Toast
@@ -53,6 +54,7 @@ class PagamentoActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityPagamentoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.btnVoltar.prepararVoltar()
         br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
 
         lerExtrasDaIntent()
@@ -62,7 +64,31 @@ class PagamentoActivity : AppCompatActivity() {
         setupBotaoConfirmar()
         setupTelaSucesso()
 
-        binding.btnVoltar.setOnClickListener { finish() }
+        binding.btnVoltar.setOnClickListener { voltarEtapa() }
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = voltarEtapa()
+        })
+    }
+
+    private fun voltarEtapa() {
+        when {
+            binding.layoutSaidaLiberada.visibility == View.VISIBLE -> {
+                setResult(RESULT_OK)
+                finish()
+            }
+            // Após aprovação, mantém o QR de saída até a conclusão.
+            binding.layoutSucesso.visibility == View.VISIBLE -> {
+                Toast.makeText(this, "Conclua a saída antes de voltar", Toast.LENGTH_SHORT).show()
+            }
+            binding.layoutEtapa2Pix.visibility == View.VISIBLE -> {
+                binding.layoutEtapa2Pix.visibility = View.GONE
+                binding.layoutEtapa1Pagamento.visibility = View.VISIBLE
+            }
+            else -> {
+                setResult(RESULT_CANCELED)
+                finish()
+            }
+        }
     }
 
     private fun lerExtrasDaIntent() {
@@ -232,10 +258,7 @@ class PagamentoActivity : AppCompatActivity() {
             binding.ivQrCodePagamento.setImageBitmap(bitmapQr)
         }
 
-        binding.btnVoltarPix.setOnClickListener {
-            binding.layoutEtapa2Pix.visibility = View.GONE
-            binding.layoutEtapa1Pagamento.visibility = View.VISIBLE
-        }
+        binding.btnVoltarPix.setOnClickListener { voltarEtapa() }
 
         binding.btnSimularConfirmacaoWebhook.setOnClickListener {
             mostrarPagamentoAprovado()

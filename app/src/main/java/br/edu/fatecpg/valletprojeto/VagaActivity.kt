@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
+import br.edu.fatecpg.valletprojeto.ui.prepararVoltar
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -36,6 +37,7 @@ class VagaActivity : AppCompatActivity() {
 
         binding = ActivityVagaBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.btnBack.prepararVoltar()
 
         viewModel = ViewModelProvider(this)[VagaViewModel::class.java]
         reservaViewModel =

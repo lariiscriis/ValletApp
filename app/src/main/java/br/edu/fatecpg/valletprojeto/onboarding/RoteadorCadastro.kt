@@ -37,11 +37,11 @@ class RoteadorCadastro(private val activity: AppCompatActivity) {
                 if (activity.isFinishing) return@launch
                 check(FirebaseAuth.getInstance().currentUser?.uid == uid) { "A sessão foi alterada." }
                 if (destino == DestinoCadastro.RESTRITO) {
-                    FirebaseAuth.getInstance().signOut()
+                    SessaoUsuario.sair(activity)
                     Toast.makeText(activity,
                         "Este aplicativo é exclusivo para motoristas. Administradores devem acessar o Desktop.",
                         Toast.LENGTH_LONG).show()
-                    abrirLogin()
+                    // A saída centralizada já abriu o login.
                 } else {
                     destinoAtual(destino)
                 }
@@ -58,8 +58,8 @@ class RoteadorCadastro(private val activity: AppCompatActivity) {
                         }
                         .setNegativeButton("Sair") { _, _ ->
                             erroDialog = null
-                            FirebaseAuth.getInstance().signOut()
-                            abrirLogin()
+                            SessaoUsuario.sair(activity)
+                            // A saída centralizada já abriu o login.
                         }
                         .setCancelable(false)
                         .show()

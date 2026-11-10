@@ -177,9 +177,7 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun performLogout() {
-        auth.signOut()
-        Toast.makeText(this, "Logout realizado com sucesso", Toast.LENGTH_SHORT).show()
-        redirectToLogin()
+        SessaoUsuario.sair(this)
     }
 
     private fun handleGlobalVoiceCommand(spokenText: String) {
