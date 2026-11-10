@@ -445,6 +445,7 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
     }
     // 🔥 ATUALIZADO: Renovar reserva com cancelamento de notificações antigas
     fun renovarReserva(reserva: Reserva) {
+        if (_cancelando.value == true) return
         viewModelScope.launch {
             val idReserva = reserva.id
             val idVaga = reserva.vagaId
@@ -489,51 +490,36 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    private val _cancelando = MutableLiveData(false)
+    val cancelando: LiveData<Boolean> = _cancelando
+    private val _erroCancelamento = MutableLiveData<String?>()
+    val erroCancelamento: LiveData<String?> = _erroCancelamento
+    fun consumirErroCancelamento() { _erroCancelamento.value = null }
+
     fun cancelarReserva(vaga: Vaga) {
+        if (_cancelando.value == true) return
+        val ativa = _uiState.value as? ReservaUIState.Active ?: return
+        if (ativa.vaga.id != vaga.id) return
+        _cancelando.value = true
         viewModelScope.launch {
-            _uiState.value = ReservaUIState.Loading
-            val userId = auth.currentUser?.uid
-
-            if (userId == null) {
-                _uiState.value = ReservaUIState.Error("Usuário não autenticado.")
-                return@launch
-            }
-
             try {
-                // 🔥 CANCELAR NOTIFICAÇÕES ANTES DE CANCELAR A RESERVA
-                cancelarNotificacoesAgendadas(getApplication())
-
-                val reservaAtivaSnapshot = db.collection("reserva")
-                    .whereEqualTo("usuarioId", userId)
-                    .whereEqualTo("vagaId", vaga.id)
-                    .whereEqualTo("status", "ativa")
-                    .limit(1)
-                    .get()
-                    .await()
-
-                val reservaDoc = reservaAtivaSnapshot.documents.firstOrNull()
-
-                if (reservaDoc == null) {
-                    _uiState.value = ReservaUIState.Error("Nenhuma reserva ativa encontrada para cancelar.")
-                    return@launch
-                }
-
-                val batch = db.batch()
-                batch.update(reservaDoc.reference, "status", "cancelada")
-                val vagaRef = db.collection("vaga").document(vaga.id)
-                batch.update(vagaRef, "disponivel", true)
-                batch.commit().await()
-
+                br.edu.fatecpg.valletprojeto.service.CancelamentoReserva.cancelar(
+                    getApplication(), ativa.reserva.id, ativa.reserva.vagaId)
                 timer?.cancel()
-
+                currentReservaId = ativa.reserva.id
+                runCatching { cancelarNotificacoesAgendadas(getApplication()) }
                 _temReservaAtiva.value = false
+                idReservaAtiva = null
                 idVagaAtiva = null
                 currentReservaId = null
-
                 _uiState.value = ReservaUIState.Finished("Reserva cancelada com sucesso.")
-
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                _uiState.value = ReservaUIState.Error("Erro ao cancelar: ${e.message}")
+                // Não troca Active por Loading/Error: timer e ações continuam visíveis.
+                _erroCancelamento.value = e.message ?: "Não foi possível cancelar."
+            } finally {
+                _cancelando.value = false
             }
         }
     }
@@ -542,6 +528,7 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
         vaga: Vaga,
         onConcluido: () -> Unit
     ) {
+        if (_cancelando.value == true) return
         viewModelScope.launch {
             val userId = auth.currentUser?.uid
 

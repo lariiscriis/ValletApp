@@ -55,7 +55,7 @@ class ReservaCriadaReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notificationId = System.currentTimeMillis().toInt()
+        val notificationId = vagaId.hashCode()
 
         val notification = NotificationCompat.Builder(context, NotificationConstants.RESERVA_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_parking)

@@ -25,6 +25,8 @@ import br.edu.fatecpg.valletprojeto.databinding.FragmentEstacionamentosBinding
 import br.edu.fatecpg.valletprojeto.viewmodel.EstacionamentosViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class EstacionamentosFragment : Fragment() {
 
@@ -118,48 +120,17 @@ class EstacionamentosFragment : Fragment() {
     }
 
     private fun cancelarReservaAtivaPorVoz() {
-        val userId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
-        if (userId == null) {
-            Toast.makeText(requireContext(), "Usuário não autenticado", Toast.LENGTH_SHORT).show()
-            return
+        val contexto = requireContext().applicationContext
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                br.edu.fatecpg.valletprojeto.service.CancelamentoReserva.cancelarAtiva(contexto)
+                Toast.makeText(contexto, "Reserva cancelada com sucesso!", Toast.LENGTH_LONG).show()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Toast.makeText(contexto, e.message ?: "Não foi possível cancelar.", Toast.LENGTH_LONG).show()
+            }
         }
-
-        Toast.makeText(requireContext(), "Buscando reserva ativa para cancelar...", Toast.LENGTH_SHORT).show()
-
-        val db = FirebaseFirestore.getInstance()
-        db.collection("reserva")
-            .whereEqualTo("usuarioId", userId)
-            .whereEqualTo("status", "ativa")
-            .limit(1)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val doc = snapshot.documents.firstOrNull()
-                if (doc != null) {
-                    val reservaId = doc.id
-                    val vagaId = doc.getString("vagaId")
-
-                    val batch = db.batch()
-                    batch.update(doc.reference, "status", "cancelada")
-                    if (!vagaId.isNullOrEmpty()) {
-                        val vagaRef = db.collection("vaga").document(vagaId)
-                        batch.update(vagaRef, "disponivel", true)
-                    }
-
-                    batch.commit().addOnSuccessListener {
-                        Toast.makeText(requireContext(), "Reserva cancelada com sucesso!", Toast.LENGTH_LONG).show()
-                        try {
-                            androidx.work.WorkManager.getInstance(requireContext()).cancelAllWorkByTag("reserva_$reservaId")
-                        } catch (_: Exception) {}
-                    }.addOnFailureListener { e ->
-                        Toast.makeText(requireContext(), "Erro ao cancelar reserva: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(requireContext(), "Nenhuma reserva ativa encontrada para cancelar", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(requireContext(), "Erro ao buscar reserva: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

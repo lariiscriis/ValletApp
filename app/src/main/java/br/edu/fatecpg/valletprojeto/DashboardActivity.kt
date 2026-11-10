@@ -211,47 +211,17 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun cancelarReservaAtivaGlobal() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId == null) {
-            Toast.makeText(this, "Usuário não autenticado", Toast.LENGTH_SHORT).show()
-            return
+        val contexto = this@DashboardActivity.applicationContext
+        lifecycleScope.launch {
+            try {
+                br.edu.fatecpg.valletprojeto.service.CancelamentoReserva.cancelarAtiva(contexto)
+                Toast.makeText(contexto, "Reserva cancelada com sucesso!", Toast.LENGTH_LONG).show()
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                Toast.makeText(contexto, e.message ?: "Não foi possível cancelar.", Toast.LENGTH_LONG).show()
+            }
         }
-
-        Toast.makeText(this, "Cancelando reserva ativa por voz...", Toast.LENGTH_SHORT).show()
-        val db = FirebaseFirestore.getInstance()
-        db.collection("reserva")
-            .whereEqualTo("usuarioId", userId)
-            .whereEqualTo("status", "ativa")
-            .limit(1)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val doc = snapshot.documents.firstOrNull()
-                if (doc != null) {
-                    val reservaId = doc.id
-                    val vagaId = doc.getString("vagaId")
-
-                    val batch = db.batch()
-                    batch.update(doc.reference, "status", "cancelada")
-                    if (!vagaId.isNullOrEmpty()) {
-                        val vagaRef = db.collection("vaga").document(vagaId)
-                        batch.update(vagaRef, "disponivel", true)
-                    }
-
-                    batch.commit().addOnSuccessListener {
-                        Toast.makeText(this, "Reserva cancelada com sucesso!", Toast.LENGTH_LONG).show()
-                        try {
-                            androidx.work.WorkManager.getInstance(this).cancelAllWorkByTag("reserva_$reservaId")
-                        } catch (_: Exception) {}
-                    }.addOnFailureListener { e ->
-                        Toast.makeText(this, "Erro ao cancelar reserva: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this, "Nenhuma reserva ativa encontrada para cancelar", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Erro ao buscar reserva: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
     }
 
 }
