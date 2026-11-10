@@ -13,7 +13,7 @@ object RetrofitClient {
 
         // Nova conexão com a API do Vallet (FastAPI)
         val valletRetrofit: Retrofit = Retrofit.Builder()
-                .baseUrl("http://192.168.100.132:8000/")
+                .baseUrl("http://SEU-ENDERECO-IP:8000/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 
