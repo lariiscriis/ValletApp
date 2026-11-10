@@ -38,4 +38,8 @@
     <string name="pag_interrompido">Pagamento interrompido</string>
     <string name="pag_dados_invalidos">Dados de pagamento inválidos</string>
     <string name="pag_erro">Erro ao processar pagamento</string>
+    <plurals name="reserva_duracao_horas">
+        <item quantity="one">%d hora</item>
+        <item quantity="other">%d horas</item>
+    </plurals>
 </resources>

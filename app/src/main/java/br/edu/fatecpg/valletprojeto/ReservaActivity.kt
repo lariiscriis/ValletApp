@@ -156,15 +156,25 @@ class ReservaActivity : AppCompatActivity() {
         binding.circuloFundoAnimado.startAnimation(pulseAnimation)
     }
 
-    @SuppressLint("DefaultLocale")
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        atualizarDuracaoSelecionada()
+    }
+
+    private fun atualizarDuracaoSelecionada() {
+        val horas = binding.sliderTempo.value.toInt()
+        binding.tvTempoSelecionado.text =
+            resources.getQuantityString(R.plurals.reserva_duracao_horas, horas, horas)
+    }
+
     private fun setupListeners() {
         binding.btnVoltar.setOnClickListener {
             finish()
         }
 
-        binding.sliderTempo.addOnChangeListener { _, value, _ ->
-            val horas = value.toInt()
-            binding.tvTempoSelecionado.text = String.format("%02d:00", horas)
+        atualizarDuracaoSelecionada()
+        binding.sliderTempo.addOnChangeListener { _, _, _ ->
+            atualizarDuracaoSelecionada()
         }
 
         binding.btnReservar.setOnClickListener {

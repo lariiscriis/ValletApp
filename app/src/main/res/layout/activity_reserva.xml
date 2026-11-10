@@ -131,7 +131,7 @@
                     android:fontFamily="sans-serif-black"
                     android:textColor="@color/vallet_green_dark"
                     android:textSize="40sp"
-                    tools:text="01:00 min" />
+                    tools:text="1 hora" />
 
                 <com.google.android.material.slider.Slider
                     android:id="@+id/slider_tempo"
