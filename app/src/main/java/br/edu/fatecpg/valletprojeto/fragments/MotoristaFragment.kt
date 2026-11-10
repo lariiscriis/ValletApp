@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.edu.fatecpg.valletprojeto.DashboardActivity
+import br.edu.fatecpg.valletprojeto.HistoricoReservasActivity
 import br.edu.fatecpg.valletprojeto.R
 import br.edu.fatecpg.valletprojeto.ReservaActivity
 import br.edu.fatecpg.valletprojeto.adapter.HistoricoReservasAdapter
@@ -111,6 +112,11 @@ class MotoristaFragment : Fragment() {
         binding.cardNoReservation.setOnClickListener {
             abrirPaginaDeEstacionamentos()
         }
+
+        binding.tvVerTodos.setOnClickListener {
+            if (!isAdded || context == null) return@setOnClickListener
+            startActivity(Intent(requireContext(), HistoricoReservasActivity::class.java))
+        }
     }
 
     private fun mostrarLoadingGeral() {
@@ -169,7 +175,11 @@ class MotoristaFragment : Fragment() {
             val estacionamentoIds = reservasSnapshot.documents.mapNotNull { it.getString("estacionamentoId") }.toSet()
             val estacionamentosMap = buscarEstacionamentosBatch(estacionamentoIds)
 
-            for (doc in reservasSnapshot) {
+            val reservasOrdenadas = reservasSnapshot.documents.sortedByDescending { 
+                it.getTimestamp("inicioReserva")?.toDate()?.time ?: 0L 
+            }
+
+            for (doc in reservasOrdenadas) {
                 val status = doc.getString("status") ?: continue
                 val vagaId = doc.getString("vagaId") ?: continue
                 val estacionamentoId = doc.getString("estacionamentoId") ?: ""
@@ -208,7 +218,7 @@ class MotoristaFragment : Fragment() {
                 }
             }
 
-            val historicoLimitado = historico.takeLast(3).reversed()
+            val historicoLimitado = historico.take(3)
 
             return@async ProcessamentoResultado(
                 totalHoras = totalHoras,
