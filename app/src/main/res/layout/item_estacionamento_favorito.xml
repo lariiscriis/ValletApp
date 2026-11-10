@@ -192,6 +192,28 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_qrcode"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/poppins_medium"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingHorizontal="12dp"
+                android:text="QR Acesso"
+                android:textAllCaps="false"
+                android:textColor="@color/vallet_green_dark"
+                android:textSize="12sp"
+                app:cornerRadius="18dp"
+                app:strokeColor="@color/vallet_green_dark"
+                app:strokeWidth="1dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btn_ver_vagas"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="TouchTargetSizeCheck" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_ver_vagas"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"

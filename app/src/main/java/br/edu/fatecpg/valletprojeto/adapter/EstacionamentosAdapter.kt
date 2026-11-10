@@ -15,7 +15,8 @@ import com.google.firebase.firestore.ListenerRegistration
 
 class EstacionamentosAdapter(
     private val onFavoriteClicked: (Estacionamento) -> Unit,
-    private val onItemClicked: (Estacionamento) -> Unit
+    private val onItemClicked: (Estacionamento) -> Unit,
+    private val onQrCodeClicked: (Estacionamento) -> Unit
 ) : ListAdapter<Estacionamento, EstacionamentosAdapter.ViewHolder>(ParkingDiffCallback) {
 
     private val listeners = mutableMapOf<String, ListenerRegistration>()
@@ -59,6 +60,7 @@ class EstacionamentosAdapter(
             // ==========================================
             binding.root.setOnClickListener { onItemClicked(estacionamento) }
             binding.btnVerVagas.setOnClickListener { onItemClicked(estacionamento) }
+            binding.btnQrcode.setOnClickListener { onQrCodeClicked(estacionamento) }
             binding.ivFavorite.setOnClickListener { onFavoriteClicked(estacionamento) }
 
             // ==========================================
