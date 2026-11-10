@@ -100,6 +100,11 @@ class PagamentoActivity : AppCompatActivity() {
         binding.tvResumoVeiculo.text = "$veiculoModelo • $veiculoPlaca"
         binding.tvResumoHorario.text = "$horarioInicioTexto - $horarioFimTexto"
         binding.tvValorTotal.text = formatarValor(valorTotal)
+        binding.tvPixValor.text = formatarValor(valorTotal)
+        binding.tvPixEstacionamento.text = estacionamentoNome
+        binding.tvSucessoEstacionamento.text = estacionamentoNome
+        binding.tvSucessoVaga.text = getString(R.string.pagamento_qr_vaga, vagaNumero)
+        binding.tvSucessoVeiculo.text = getString(R.string.pagamento_qr_placa, veiculoPlaca)
     }
 
     private fun formatarValor(valor: Double): String = "R$ %.2f".format(valor).replace(".", ",")
@@ -254,7 +259,7 @@ class PagamentoActivity : AppCompatActivity() {
     }
 
     private fun animarEntradaSucesso() {
-        val icone = binding.layoutSucesso.getChildAt(0)
+        val icone = binding.ivSaidaCancela
         icone.scaleX = 0f
         icone.scaleY = 0f
         icone.animate()

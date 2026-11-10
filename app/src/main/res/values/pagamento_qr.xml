@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Recursos exclusivos das etapas de QR code; não alteram a seleção de pagamento. -->
+    <color name="pagamento_qr_fundo">#F0F2EB</color>
+    <color name="pagamento_qr_verde">#3B5942</color>
+    <color name="pagamento_qr_secundario">#637365</color>
+    <color name="pagamento_qr_claro">#CBD9C5</color>
+    <color name="pagamento_qr_branco">#FFFFFF</color>
+
+    <string name="pagamento_qr_voltar">Voltar</string>
+    <string name="pagamento_qr_pix_titulo">Pague com Pix</string>
+    <string name="pagamento_qr_pix_descricao">QR code para pagamento Pix</string>
+    <string name="pagamento_qr_pix_instrucao">Escaneie com outro aparelho ou copie o código para pagar neste celular.</string>
+    <string name="pagamento_qr_pix_copiar">Copiar código Pix</string>
+    <string name="pagamento_qr_pix_status">Aguardando pagamento</string>
+    <string name="pagamento_qr_simular_pagamento">[DEV] Simular pagamento aprovado</string>
+    <string name="pagamento_qr_saida_cabecalho">Saída do estacionamento</string>
+    <string name="pagamento_qr_saida_titulo">Sua saída está liberada</string>
+    <string name="pagamento_qr_saida_status">Saída autorizada</string>
+    <string name="pagamento_qr_saida_descricao">QR code de saída</string>
+    <string name="pagamento_qr_saida_instrucao">Apresente este código no leitor da saída.</string>
+    <string name="pagamento_qr_vaga">Vaga %1$s</string>
+    <string name="pagamento_qr_placa">Placa %1$s</string>
+    <string name="pagamento_qr_concluir">Concluir</string>
+    <string name="pagamento_qr_simular_leitura">[DEV] Simular cancela aberta</string>
+
+    <style name="PagamentoQrTexto">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textColor">@color/pagamento_qr_secundario</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="PagamentoQrTitulo" parent="PagamentoQrTexto">
+        <item name="android:fontFamily">@font/poppins_bold</item>
+        <item name="android:textColor">@color/pagamento_qr_verde</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="PagamentoQrBotao" parent="Widget.MaterialComponents.Button">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="android:paddingTop">11dp</item>
+        <item name="android:paddingBottom">11dp</item>
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/pagamento_qr_branco</item>
+        <item name="android:elevation">0dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="backgroundTint">@color/pagamento_qr_verde</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+    </style>
+    <style name="PagamentoQrSimulacao" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:minHeight">48dp</item>
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/pagamento_qr_secundario</item>
+    </style>
+</resources>

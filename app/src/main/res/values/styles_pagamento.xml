@@ -1,0 +1,51 @@
+<resources>
+<style name="PagamentoTexto">
+<item name="android:layout_width">match_parent</item>
+<item name="android:layout_height">wrap_content</item>
+<item name="android:fontFamily">@font/poppins</item>
+<item name="android:textColor">@color/vallet_green</item>
+<item name="android:textSize">14sp</item>
+</style>
+<style name="PagamentoTitulo" parent="PagamentoTexto">
+<item name="android:fontFamily">@font/poppins_bold</item>
+<item name="android:textColor">@color/vallet_green_dark</item>
+<item name="android:textSize">22sp</item>
+</style>
+<style name="PagamentoValor" parent="PagamentoTitulo">
+<item name="android:textSize">40sp</item>
+<item name="android:layout_marginTop">12dp</item>
+<item name="android:layout_marginBottom">12dp</item>
+</style>
+<style name="PagamentoBotao" parent="Widget.MaterialComponents.Button">
+<item name="android:layout_width">match_parent</item>
+<item name="android:layout_height">wrap_content</item>
+<item name="android:minHeight">56dp</item>
+<item name="android:paddingTop">14dp</item>
+<item name="android:paddingBottom">14dp</item>
+<item name="android:layout_marginTop">20dp</item>
+<item name="android:textAllCaps">false</item>
+<item name="android:fontFamily">@font/poppins_medium</item>
+<item name="android:textSize">16sp</item>
+<item name="android:textColor">@color/white</item>
+<item name="backgroundTint">@color/vallet_green_dark</item>
+<item name="cornerRadius">18dp</item>
+<item name="android:stateListAnimator">@null</item>
+</style>
+<style name="PagamentoDivisor">
+<item name="android:layout_width">match_parent</item>
+<item name="android:layout_height">1dp</item>
+<item name="android:layout_marginTop">20dp</item>
+<item name="android:layout_marginBottom">20dp</item>
+<item name="android:background">@color/vallet_green_light</item>
+</style>
+<style name="PagamentoOpcao">
+<item name="android:layout_width">match_parent</item>
+<item name="android:layout_height">wrap_content</item>
+<item name="android:minHeight">76dp</item>
+<item name="android:layout_marginTop">12dp</item>
+<item name="android:padding">16dp</item>
+<item name="android:orientation">horizontal</item>
+<item name="android:gravity">center_vertical</item>
+<item name="android:background">@drawable/bg_card_opcao_padrao</item>
+</style>
+</resources>

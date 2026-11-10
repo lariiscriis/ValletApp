@@ -38,7 +38,8 @@
                     android:backgroundTint="@color/vallet_surface"
                     android:contentDescription="Voltar"
                     android:src="@drawable/ic_arrow_back"
-                    app:tint="@color/vallet_green_dark" />
+                    app:tint="@color/vallet_green_dark"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -206,103 +207,187 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- ===================== ETAPA 2: TELA PIX REFORMULADA ===================== -->
+    <!-- ===================== ETAPA 2: QR CODE PIX ===================== -->
     <ScrollView
         android:id="@+id/layout_etapa_2_pix"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/pagamento_qr_fundo"
         android:fillViewport="true"
+        android:overScrollMode="ifContentScrolls"
         android:visibility="gone">
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingBottom="32dp">
 
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_header_vallet" android:orientation="vertical" android:paddingHorizontal="24dp" android:paddingTop="20dp" android:paddingBottom="40dp">
-                <ImageButton android:id="@+id/btn_voltar_pix" android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_icone_chip" android:backgroundTint="@color/vallet_surface" android:src="@drawable/ic_arrow_back" app:tint="@color/vallet_green_dark" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="PIX" android:textColor="@color/vallet_surface" android:textSize="24sp" android:textStyle="bold" />
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Escaneie ou copie o código abaixo" android:textColor="@color/vallet_green_light" android:textSize="14sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="22dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="18dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btn_voltar_pix"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="-12dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/pagamento_qr_voltar"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="@color/pagamento_qr_verde" />
+
+                <TextView
+                    style="@style/PagamentoQrTitulo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:text="@string/pagamento_qr_pix_titulo" />
             </LinearLayout>
 
-            <LinearLayout android:id="@+id/layout_pix_gerado" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="-24dp" android:orientation="vertical" android:paddingHorizontal="24dp">
+            <LinearLayout
+                android:id="@+id/layout_pix_gerado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
-                <!-- QR Code Central -->
-                <com.google.android.material.card.MaterialCardView android:layout_width="match_parent" android:layout_height="wrap_content" app:cardBackgroundColor="@color/vallet_surface" app:cardCornerRadius="16dp" app:cardElevation="2dp">
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:orientation="vertical" android:padding="24dp">
-                        <ImageView android:id="@+id/iv_qr_code_pagamento" android:layout_width="200dp" android:layout_height="200dp" android:scaleType="fitCenter" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                <TextView
+                    android:id="@+id/tv_pix_valor"
+                    style="@style/PagamentoQrTitulo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:textSize="39sp"
+                    tools:text="R$ 18,00" />
 
-                <!-- NOVO BLOCO: Copia e Cola -->
+                <TextView
+                    android:id="@+id/tv_pix_estacionamento"
+                    style="@style/PagamentoQrTexto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center"
+                    android:textSize="17sp"
+                    tools:text="Estacionamento Central" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:cardBackgroundColor="@color/pagamento_qr_branco"
+                        app:cardCornerRadius="18dp"
+                        app:cardElevation="0dp"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintWidth_max="270dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:strokeWidth="0dp">
+
+                        <ImageView
+                            android:id="@+id/iv_qr_code_pagamento"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:contentDescription="@string/pagamento_qr_pix_descricao"
+                            android:padding="14dp"
+                            android:scaleType="fitCenter" />
+                    </com.google.android.material.card.MaterialCardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    style="@style/PagamentoQrTexto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="@string/pagamento_qr_pix_instrucao" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_copiar_pix"
+                    style="@style/PagamentoQrBotao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:text="@string/pagamento_qr_pix_copiar"
+                    app:icon="@drawable/ic_content_copy"
+                    app:iconGravity="textStart"
+                    app:iconPadding="12dp"
+                    app:iconTint="@color/pagamento_qr_branco" />
+
+                <!-- O conteúdo integral continua disponível ao listener de cópia existente. -->
+                <TextView
+                    android:id="@+id/tv_codigo_pix_copia_cola"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textIsSelectable="true"
+                    android:visibility="gone" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="18dp"
+                    android:background="@color/pagamento_qr_claro" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:background="@drawable/bg_card_opcao_padrao"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingVertical="12dp">
+
+                    <ImageView
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_schedule"
+                        app:tint="@color/pagamento_qr_secundario" />
 
                     <TextView
+                        style="@style/PagamentoQrTexto"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Código Pix (Copia e Cola)"
-                        android:textColor="@color/vallet_text"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Copie o código e cole no aplicativo do seu banco."
-                        android:textColor="@color/vallet_text_secondary"
-                        android:textSize="13sp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:background="@drawable/bg_pix_code_box"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="8dp"
-                        android:paddingVertical="8dp">
-
-                        <TextView
-                            android:id="@+id/tv_codigo_pix_copia_cola"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:ellipsize="end"
-                            android:fontFamily="monospace"
-                            android:maxLines="3"
-                            android:textIsSelectable="true"
-                            android:textColor="@color/vallet_text"
-                            android:textSize="14sp"
-                            tools:text="00020126580014br.gov.bcb.pix.0136123e4567-e89b-12d3-a456-426655440000..." />
-
-                        <!-- Novo Botão Copiar Dedicado -->
-                        <ImageButton
-                            android:id="@+id/btn_copiar_pix"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_marginStart="8dp"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:src="@drawable/ic_content_copy"
-                            app:tint="@color/vallet_green_dark" />
-                    </LinearLayout>
+                        android:layout_marginStart="12dp"
+                        android:fontFamily="@font/poppins_medium"
+                        android:text="@string/pagamento_qr_pix_status"
+                        android:textColor="@color/pagamento_qr_verde" />
                 </LinearLayout>
 
-                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:gravity="center" android:text="Confirmação automática em segundos." android:textColor="@color/vallet_text_secondary" android:textSize="13sp" />
-                <com.google.android.material.button.MaterialButton android:id="@+id/btn_simular_confirmacao_webhook" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="[DEV] Simular pagamento aprovado" android:textColor="@color/vallet_green_dark" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/pagamento_qr_claro" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_simular_confirmacao_webhook"
+                    style="@style/PagamentoQrSimulacao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/pagamento_qr_simular_pagamento" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
-    <!-- ===================== ETAPA 3: SUCESSO ===================== -->
+    <!-- ===================== ETAPA 3: QR CODE DE SAÍDA ===================== -->
     <ScrollView
         android:id="@+id/layout_etapa_3_sucesso"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/pagamento_qr_fundo"
         android:fillViewport="true"
+        android:overScrollMode="ifContentScrolls"
         android:visibility="gone">
 
         <LinearLayout
@@ -311,102 +396,200 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingHorizontal="22dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="18dp">
 
-            <FrameLayout
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_icone_chip">
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_exit_to_app"
-                    app:tint="@color/vallet_green_dark" />
-            </FrameLayout>
+            <TextView
+                style="@style/PagamentoQrTitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:minHeight="44dp"
+                android:text="@string/pagamento_qr_saida_cabecalho" />
+
+            <ImageView
+                android:id="@+id/iv_saida_cancela"
+                android:layout_width="match_parent"
+                android:layout_height="88dp"
+                android:layout_marginTop="18dp"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"
+                android:src="@drawable/pagamento_cancela" />
 
             <TextView
                 android:id="@+id/tv_saida_titulo"
+                style="@style/PagamentoQrTitulo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="@string/pagamento_qr_saida_titulo" />
+
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Pagamento confirmado!"
-                android:textColor="@color/vallet_text"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:layout_marginTop="6dp"
+                app:cardBackgroundColor="@color/pagamento_qr_claro"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
-            <!-- QR CODE COM BORDAS ESTILO "SCANNER" (REFERÊNCIA IMAGEM) -->
-            <FrameLayout
-                android:layout_width="280dp"
-                android:layout_height="280dp"
-                android:layout_marginTop="32dp">
+                <TextView
+                    style="@style/PagamentoQrTexto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_medium"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="5dp"
+                    android:text="@string/pagamento_qr_saida_status"
+                    android:textColor="@color/pagamento_qr_verde" />
+            </com.google.android.material.card.MaterialCardView>
 
-                <!-- As bordas nos 4 cantos -->
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_qr_frame" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp">
 
-                <!-- O QR Code Centralizado -->
                 <com.google.android.material.card.MaterialCardView
-                    android:layout_width="230dp"
-                    android:layout_height="230dp"
-                    android:layout_gravity="center"
-                    app:cardBackgroundColor="@color/vallet_surface"
-                    app:cardCornerRadius="16dp"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:cardBackgroundColor="@color/pagamento_qr_branco"
+                    app:cardCornerRadius="18dp"
                     app:cardElevation="0dp"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintWidth_max="216dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:strokeWidth="0dp">
 
                     <ImageView
                         android:id="@+id/iv_qr_code"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:padding="8dp"
-                        android:contentDescription="QR Code de saída" />
+                        android:contentDescription="@string/pagamento_qr_saida_descricao"
+                        android:padding="14dp"
+                        android:scaleType="fitCenter" />
                 </com.google.android.material.card.MaterialCardView>
-            </FrameLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
+                style="@style/PagamentoQrTexto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 android:gravity="center"
-                android:text="Apresente este código na saída."
-                android:textColor="@color/vallet_text_secondary"
-                android:textSize="14sp" />
+                android:text="@string/pagamento_qr_saida_instrucao" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="14dp"
+                android:background="@color/pagamento_qr_claro" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="9dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_parking"
+                    app:tint="@color/pagamento_qr_verde" />
+
+                <TextView
+                    android:id="@+id/tv_sucesso_estacionamento"
+                    style="@style/PagamentoQrTexto"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/pagamento_qr_verde"
+                    tools:text="Estacionamento Central" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/pagamento_qr_claro" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="9dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_vehicle"
+                    app:tint="@color/pagamento_qr_verde" />
+
+                <TextView
+                    android:id="@+id/tv_sucesso_vaga"
+                    style="@style/PagamentoQrTexto"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/pagamento_qr_verde"
+                    tools:text="Vaga A12" />
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="28dp"
+                    android:layout_marginHorizontal="12dp"
+                    android:background="@color/pagamento_qr_claro" />
+
+                <TextView
+                    android:id="@+id/tv_sucesso_veiculo"
+                    style="@style/PagamentoQrTexto"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="@color/pagamento_qr_verde"
+                    tools:text="Placa ABC1D23" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/pagamento_qr_claro" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_concluir"
+                style="@style/PagamentoQrBotao"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="32dp"
-                android:text="Concluir"
-                android:textAllCaps="false"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                app:backgroundTint="@color/vallet_green_dark"
-                app:cornerRadius="12dp" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="@string/pagamento_qr_concluir" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_simular_leitura"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+                style="@style/PagamentoQrSimulacao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="[DEV] Simular cancela aberta"
-                android:textColor="@color/vallet_green_dark" />
+                android:layout_marginTop="6dp"
+                android:text="@string/pagamento_qr_simular_leitura" />
 
-            <!-- Mantidos para não quebrar Kotlin -->
-            <LinearLayout android:id="@+id/layout_saida_liberada" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone">
-                <TextView android:id="@+id/tv_sucesso_estacionamento" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                <TextView android:id="@+id/tv_sucesso_vaga" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                <TextView android:id="@+id/tv_sucesso_veiculo" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                <TextView android:id="@+id/tv_saida_tempo_total" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                <TextView android:id="@+id/tv_saida_valor_pago" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                <TextView android:id="@+id/tv_sucesso_valor" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <!-- Hierarquia do estado de simulação mantida como no fluxo existente. -->
+            <LinearLayout
+                android:id="@+id/layout_saida_liberada"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone">
+                <TextView android:id="@+id/tv_saida_tempo_total" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tv_saida_valor_pago" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tv_sucesso_valor" android:layout_width="wrap_content" android:layout_height="wrap_content" />
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

@@ -33,4 +33,9 @@
     <string name="estacionamentos">Estacionamentos</string>
     <string name="inicio">Início</string>
     <string name="veiculos">Veículos</string>
+
+    <!-- Strings de Pagamento -->
+    <string name="pag_interrompido">Pagamento interrompido</string>
+    <string name="pag_dados_invalidos">Dados de pagamento inválidos</string>
+    <string name="pag_erro">Erro ao processar pagamento</string>
 </resources>
