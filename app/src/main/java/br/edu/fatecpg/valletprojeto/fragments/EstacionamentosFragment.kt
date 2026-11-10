@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import br.edu.fatecpg.valletprojeto.VagaActivity
 import br.edu.fatecpg.valletprojeto.adapter.FavoriteParkingAdapter
 import br.edu.fatecpg.valletprojeto.adapter.EstacionamentosAdapter
+import br.edu.fatecpg.valletprojeto.model.Estacionamento
+import br.edu.fatecpg.valletprojeto.R
 import br.edu.fatecpg.valletprojeto.databinding.FragmentEstacionamentosBinding
 import br.edu.fatecpg.valletprojeto.viewmodel.EstacionamentosViewModel
 import com.google.firebase.firestore.FirebaseFirestore
@@ -208,6 +210,9 @@ class EstacionamentosFragment : Fragment() {
             },
             onItemClicked = { estacionamento ->
                 viewModel.onEstacionamentoClicked(estacionamento)
+            },
+            onQrCodeClicked = { estacionamento ->
+                mostrarQrCodeAcesso(estacionamento)
             }
         )
         binding.rvOtherParkings.layoutManager = object : LinearLayoutManager(requireContext()) {
@@ -223,6 +228,9 @@ class EstacionamentosFragment : Fragment() {
             },
             onItemClicked = { estacionamento ->
                 viewModel.onEstacionamentoClicked(estacionamento)
+            },
+            onQrCodeClicked = { estacionamento ->
+                mostrarQrCodeAcesso(estacionamento)
             }
         )
         binding.rvFavorites.layoutManager = object : LinearLayoutManager(requireContext()) {
@@ -231,6 +239,106 @@ class EstacionamentosFragment : Fragment() {
         binding.rvFavorites.isNestedScrollingEnabled = false
         binding.rvFavorites.setHasFixedSize(false)
         binding.rvFavorites.adapter = favoriteAdapter
+    }
+
+    private fun mostrarQrCodeAcesso(estacionamento: Estacionamento) {
+        val context = requireContext()
+        val imageView = android.widget.ImageView(context).apply {
+            layoutParams = android.widget.FrameLayout.LayoutParams(650, 650).apply {
+                gravity = android.view.Gravity.CENTER
+            }
+            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+            setPadding(16, 16, 16, 16)
+        }
+
+        val qrContent = "VALLET-ACESSO-${estacionamento.id}-${System.currentTimeMillis()}"
+        val bitmap = gerarBitmapQrCode(qrContent)
+        imageView.setImageBitmap(bitmap)
+
+        val cardView = com.google.android.material.card.MaterialCardView(context).apply {
+            layoutParams = android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = android.view.Gravity.CENTER
+                setMargins(0, 16, 0, 16)
+            }
+            radius = 24f * context.resources.displayMetrics.density
+            cardElevation = 4f
+            setCardBackgroundColor(ContextCompat.getColor(context, R.color.white))
+            addView(imageView)
+        }
+
+        val btnFechar = com.google.android.material.button.MaterialButton(context).apply {
+            layoutParams = android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                140
+            ).apply {
+                setMargins(0, 24, 0, 0)
+            }
+            text = "Fechar"
+            isAllCaps = false
+            textSize = 15f
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setTextColor(ContextCompat.getColor(context, android.R.color.white))
+            backgroundTintList = ContextCompat.getColorStateList(context, R.color.vallet_green_dark)
+            cornerRadius = (12f * context.resources.displayMetrics.density).toInt()
+        }
+
+        val container = android.widget.LinearLayout(context).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(48, 48, 48, 48)
+            gravity = android.view.Gravity.CENTER
+            setBackgroundResource(R.drawable.dialog_background)
+
+            addView(android.widget.TextView(context).apply {
+                text = "QR Code de Acesso"
+                textSize = 18f
+                textAlignment = android.view.View.TEXT_ALIGNMENT_CENTER
+                setTypeface(null, android.graphics.Typeface.BOLD)
+                setPadding(0, 0, 0, 8)
+                setTextColor(ContextCompat.getColor(context, R.color.vallet_green_dark))
+            })
+            addView(android.widget.TextView(context).apply {
+                text = estacionamento.nome
+                textSize = 14f
+                textAlignment = android.view.View.TEXT_ALIGNMENT_CENTER
+                setPadding(0, 0, 0, 24)
+                setTextColor(ContextCompat.getColor(context, R.color.vallet_text))
+            })
+            addView(cardView)
+            addView(android.widget.TextView(context).apply {
+                text = "Apresente este QR Code na entrada do estacionamento."
+                textSize = 13f
+                textAlignment = android.view.View.TEXT_ALIGNMENT_CENTER
+                setPadding(0, 16, 0, 0)
+                setTextColor(ContextCompat.getColor(context, R.color.vallet_green_dark))
+            })
+            addView(btnFechar)
+        }
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(context)
+            .setView(container)
+            .create()
+
+        btnFechar.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+    }
+
+    private fun gerarBitmapQrCode(conteudo: String): android.graphics.Bitmap {
+        val tamanho = 512
+        val bitMatrix = com.google.zxing.qrcode.QRCodeWriter().encode(conteudo, com.google.zxing.BarcodeFormat.QR_CODE, tamanho, tamanho)
+        val bitmap = android.graphics.Bitmap.createBitmap(tamanho, tamanho, android.graphics.Bitmap.Config.RGB_565)
+        for (x in 0 until tamanho) {
+            for (y in 0 until tamanho) {
+                bitmap.setPixel(x, y, if (bitMatrix[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
+            }
+        }
+        return bitmap
     }
 
     private fun setupSearchView() {
