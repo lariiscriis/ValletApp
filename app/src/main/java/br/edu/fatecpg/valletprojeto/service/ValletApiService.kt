@@ -27,6 +27,13 @@ data class RespostaPix(
 
 // 3. A rota da sua API
 interface ValletApiService {
+    @POST("reserva/{reservaId}/cancelar")
+    suspend fun cancelarReserva(
+        @Path("reservaId") reservaId: String,
+        @Header("Authorization") authorization: String,
+        @retrofit2.http.Query("vaga_id") vagaId: String
+    ): Response<ResponseBody>
+
     @POST("reserva/{reservaId}/notificar-inicio")
     suspend fun notificarInicioReserva(
         @Path("reservaId") reservaId: String,

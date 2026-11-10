@@ -18,6 +18,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import br.edu.fatecpg.valletprojeto.model.Vaga
 import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import br.edu.fatecpg.valletprojeto.model.JanelaCancelamento
 
 class ReservaActivity : AppCompatActivity() {
 
@@ -87,6 +93,14 @@ class ReservaActivity : AppCompatActivity() {
         setupGifAnimation()
         setupListeners()
         setupObservers()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                while (true) {
+                    atualizarCancelamento()
+                    delay(250)
+                }
+            }
+        }
 
         viewModel.carregarDadosIniciais(vagaId!!)
     }
@@ -188,6 +202,26 @@ class ReservaActivity : AppCompatActivity() {
         }
     }
 
+    private fun atualizarCancelamento() {
+        val ativa = viewModel.uiState.value as? ReservaUIState.Active ?: return
+        val inicio = ativa.reserva.inicioReserva?.toDate()?.time
+        val restante = JanelaCancelamento.restanteMs(ativa.reserva.status, inicio, System.currentTimeMillis())
+        val ocupado = viewModel.cancelando.value == true
+        binding.tvPrazoCancelamento.visibility = View.VISIBLE
+        binding.btnCancelar.isEnabled = restante > 0 && !ocupado
+        binding.btnRenovar.isEnabled = !ocupado
+        binding.btnFinalizar.isEnabled = !ocupado
+        binding.tvPrazoCancelamento.text = when {
+            inicio == null || inicio <= 0 || inicio > System.currentTimeMillis() ->
+                getString(R.string.cancelamento_data_invalida)
+            restante == 0L -> getString(R.string.cancelamento_encerrado)
+            else -> {
+                val segundos = (restante + 999) / 1000
+                getString(R.string.cancelamento_restante, segundos / 60, segundos % 60)
+            }
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     private fun setupObservers() {
         viewModel.uiState.observe(this) { state ->
@@ -198,6 +232,7 @@ class ReservaActivity : AppCompatActivity() {
             binding.btnRenovar.visibility = View.GONE
             binding.btnFinalizar.visibility = View.GONE
             binding.btnCancelar.visibility = View.GONE
+            binding.tvPrazoCancelamento.visibility = View.GONE
 
             when (state) {
                 is ReservaUIState.Initial, is ReservaUIState.Loading -> {
@@ -222,6 +257,7 @@ class ReservaActivity : AppCompatActivity() {
                     binding.btnRenovar.visibility = View.VISIBLE
                     binding.btnFinalizar.visibility = View.VISIBLE
                     binding.btnCancelar.visibility = View.VISIBLE
+                    atualizarCancelamento()
 
                     binding.tvVagaNumero.text = state.vaga.numero
                     binding.tvVagaDetalhes.text = "${state.vaga.tipo}\n${state.vaga.localizacao}"
@@ -230,7 +266,7 @@ class ReservaActivity : AppCompatActivity() {
                     carregarImagemVeiculo(state.vaga.tipo)
 
                     val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-                    val inicioStr = sdf.format(state.reserva.inicioReserva!!.toDate())
+                    val inicioStr = state.reserva.inicioReserva?.toDate()?.let { sdf.format(it) } ?: "—"
                     val fimStr = sdf.format(state.reserva.fimReserva!!.toDate())
                     binding.tvHorarioReserva.text = "$inicioStr às $fimStr"
 
@@ -248,7 +284,7 @@ class ReservaActivity : AppCompatActivity() {
                             putExtra("veiculoPlaca", state.veiculo.placa)
                             putExtra("horarioInicioTexto", inicioStr)
                             putExtra("horarioFimTexto", fimStr)
-                            putExtra("horaInicioMillis", state.reserva.inicioReserva.toDate().time)
+                            state.reserva.inicioReserva?.let { putExtra("horaInicioMillis", it.toDate().time) }
 
                             // ENVIANDO O PREÇO PARA A TELA DE PAGAMENTO!
                             putExtra("valorHora", estacionamentoValorHora)
@@ -273,6 +309,14 @@ class ReservaActivity : AppCompatActivity() {
             }
         }
 
+        viewModel.cancelando.observe(this) { atualizarCancelamento() }
+        viewModel.erroCancelamento.observe(this) { erro ->
+            if (erro != null) {
+                Toast.makeText(this, erro, Toast.LENGTH_LONG).show()
+                viewModel.consumirErroCancelamento()
+                atualizarCancelamento()
+            }
+        }
         viewModel.tempoRestante.observe(this) { tempo ->
             binding.tvTimer.text = tempo
         }

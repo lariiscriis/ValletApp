@@ -42,4 +42,8 @@
         <item quantity="one">%d hora</item>
         <item quantity="other">%d horas</item>
     </plurals>
+    <string name="cancelamento_restante">Você pode cancelar por mais %1$02d:%2$02d.</string>
+    <string name="cancelamento_encerrado">O prazo de cancelamento encerrou. Para encerrar a reserva, utilize Finalizar.</string>
+    <string name="cancelamento_data_invalida">Não foi possível validar o início da reserva. Para encerrar, utilize Finalizar.</string>
+    <string name="cancelamento_indisponivel">O cancelamento está temporariamente indisponível. Sua reserva continua ativa. Tente novamente mais tarde.</string>
 </resources>
