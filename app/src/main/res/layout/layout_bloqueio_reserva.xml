@@ -1,134 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutBloqueio"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@color/vallet_background"
-    android:clickable="true"
-    android:fillViewport="true"
-    android:focusable="true"
-    android:overScrollMode="never"
-    android:scrollbars="none">
+    android:clickable="true" android:focusable="true"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp" android:paddingTop="4dp" android:paddingBottom="12dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingStart="24dp"
-        android:paddingTop="24dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="32dp">
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/vallet_surface"
-            app:cardCornerRadius="28dp"
-            app:cardElevation="0dp"
-            app:strokeColor="@color/vallet_card_stroke"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:padding="24dp">
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="88dp"
-                    android:layout_height="88dp"
-                    android:importantForAccessibility="no"
-                    app:cardBackgroundColor="@color/vallet_icon_bg"
-                    app:cardCornerRadius="28dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="0dp">
-
-                    <ImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:importantForAccessibility="no"
-                        android:src="@drawable/calendar_check"
-                        app:tint="@color/vallet_green_dark" />
-                </com.google.android.material.card.MaterialCardView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:fontFamily="@font/poppins_medium"
-                    android:letterSpacing="0.12"
-                    android:text="RESERVA ATIVA"
-                    android:textColor="@color/vallet_text_secondary"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:accessibilityHeading="true"
-                    android:fontFamily="@font/poppins_bold"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:text="Sua reserva está\nem andamento"
-                    android:textColor="@color/vallet_green_dark"
-                    android:textSize="26sp" />
-
-                <TextView
-                    android:id="@+id/textBloqueio"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:accessibilityLiveRegion="polite"
-                    android:fontFamily="@font/poppins_medium"
-                    android:gravity="center"
-                    android:lineSpacingExtra="3dp"
-                    android:text="Você tem uma reserva em andamento."
-                    android:textColor="@color/vallet_text"
-                    android:textSize="15sp" />
-
-                <View
-                    android:layout_width="48dp"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:background="@color/vallet_card_stroke"
-                    android:importantForAccessibility="no" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins"
-                    android:gravity="center"
-                    android:lineSpacingExtra="3dp"
-                    android:text="Finalize sua reserva atual antes de escolher outra vaga."
-                    android:textColor="@color/vallet_text_secondary"
-                    android:textSize="14sp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnVerReserva"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="28dp"
-                    android:fontFamily="@font/poppins_medium"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:minHeight="56dp"
-                    android:paddingStart="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingBottom="16dp"
-                    android:text="Ver minha reserva"
-                    android:textAllCaps="false"
-                    android:textColor="@color/vallet_surface"
-                    android:textSize="15sp"
-                    app:backgroundTint="@color/vallet_green_dark"
-                    app:cornerRadius="20dp" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:gravity="center_vertical" android:orientation="horizontal">
+        <ImageButton android:id="@+id/btnVoltarBloqueio"
+            android:layout_width="48dp" android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/bloqueio_voltar"
+            android:padding="12dp" android:src="@drawable/ic_arrow_back"
+            app:tint="@color/vallet_text" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:fontFamily="@font/poppins_semibold"
+            android:text="@string/bloqueio_cabecalho" android:textSize="18sp"
+            android:textColor="@color/vallet_text" />
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:minHeight="32dp" android:paddingVertical="4dp"
+        android:layout_marginTop="@dimen/bloqueio_espaco"
+        android:background="@drawable/bg_reserva_status"
+        android:drawableStart="@drawable/reserva_status_dot" android:drawablePadding="8dp"
+        android:gravity="center_vertical" android:paddingHorizontal="12dp"
+        android:fontFamily="@font/poppins_semibold" android:text="@string/bloqueio_status"
+        android:textColor="@color/vallet_green_dark" android:textSize="11sp" />
+
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/bloqueio_espaco"
+        android:accessibilityHeading="true" android:fontFamily="@font/poppins_bold"
+        android:includeFontPadding="false" android:text="@string/bloqueio_titulo"
+        android:textColor="@color/vallet_text" android:textSize="@dimen/bloqueio_titulo" />
+
+    <TextView android:id="@+id/textBloqueio"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" android:fontFamily="@font/poppins"
+        android:text="@string/bloqueio_descricao" android:textSize="14sp"
+        android:textColor="@color/vallet_text" />
+
+    <!-- A ilustração cede espaço aos textos em janelas menores, sem rolagem. -->
+    <ImageView android:id="@+id/ilustracaoBloqueio"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:layout_marginVertical="8dp"
+        android:importantForAccessibility="no" android:contentDescription="@null"
+        android:scaleType="fitCenter" android:src="@drawable/carro_reserva_ativa" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/vallet_surface" app:cardCornerRadius="22dp"
+        app:cardElevation="0dp" app:strokeColor="@color/vallet_green_muted" app:strokeWidth="1dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="@dimen/bloqueio_padding_cartao">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:id="@+id/tvBloqueioVaga"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:fontFamily="@font/poppins_bold"
+                    android:textColor="@color/vallet_text" android:textSize="22sp"
+                    tools:text="Vaga A-03" />
+                <TextView android:id="@+id/tvBloqueioTipo"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp" android:background="@drawable/bg_reserva_tipo"
+                    android:paddingHorizontal="12dp" android:paddingVertical="3dp"
+                    android:fontFamily="@font/poppins_semibold" android:textColor="@color/vallet_green_dark"
+                    android:textSize="12sp" android:visibility="gone" tools:visibility="visible" tools:text="Carro" />
+            </LinearLayout>
+            <TextView android:id="@+id/tvBloqueioEstacionamento"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_medium" android:textSize="15sp"
+                android:textColor="@color/vallet_text" android:visibility="gone"
+                tools:visibility="visible" tools:text="Estacionamento Central" />
+            <ProgressBar android:id="@+id/progressBloqueio"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="24dp" android:layout_height="24dp"
+                android:indeterminateTint="@color/vallet_green_dark" />
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:layout_marginVertical="10dp" android:background="@color/vallet_green_light" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_schedule" android:drawablePadding="8dp"
+                android:gravity="center_vertical" android:fontFamily="@font/poppins_semibold"
+                android:text="@string/bloqueio_andamento" android:textSize="13sp"
+                android:textColor="@color/vallet_green_dark" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton android:id="@+id/btnVerReserva"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/bloqueio_espaco"
+        android:minHeight="56dp" android:insetTop="0dp" android:insetBottom="0dp"
+        android:paddingVertical="12dp" android:paddingHorizontal="20dp"
+        android:fontFamily="@font/poppins_semibold" android:text="@string/bloqueio_ver_reserva"
+        android:textAllCaps="false" android:textColor="@color/vallet_surface" android:textSize="15sp"
+        app:backgroundTint="@color/vallet_green_dark" app:cornerRadius="18dp"
+        app:icon="@drawable/baseline_arrow_forward_24" app:iconGravity="end"
+        app:iconTint="@color/vallet_surface" app:iconSize="22dp" />
+</LinearLayout>
