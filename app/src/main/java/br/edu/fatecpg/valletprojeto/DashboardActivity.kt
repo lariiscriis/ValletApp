@@ -70,6 +70,11 @@ class DashboardActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        carregarDadosUsuario()
+    }
+
     // Adicione esta opção no menu ou em uma tela de configurações
     private fun mostrarOpcaoDebugToken() {
         val intent = Intent(this, GerarTokenActivity::class.java)

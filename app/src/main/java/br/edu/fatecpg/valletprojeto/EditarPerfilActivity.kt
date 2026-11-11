@@ -184,20 +184,38 @@ class EditarPerfilActivity : AppCompatActivity() {
             dados["fotoPerfil"] = imageUrl
         }
 
-        if (docIdUsuario == null) {
-            Toast.makeText(this, "Erro interno: docId nulo", Toast.LENGTH_LONG).show()
-            return
+        val currentEmail = auth.currentUser?.email ?: email
+
+        val updateAction = { docId: String ->
+            db.collection("usuario").document(docId)
+                .update(dados)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Perfil atualizado com sucesso", Toast.LENGTH_SHORT).show()
+                    setResult(RESULT_OK)
+                    finish()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Erro ao atualizar dados: ${it.message}", Toast.LENGTH_LONG).show()
+                }
         }
 
-        db.collection("usuario").document(docIdUsuario!!)
-            .update(dados)
-            .addOnSuccessListener {
-                Toast.makeText(this, "Perfil atualizado com sucesso", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Erro ao atualizar dados: ${it.message}", Toast.LENGTH_LONG).show()
-            }
+        if (docIdUsuario != null) {
+            updateAction(docIdUsuario!!)
+        } else {
+            db.collection("usuario")
+                .whereEqualTo("email", currentEmail)
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    if (!snapshot.isEmpty) {
+                        updateAction(snapshot.documents[0].id)
+                    } else {
+                        Toast.makeText(this, "Erro: usuário não encontrado no banco", Toast.LENGTH_LONG).show()
+                    }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Erro ao localizar usuário: ${it.message}", Toast.LENGTH_LONG).show()
+                }
+        }
     }
 
     private fun finishComErro(msg: String): Nothing {
