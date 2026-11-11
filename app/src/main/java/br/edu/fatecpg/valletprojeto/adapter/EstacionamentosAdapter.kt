@@ -23,6 +23,20 @@ class EstacionamentosAdapter(
     private val db = FirebaseFirestore.getInstance()
 
     inner class ViewHolder(private val binding: ItemEstacionamentoBinding) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            androidx.appcompat.widget.TooltipCompat.setTooltipText(
+                binding.btnQrcode, binding.root.context.getString(R.string.qr_acesso_descricao)
+            )
+            // Mantém 48dp de toque sem aumentar a altura visual do card.
+            binding.btnQrcode.addOnLayoutChangeListener { view, _, _, _, _, _, _, _, _ ->
+                val area = android.graphics.Rect()
+                view.getHitRect(area)
+                val minimo = (48 * view.resources.displayMetrics.density).toInt()
+                area.inset(0, -((minimo - area.height()) / 2).coerceAtLeast(0))
+                binding.footerArea.touchDelegate = android.view.TouchDelegate(area, view)
+            }
+        }
+
         fun bind(estacionamento: Estacionamento) {
             val context = binding.root.context
 

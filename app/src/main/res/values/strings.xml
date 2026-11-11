@@ -18,6 +18,9 @@
     <string name="slider">Slider de tempo</string>
     <string name="editar_veiculo">Editar Veículo</string>
 
+    <string name="qr_acesso_botao">Acesso</string>
+    <string name="qr_acesso_descricao">Mostrar QR Code de acesso</string>
+
     <!-- Strings do Dashboard -->
     <string name="dashboard_reserva_atual">Sua Reserva Atual</string>
     <string name="dashboard_estacionamento_nome">Nome do Estacionamento</string>
