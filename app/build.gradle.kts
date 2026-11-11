@@ -1,3 +1,8 @@
+import java.awt.Color as IconColor
+import java.awt.RenderingHints
+import java.awt.geom.Ellipse2D
+import java.awt.image.BufferedImage
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -42,6 +47,52 @@ android {
         dataBinding = true
     }
 }
+
+// Recursos derivados da arte oficial. Não modifica a imagem usada nas telas.
+val recursosMarca = layout.buildDirectory.dir("generated/valletBrandRes")
+val gerarIconesVallet by tasks.registering {
+    val arte = layout.projectDirectory.file("src/main/res/drawable/vallet_icon.png")
+    inputs.file(arte)
+    outputs.dir(recursosMarca)
+    doLast {
+        val original = javax.imageio.ImageIO.read(arte.asFile)
+            ?: error("Não foi possível ler a arte oficial do ícone Vallet")
+        val destino = recursosMarca.get().asFile
+        fun renderizar(tamanho: Int, ocupacao: Double, fundo: Boolean, circular: Boolean): BufferedImage {
+            val imagem = BufferedImage(tamanho, tamanho, BufferedImage.TYPE_INT_ARGB)
+            val g = imagem.createGraphics()
+            try {
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+                if (circular) g.clip = Ellipse2D.Double(0.0, 0.0, tamanho.toDouble(), tamanho.toDouble())
+                if (fundo) {
+                    g.color = IconColor(0xF0, 0xF2, 0xEB)
+                    g.fillRect(0, 0, tamanho, tamanho)
+                }
+                val escala = tamanho * ocupacao / maxOf(original.width, original.height)
+                val w = (original.width * escala).toInt()
+                val h = (original.height * escala).toInt()
+                g.drawImage(original, (tamanho - w) / 2, (tamanho - h) / 2, w, h, null)
+            } finally {
+                g.dispose()
+            }
+            return imagem
+        }
+        fun gravar(pasta: String, nome: String, imagem: BufferedImage) {
+            val arquivo = destino.resolve("$pasta/$nome.png")
+            arquivo.parentFile.mkdirs()
+            check(javax.imageio.ImageIO.write(imagem, "png", arquivo))
+        }
+        for ((densidade, tamanho) in mapOf("mdpi" to 48, "hdpi" to 72, "xhdpi" to 96, "xxhdpi" to 144, "xxxhdpi" to 192)) {
+            gravar("mipmap-$densidade", "vallet_launcher", renderizar(tamanho, 0.80, true, false))
+            gravar("mipmap-$densidade", "vallet_launcher_round", renderizar(tamanho, 0.80, true, true))
+        }
+        // Tela de 108dp: a arte ocupa 54dp, dentro da zona segura das máscaras.
+        gravar("drawable-nodpi", "vallet_launcher_foreground", renderizar(432, 0.50, false, false))
+    }
+}
+android.sourceSets.getByName("main").res.srcDir(recursosMarca)
+tasks.named("preBuild").configure { dependsOn(gerarIconesVallet) }
 
 dependencies {
 

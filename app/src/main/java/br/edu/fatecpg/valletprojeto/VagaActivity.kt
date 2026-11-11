@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
 import android.os.Bundle
+import br.edu.fatecpg.valletprojeto.ui.prepararVoltar
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -36,6 +37,7 @@ class VagaActivity : AppCompatActivity() {
 
         binding = ActivityVagaBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.btnBack.prepararVoltar()
 
         viewModel = ViewModelProvider(this)[VagaViewModel::class.java]
         reservaViewModel =
@@ -158,6 +160,7 @@ class VagaActivity : AppCompatActivity() {
             layoutBloqueio = novoLayout
         }
 
+        layoutBloqueio?.findViewById<View>(R.id.btnVoltarBloqueio)?.setOnClickListener { finish() }
         atualizarTelaBloqueio()
     }
 
@@ -165,25 +168,26 @@ class VagaActivity : AppCompatActivity() {
         val tela = layoutBloqueio ?: return
 
         val botao = tela.findViewById<Button>(R.id.btnVerReserva)
-        val mensagem = tela.findViewById<TextView>(R.id.textBloqueio)
+        val titulo = tela.findViewById<TextView>(R.id.tvBloqueioVaga)
+        val tipo = tela.findViewById<TextView>(R.id.tvBloqueioTipo)
+        val nome = tela.findViewById<TextView>(R.id.tvBloqueioEstacionamento)
+        tela.findViewById<View>(R.id.progressBloqueio).visibility =
+            if (reservaAtivaAtual == null) View.VISIBLE else View.GONE
         val ativa = reservaAtivaAtual
 
         if (ativa != null) {
-            val numero = ativa.vaga.numero.ifBlank {
-                "selecionada"
-            }
-
-            val estacionamento = ativa.reserva.estacionamentoNome
-
-            mensagem.text = if (estacionamento.isBlank()) {
-                "Sua reserva atual está na vaga $numero."
-            } else {
-                "Vaga $numero • $estacionamento"
-            }
-
-            botao.text = "Ver minha reserva"
+            titulo.text = ativa.vaga.numero.takeIf { it.isNotBlank() }?.let {
+                getString(R.string.bloqueio_vaga, it)
+            } ?: getString(R.string.bloqueio_vaga_indisponivel)
+            tipo.text = ativa.vaga.tipo.replaceFirstChar { it.uppercase() }
+            tipo.visibility = if (ativa.vaga.tipo.isBlank()) View.GONE else View.VISIBLE
+            nome.text = ativa.reserva.estacionamentoNome
+            nome.visibility = if (ativa.reserva.estacionamentoNome.isBlank()) View.GONE else View.VISIBLE
+            // Reserva não persiste veículoId: não apresentar o veículo padrão como original.
+            botao.setText(R.string.bloqueio_ver_reserva)
 
             botao.setOnClickListener {
+                if (isFinishing) return@setOnClickListener
                 val atual = reservaAtivaAtual
                     ?: return@setOnClickListener
 
@@ -206,15 +210,17 @@ class VagaActivity : AppCompatActivity() {
                 finish()
             }
         } else {
-            mensagem.text = "Você tem uma reserva em andamento."
-            botao.text = "Buscar minha reserva"
+            titulo.setText(R.string.bloqueio_carregando)
+            tipo.visibility = View.GONE
+            nome.visibility = View.GONE
+            botao.setText(R.string.bloqueio_buscar)
 
             botao.setOnClickListener {
                 reservaViewModel.verificarReservaAtiva()
 
                 Toast.makeText(
                     this,
-                    "Buscando reserva ativa...",
+                    getString(R.string.bloqueio_buscando),
                     Toast.LENGTH_SHORT
                 ).show()
             }

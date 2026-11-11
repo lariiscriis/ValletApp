@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.ValletAbertura" parent="Base.Theme.ValletAbertura">
+        <item name="android:windowSplashScreenBackground">@color/vallet_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/vallet_launcher_foreground</item>
+        <item name="android:windowSplashScreenAnimationDuration">0</item>
+    </style>
+</resources>

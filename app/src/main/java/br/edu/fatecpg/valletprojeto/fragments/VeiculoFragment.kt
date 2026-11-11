@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import br.edu.fatecpg.valletprojeto.ui.prepararVoltar
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
@@ -69,6 +70,7 @@ class VeiculoFragment : DialogFragment() {
         val factory = VeiculoViewModelFactory()
         viewModel = ViewModelProvider(this, factory)[VeiculoViewModel::class.java]
 
+        binding.ivBack.prepararVoltar()
         setupDropdowns()
         fotoSelecionadaUri?.let { uri ->
             com.bumptech.glide.Glide.with(this).load(uri).centerCrop().into(binding.ivVehiclePhoto)
@@ -116,6 +118,17 @@ class VeiculoFragment : DialogFragment() {
                 .setPositiveButton("Sim") { _, _ -> dismiss() }
                 .setNegativeButton("Não", null)
                 .show()
+        }
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): android.app.Dialog {
+        return super.onCreateDialog(savedInstanceState).apply {
+            (this as? androidx.activity.ComponentDialog)?.onBackPressedDispatcher
+                ?.addCallback(this@VeiculoFragment, object : androidx.activity.OnBackPressedCallback(true) {
+                    override fun handleOnBackPressed() {
+                        _binding?.ivBack?.performClick()
+                    }
+                })
         }
     }
 

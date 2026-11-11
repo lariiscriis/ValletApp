@@ -60,6 +60,8 @@
                 <!-- Botão Sair da Conta  -->
                 <LinearLayout
                     android:id="@+id/btnSairConta"
+                    android:contentDescription="Sair da conta"
+                    android:minHeight="48dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_status_fechado"

@@ -2,6 +2,7 @@ package br.edu.fatecpg.valletprojeto
 
 import android.content.Intent
 import android.os.Bundle
+import br.edu.fatecpg.valletprojeto.ui.prepararVoltar
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,7 @@ class PerfilActivity : AppCompatActivity() {
 
         binding = ActivityPerfilMotoristaBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.btnVoltar.prepararVoltar()
 
         supportActionBar?.hide()
 
@@ -77,6 +79,7 @@ class PerfilActivity : AppCompatActivity() {
         }
     }
     private fun setupListeners() {
+        binding.btnSairConta.setOnClickListener { SessaoUsuario.sair(this) }
 /*        binding.btnVerHistorico.setOnClickListener {
             startActivity(Intent(this, HistoricoReservasActivity::class.java))
         }*/

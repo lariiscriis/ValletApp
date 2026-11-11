@@ -1,6 +1,7 @@
 package br.edu.fatecpg.valletprojeto
 
 import android.os.Bundle
+import br.edu.fatecpg.valletprojeto.ui.prepararVoltar
 import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -30,12 +31,12 @@ class CadastroUsuarioActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityCadastroUsuarioBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.btnVoltar.prepararVoltar()
         br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
         IndicadoresCadastro.mostrar(binding.root, 2)
         binding.botaoLogin.setOnClickListener {
             if (!ocupado()) {
-                FirebaseAuth.getInstance().signOut()
-                roteador.abrirLogin()
+                SessaoUsuario.sair(this)
             }
         }
         binding.btnVoltar.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
