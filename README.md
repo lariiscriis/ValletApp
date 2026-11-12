@@ -16,7 +16,7 @@ Ele busca otimizar o processo de <b>reserva, monitoramento e administração de 
  | Módulo / Repositório | Descrição | Link de Acesso |
 | :--- | :--- | :--- |
 | **ValletWeb** (Gestores) | Dashboards e controle de ocupação para gestores de estacionamento. | [Repositório Web](https://github.com/Pereira-Sah/ValletWeb) |
-| **ValletApp** (Android) | Aplicativo móvel voltado para motoristas e usuários finais. | [Repositório Android](https://github.com/lariiscriis/ValletProjeto) |
+| **ValletApp** (Motorista) | Aplicativo Android voltado para motoristas e usuários finais. | [Repositório Android](https://github.com/lariiscriis/ValletApp) |
 | **ValletAPI** | API backend para conexão e gerenciamento de todo o ecossistema. | [Repositório API](https://github.com/Almile/ValletAPI) |
 | **ValletIOT** | Sistema de leitura de placas (LPR) com uso de webcam. | [Repositório IOT](https://github.com/Almile/ValletIOT) |
 | **ValletDesktop** | Sistema desktop voltado para os administradores gerais. | [Repositório Desktop](https://github.com/Almile/valletDesktop) |
