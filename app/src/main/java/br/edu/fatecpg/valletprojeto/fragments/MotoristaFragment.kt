@@ -25,6 +25,7 @@ import br.edu.fatecpg.valletprojeto.databinding.FragmentMotoristaDashboardBindin
 import br.edu.fatecpg.valletprojeto.model.Vaga
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -152,6 +153,8 @@ class MotoristaFragment : Fragment() {
                     atualizarUI(resultado)
                 }
 
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 if (isAdded && context != null) {
                     Log.e("MotoristaFragment", "Erro ao carregar reservas", e)
@@ -259,6 +262,8 @@ class MotoristaFragment : Fragment() {
             }
 
             vagasMap
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.e("MotoristaFragment", "Erro ao buscar vagas em batch", e)
             emptyMap()
@@ -291,6 +296,8 @@ class MotoristaFragment : Fragment() {
             }
 
             estacionamentosMap
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.e("MotoristaFragment", "Erro ao buscar estacionamentos em batch", e)
             emptyMap()
@@ -344,6 +351,8 @@ class MotoristaFragment : Fragment() {
                 Log.e("MotoristaFragment", "Vaga não encontrada: $numeroVaga no estacionamento $estacionamentoId")
                 null
             }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.e("MotoristaFragment", "Erro ao buscar vagaId: ${e.message}")
             null
