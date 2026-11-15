@@ -52,16 +52,16 @@
                     android:id="@+id/tv_veiculo_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-black"
+                    android:fontFamily="@font/poppins_bold"
                     android:textColor="@color/vallet_green_dark"
-                    android:textSize="24sp"
+                    android:textSize="22sp"
                     tools:text="Fiat Mobi" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/poppins_medium"
                     android:text="Veículo Selecionado"
                     android:textColor="@color/vallet_green"
                     android:textSize="13sp" />
@@ -108,7 +108,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/poppins_medium"
                     android:text="Selecione a Duração"
                     android:textColor="@color/vallet_green"
                     android:textSize="13sp" />
@@ -118,7 +118,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:fontFamily="sans-serif"
+                    android:fontFamily="@font/poppins_medium"
                     android:text="Máximo de 4 horas permitidas"
                     android:textColor="@color/vallet_green_muted"
                     android:textSize="11sp" />
@@ -128,9 +128,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:fontFamily="sans-serif-black"
+                    android:fontFamily="@font/poppins_semibold"
                     android:textColor="@color/vallet_green_dark"
-                    android:textSize="40sp"
+                    android:textSize="36sp"
                     tools:text="1 hora" />
 
                 <com.google.android.material.slider.Slider
@@ -163,7 +163,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/poppins_medium"
                     android:text="Tempo Restante"
                     android:textColor="@color/vallet_green"
                     android:textSize="13sp" />
@@ -172,16 +172,16 @@
                     android:id="@+id/tv_timer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif-black"
+                    android:fontFamily="@font/poppins_semibold"
                     android:textColor="@color/vallet_green_dark"
-                    android:textSize="44sp"
+                    android:textSize="40sp"
                     tools:text="30 : 20 min" />
 
                 <TextView
                     android:id="@+id/tv_horario_reserva"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="sans-serif"
+                    android:fontFamily="@font/poppins_medium"
                     android:textColor="@color/vallet_green"
                     android:textSize="13sp"
                     tools:text="12:10 PM - 01 Dec 2021" />
@@ -219,6 +219,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_medium"
                         android:text="Vaga / Zona"
                         android:textColor="@color/vallet_green_light"
                         android:textSize="11sp" />
@@ -227,7 +228,7 @@
                         android:id="@+id/tv_vaga_numero"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="sans-serif-black"
+                        android:fontFamily="@font/poppins_semibold"
                         android:textColor="@color/white"
                         android:textSize="22sp"
                         tools:text="A-013" />
@@ -237,7 +238,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
-                        android:fontFamily="sans-serif"
+                        android:fontFamily="@font/poppins_medium"
                         android:textColor="@color/vallet_green_light"
                         android:textSize="11sp"
                         tools:text="Tipo: Carro • Local: Térreo" />
@@ -277,7 +278,7 @@
                 android:layout_height="56dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="6dp"
-                android:fontFamily="sans-serif-bold"
+                android:fontFamily="@font/poppins_semibold"
                 android:text="Rota"
                 android:textAllCaps="false"
                 android:textColor="@color/vallet_green_dark"
@@ -291,7 +292,7 @@
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_weight="1.5"
-                android:fontFamily="sans-serif-bold"
+                android:fontFamily="@font/poppins_semibold"
                 android:text="Confirmar"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
@@ -311,7 +312,7 @@
                 android:layout_height="56dp"
                 android:layout_marginEnd="6dp"
                 android:layout_weight="1"
-                android:fontFamily="sans-serif-bold"
+                android:fontFamily="@font/poppins_semibold"
                 android:text="Renovar"
                 android:textAllCaps="false"
                 android:textColor="@color/vallet_green_dark"
@@ -327,7 +328,7 @@
                 android:layout_width="0dp"
                 android:layout_height="56dp"
                 android:layout_weight="1"
-                android:fontFamily="sans-serif-bold"
+                android:fontFamily="@font/poppins_semibold"
                 android:text="Finalizar"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
@@ -344,6 +345,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppins_medium"
             android:gravity="center"
             android:textColor="@color/vallet_green"
             android:textSize="13sp"
@@ -356,6 +358,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Cancelar Reserva"
+            android:fontFamily="@font/poppins_medium"
             android:background="@drawable/bg_status_fechado"
             android:textAllCaps="false"
             android:textColor="@color/red_cancel"

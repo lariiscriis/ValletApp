@@ -457,21 +457,27 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
                 // 🔥 CANCELAR NOTIFICAÇÕES ANTIGAS ANTES DE RENOVAR
                 cancelarNotificacoesAgendadas(getApplication())
 
-                val proximaReserva = db.collection("reserva")
+                val reservasVaga = db.collection("reserva")
                     .whereEqualTo("vagaId", idVaga)
-                    .whereGreaterThan("inicioReserva", reserva.fimReserva!!)
-                    .orderBy("inicioReserva")
-                    .limit(1)
                     .get().await()
 
-                if (!proximaReserva.isEmpty) {
+                val temReservaFutura = reservasVaga.documents.any { doc ->
+                    if (doc.id == idReserva) return@any false
+                    val inicio = doc.getTimestamp("inicioReserva")
+                    val status = doc.getString("status")
+                    inicio != null &&
+                        inicio > reserva.fimReserva!! &&
+                        (status == null || (status.lowercase() != "finalizada" && status.lowercase() != "cancelada"))
+                }
+
+                if (temReservaFutura) {
                     Log.w("Renovacao", "Falha: Já existe uma reserva futura para a vaga $idVaga.")
                     _uiState.value = ReservaUIState.Error("Não é possível renovar. Vaga já reservada para o próximo horário.")
                     carregarDadosIniciais(idVaga)
                     return@launch
                 }
 
-                val novoFim = Timestamp(Date(reserva.fimReserva.toDate().time + TimeUnit.HOURS.toMillis(1)))
+                val novoFim = Timestamp(Date(reserva.fimReserva!!.toDate().time + TimeUnit.HOURS.toMillis(1)))
 
                 Log.d("Renovacao", "Atualizando reserva $idReserva com novo fim: $novoFim")
                 db.collection("reserva").document(idReserva).update("fimReserva", novoFim).await()

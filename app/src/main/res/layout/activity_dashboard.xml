@@ -52,6 +52,7 @@
                 android:layout_height="wrap_content"
                 android:text="Bem-vindo(a),"
                 android:textColor="@color/vallet_text_secondary"
+                android:fontFamily="@font/poppins"
                 android:textSize="11sp" />
 
             <TextView
@@ -61,6 +62,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="Nome do motorista"
+                android:fontFamily="@font/poppins_medium"
                 android:textColor="@color/vallet_text"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -72,6 +74,7 @@
                 android:layout_marginTop="1dp"
                 android:text="Motorista"
                 android:textColor="@color/vallet_green"
+                android:fontFamily="@font/poppins"
                 android:textSize="12sp" />
 
         </LinearLayout>

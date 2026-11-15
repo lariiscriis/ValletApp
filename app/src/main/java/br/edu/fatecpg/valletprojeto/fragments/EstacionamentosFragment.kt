@@ -243,86 +243,19 @@ class EstacionamentosFragment : Fragment() {
     }
 
     private fun mostrarQrCodeAcesso(estacionamento: Estacionamento) {
-        val context = requireContext()
-        val imageView = android.widget.ImageView(context).apply {
-            layoutParams = android.widget.FrameLayout.LayoutParams(650, 650).apply {
-                gravity = android.view.Gravity.CENTER
-            }
-            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
-            setPadding(16, 16, 16, 16)
-        }
+        val dialogBinding = br.edu.fatecpg.valletprojeto.databinding.DialogQrAcessoBinding.inflate(layoutInflater)
+
+        dialogBinding.tvQrEstacionamentoNome.text = estacionamento.nome
 
         val qrContent = "VALLET-ACESSO-${estacionamento.id}-${System.currentTimeMillis()}"
         val bitmap = gerarBitmapQrCode(qrContent)
-        imageView.setImageBitmap(bitmap)
+        dialogBinding.ivQrCode.setImageBitmap(bitmap)
 
-        val cardView = com.google.android.material.card.MaterialCardView(context).apply {
-            layoutParams = android.widget.LinearLayout.LayoutParams(
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT,
-                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                gravity = android.view.Gravity.CENTER
-                setMargins(0, 16, 0, 16)
-            }
-            radius = 24f * context.resources.displayMetrics.density
-            cardElevation = 4f
-            setCardBackgroundColor(ContextCompat.getColor(context, R.color.white))
-            addView(imageView)
-        }
-
-        val btnFechar = com.google.android.material.button.MaterialButton(context).apply {
-            layoutParams = android.widget.LinearLayout.LayoutParams(
-                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
-                140
-            ).apply {
-                setMargins(0, 24, 0, 0)
-            }
-            text = "Fechar"
-            isAllCaps = false
-            textSize = 15f
-            setTypeface(null, android.graphics.Typeface.BOLD)
-            setTextColor(ContextCompat.getColor(context, android.R.color.white))
-            backgroundTintList = ContextCompat.getColorStateList(context, R.color.vallet_green_dark)
-            cornerRadius = (12f * context.resources.displayMetrics.density).toInt()
-        }
-
-        val container = android.widget.LinearLayout(context).apply {
-            orientation = android.widget.LinearLayout.VERTICAL
-            setPadding(48, 48, 48, 48)
-            gravity = android.view.Gravity.CENTER
-            setBackgroundResource(R.drawable.dialog_background)
-
-            addView(android.widget.TextView(context).apply {
-                text = "QR Code de Acesso"
-                textSize = 18f
-                textAlignment = View.TEXT_ALIGNMENT_CENTER
-                setTypeface(null, android.graphics.Typeface.BOLD)
-                setPadding(0, 0, 0, 8)
-                setTextColor(ContextCompat.getColor(context, R.color.vallet_green_dark))
-            })
-            addView(android.widget.TextView(context).apply {
-                text = estacionamento.nome
-                textSize = 14f
-                textAlignment = View.TEXT_ALIGNMENT_CENTER
-                setPadding(0, 0, 0, 24)
-                setTextColor(ContextCompat.getColor(context, R.color.vallet_text))
-            })
-            addView(cardView)
-            addView(android.widget.TextView(context).apply {
-                text = "Apresente este QR Code na entrada do estacionamento."
-                textSize = 13f
-                textAlignment = View.TEXT_ALIGNMENT_CENTER
-                setPadding(0, 16, 0, 0)
-                setTextColor(ContextCompat.getColor(context, R.color.vallet_green_dark))
-            })
-            addView(btnFechar)
-        }
-
-        val dialog = androidx.appcompat.app.AlertDialog.Builder(context)
-            .setView(container)
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
             .create()
 
-        btnFechar.setOnClickListener {
+        dialogBinding.btnQrFechar.setOnClickListener {
             dialog.dismiss()
         }
 
