@@ -25,10 +25,11 @@ import br.edu.fatecpg.valletprojeto.model.Estacionamento
 import br.edu.fatecpg.valletprojeto.R
 import br.edu.fatecpg.valletprojeto.databinding.FragmentEstacionamentosBinding
 import br.edu.fatecpg.valletprojeto.viewmodel.EstacionamentosViewModel
-import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 
 class EstacionamentosFragment : Fragment() {
 
@@ -294,7 +295,7 @@ class EstacionamentosFragment : Fragment() {
             addView(android.widget.TextView(context).apply {
                 text = "QR Code de Acesso"
                 textSize = 18f
-                textAlignment = android.view.View.TEXT_ALIGNMENT_CENTER
+                textAlignment = View.TEXT_ALIGNMENT_CENTER
                 setTypeface(null, android.graphics.Typeface.BOLD)
                 setPadding(0, 0, 0, 8)
                 setTextColor(ContextCompat.getColor(context, R.color.vallet_green_dark))
@@ -302,7 +303,7 @@ class EstacionamentosFragment : Fragment() {
             addView(android.widget.TextView(context).apply {
                 text = estacionamento.nome
                 textSize = 14f
-                textAlignment = android.view.View.TEXT_ALIGNMENT_CENTER
+                textAlignment = View.TEXT_ALIGNMENT_CENTER
                 setPadding(0, 0, 0, 24)
                 setTextColor(ContextCompat.getColor(context, R.color.vallet_text))
             })
@@ -310,7 +311,7 @@ class EstacionamentosFragment : Fragment() {
             addView(android.widget.TextView(context).apply {
                 text = "Apresente este QR Code na entrada do estacionamento."
                 textSize = 13f
-                textAlignment = android.view.View.TEXT_ALIGNMENT_CENTER
+                textAlignment = View.TEXT_ALIGNMENT_CENTER
                 setPadding(0, 16, 0, 0)
                 setTextColor(ContextCompat.getColor(context, R.color.vallet_green_dark))
             })
@@ -332,10 +333,11 @@ class EstacionamentosFragment : Fragment() {
     private fun gerarBitmapQrCode(conteudo: String): android.graphics.Bitmap {
         val tamanho = 512
         val bitMatrix = com.google.zxing.qrcode.QRCodeWriter().encode(conteudo, com.google.zxing.BarcodeFormat.QR_CODE, tamanho, tamanho)
-        val bitmap = android.graphics.Bitmap.createBitmap(tamanho, tamanho, android.graphics.Bitmap.Config.RGB_565)
+        val bitmap = createBitmap(tamanho, tamanho, android.graphics.Bitmap.Config.RGB_565)
         for (x in 0 until tamanho) {
             for (y in 0 until tamanho) {
-                bitmap.setPixel(x, y, if (bitMatrix[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
+                bitmap[x, y] =
+                    if (bitMatrix[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE
             }
         }
         return bitmap
@@ -369,21 +371,36 @@ class EstacionamentosFragment : Fragment() {
     }
 
     private fun mostrarDialogoRaio() {
-        val raios = arrayOf("1 km", "2 km", "3 km", "4 km", "5 km")
+        val dialogBinding = br.edu.fatecpg.valletprojeto.databinding.DialogRaioBinding.inflate(layoutInflater)
         val valores = doubleArrayOf(1.0, 2.0, 3.0, 4.0, 5.0)
+        val radioButtons = arrayOf(
+            dialogBinding.rbRaio1,
+            dialogBinding.rbRaio2,
+            dialogBinding.rbRaio3,
+            dialogBinding.rbRaio4,
+            dialogBinding.rbRaio5
+        )
 
-        val currentIndex = valores.indexOfFirst { it == viewModel.currentRadiusKm }.coerceAtLeast(4)
+        val idx = valores.indexOfFirst { it == viewModel.currentRadiusKm }
+        val currentIndex = if (idx in radioButtons.indices) idx else 4
+        radioButtons[currentIndex].isChecked = true
 
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Escolher raio de distância")
-            .setSingleChoiceItems(raios, currentIndex) { dialog, which ->
-                val selectedRadius = valores[which]
-                viewModel.setRadius(selectedRadius)
-                Toast.makeText(requireContext(), "Raio alterado para ${raios[which]}", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
-            }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .create()
+
+        dialogBinding.btnDialogRaioCancelar.setOnClickListener { dialog.dismiss() }
+
+        dialogBinding.btnDialogRaioAplicar.setOnClickListener {
+            val selectedIndex = radioButtons.indexOfFirst { it.isChecked }.let { if (it >= 0) it else 4 }
+            val selectedRadius = valores[selectedIndex]
+            viewModel.setRadius(selectedRadius)
+            Toast.makeText(requireContext(), "Raio alterado para ${selectedRadius.toInt()} km", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
     }
 
     private fun observeViewModel() {
