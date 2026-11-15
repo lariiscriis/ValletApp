@@ -11,20 +11,24 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import br.edu.fatecpg.valletprojeto.model.Reserva
 import br.edu.fatecpg.valletprojeto.model.Vaga
 import br.edu.fatecpg.valletprojeto.model.Veiculo
-import br.edu.fatecpg.valletprojeto.receiver.ReservaAvisoReceiver
 import br.edu.fatecpg.valletprojeto.receiver.ReservaCriadaReceiver
-import br.edu.fatecpg.valletprojeto.receiver.ReservaExpiredReceiver
+import br.edu.fatecpg.valletprojeto.receiver.ReservaExpiradaReceiver
 import br.edu.fatecpg.valletprojeto.worker.CheckReservaWorker
 import br.edu.fatecpg.valletprojeto.worker.ReservaNotificationWorker
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -78,26 +82,33 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    private var verificacaoExpiradasJob: Job? = null
+
     fun verificarEFinalizarReservasExpiradas() {
-        viewModelScope.launch {
+        if (verificacaoExpiradasJob?.isActive == true) return
+        verificacaoExpiradasJob = viewModelScope.launch {
             try {
                 val userId = auth.currentUser?.uid ?: return@launch
                 val agora = Timestamp.now()
 
                 val reservasExpiradas = db.collection("reserva")
                     .whereEqualTo("usuarioId", userId)
-                    .whereEqualTo("status", "ativa")
-                    .whereLessThan("fimReserva", agora)
                     .get()
                     .await()
 
                 for (document in reservasExpiradas.documents) {
                     val reserva = document.toObject(Reserva::class.java)
-                    if (reserva != null) {
-                        Log.d("ReservaViewModel", "🔍 Encontrada reserva expirada: ${reserva.id}")
-                        finalizarReservaExpirada(reserva.id, reserva.vagaId)
+                    val fimReserva = reserva?.fimReserva
+                    if (reserva != null && reserva.status == "ativa" &&
+                        fimReserva != null && fimReserva <= agora &&
+                        reserva.vagaId.isNotBlank()
+                    ) {
+                        Log.d("ReservaViewModel", "Encontrada reserva expirada: ${document.id}")
+                        finalizarReservaExpirada(document.id, reserva.vagaId)
                     }
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Log.e("ReservaViewModel", "Erro ao verificar reservas expiradas", e)
             }
@@ -113,10 +124,16 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
 
         val workRequest = OneTimeWorkRequestBuilder<CheckReservaWorker>()
             .setInputData(inputData)
-            .setInitialDelay(0, TimeUnit.SECONDS)
+            .setConstraints(Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build())
+            .addTag("recuperacao_reservas_expiradas")
+            .addTag("reserva_${reservaId}")
             .build()
 
-        WorkManager.getInstance(getApplication()).enqueue(workRequest)
+        WorkManager.getInstance(getApplication()).enqueueUniqueWork(
+            "recuperar_reserva_$reservaId", ExistingWorkPolicy.KEEP, workRequest
+        )
     }
 
     private suspend fun buscarQualquerReservaAtiva(): Reserva? {
@@ -235,7 +252,7 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
         }
 
         // 🔥 AGENDAR FINALIZAÇÃO AUTOMÁTICA
-        val expiraIntent = Intent(context, ReservaExpiredReceiver::class.java).apply {
+        val expiraIntent = Intent(context, ReservaExpiradaReceiver::class.java).apply {
             putExtra("reservaId", reserva.id)
             putExtra("vagaId", reserva.vagaId)
         }
@@ -361,7 +378,9 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
                 db.collection("vaga").document(vagaId).update("disponivel", false).await()
                 val reservaCriada = novaReserva.apply { id = docRef.id }
 
-                enviarNotificacaoReservaCriada(getApplication(), vagaId, estacionamentoNome)
+                // Independente dos avisos locais: uma falha na API não desfaz a reserva.
+                agendarNotificacaoInicioGestor(docRef.id, userId)
+                enviarNotificacaoReservaCriada(getApplication(), vagaId, estacionamentoNome, estacionamentoId)
                 agendarNotificacoes(getApplication(), reservaCriada)
 
                 _temReservaAtiva.value = true
@@ -372,7 +391,31 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
-    private fun enviarNotificacaoReservaCriada(context: Context, vagaId: String, estacionamentoNome: String) {
+    private fun agendarNotificacaoInicioGestor(reservaId: String, usuarioId: String) {
+        val trabalho = OneTimeWorkRequestBuilder<ReservaNotificationWorker>()
+            .setInputData(workDataOf(
+                "tipo" to "inicio_gestor",
+                "reservaId" to reservaId,
+                "usuarioId" to usuarioId
+            ))
+            .setConstraints(Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build())
+            .setBackoffCriteria(androidx.work.BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
+            // Não usa reserva_ID: renovar/cancelar avisos locais não cancela este evento.
+            .addTag("notificacao_inicio_gestor")
+            .build()
+        WorkManager.getInstance(getApplication()).enqueueUniqueWork(
+            "notificar_inicio_gestor_$reservaId", ExistingWorkPolicy.KEEP, trabalho
+        )
+    }
+
+    private fun enviarNotificacaoReservaCriada(
+        context: Context,
+        vagaId: String,
+        estacionamentoNome: String,
+        estacionamentoId: String
+    ) {
         viewModelScope.launch {
             try {
                 // 🔥 BUSCAR O NÚMERO DA VAGA
@@ -383,9 +426,10 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
                     putExtra("vagaId", vagaId)
                     putExtra("numeroVaga", numeroVaga) // 🔥 ENVIAR O NÚMERO
                     putExtra("estacionamentoNome", estacionamentoNome)
+                    putExtra("estacionamentoId", estacionamentoId)
                 }
                 context.sendBroadcast(intent)
-                Log.d("Notificacoes", "Notificação de reserva criada enviada para vaga: $numeroVaga")
+                Log.d("Notificacoes", "Broadcast local de reserva criada enviado para vaga: $numeroVaga")
             } catch (e: Exception) {
                 Log.e("Notificacoes", "Erro ao buscar número da vaga: ${e.message}")
                 // Fallback com ID
@@ -393,6 +437,7 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
                     putExtra("vagaId", vagaId)
                     putExtra("numeroVaga", vagaId)
                     putExtra("estacionamentoNome", estacionamentoNome)
+                    putExtra("estacionamentoId", estacionamentoId)
                 }
                 context.sendBroadcast(intent)
             }
@@ -400,6 +445,7 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
     }
     // 🔥 ATUALIZADO: Renovar reserva com cancelamento de notificações antigas
     fun renovarReserva(reserva: Reserva) {
+        if (_cancelando.value == true) return
         viewModelScope.launch {
             val idReserva = reserva.id
             val idVaga = reserva.vagaId
@@ -444,51 +490,36 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
         }
     }
 
+    private val _cancelando = MutableLiveData(false)
+    val cancelando: LiveData<Boolean> = _cancelando
+    private val _erroCancelamento = MutableLiveData<String?>()
+    val erroCancelamento: LiveData<String?> = _erroCancelamento
+    fun consumirErroCancelamento() { _erroCancelamento.value = null }
+
     fun cancelarReserva(vaga: Vaga) {
+        if (_cancelando.value == true) return
+        val ativa = _uiState.value as? ReservaUIState.Active ?: return
+        if (ativa.vaga.id != vaga.id) return
+        _cancelando.value = true
         viewModelScope.launch {
-            _uiState.value = ReservaUIState.Loading
-            val userId = auth.currentUser?.uid
-
-            if (userId == null) {
-                _uiState.value = ReservaUIState.Error("Usuário não autenticado.")
-                return@launch
-            }
-
             try {
-                // 🔥 CANCELAR NOTIFICAÇÕES ANTES DE CANCELAR A RESERVA
-                cancelarNotificacoesAgendadas(getApplication())
-
-                val reservaAtivaSnapshot = db.collection("reserva")
-                    .whereEqualTo("usuarioId", userId)
-                    .whereEqualTo("vagaId", vaga.id)
-                    .whereEqualTo("status", "ativa")
-                    .limit(1)
-                    .get()
-                    .await()
-
-                val reservaDoc = reservaAtivaSnapshot.documents.firstOrNull()
-
-                if (reservaDoc == null) {
-                    _uiState.value = ReservaUIState.Error("Nenhuma reserva ativa encontrada para cancelar.")
-                    return@launch
-                }
-
-                val batch = db.batch()
-                batch.update(reservaDoc.reference, "status", "cancelada")
-                val vagaRef = db.collection("vaga").document(vaga.id)
-                batch.update(vagaRef, "disponivel", true)
-                batch.commit().await()
-
+                br.edu.fatecpg.valletprojeto.service.CancelamentoReserva.cancelar(
+                    getApplication(), ativa.reserva.id, ativa.reserva.vagaId)
                 timer?.cancel()
-
+                currentReservaId = ativa.reserva.id
+                runCatching { cancelarNotificacoesAgendadas(getApplication()) }
                 _temReservaAtiva.value = false
+                idReservaAtiva = null
                 idVagaAtiva = null
                 currentReservaId = null
-
                 _uiState.value = ReservaUIState.Finished("Reserva cancelada com sucesso.")
-
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
-                _uiState.value = ReservaUIState.Error("Erro ao cancelar: ${e.message}")
+                // Não troca Active por Loading/Error: timer e ações continuam visíveis.
+                _erroCancelamento.value = e.message ?: "Não foi possível cancelar."
+            } finally {
+                _cancelando.value = false
             }
         }
     }
@@ -497,6 +528,7 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
         vaga: Vaga,
         onConcluido: () -> Unit
     ) {
+        if (_cancelando.value == true) return
         viewModelScope.launch {
             val userId = auth.currentUser?.uid
 
@@ -529,7 +561,7 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
                 batch.update(
                     reservaDoc.reference,
                     "status",
-                    "cancelada"
+                    "finalizada"
                 )
 
                 // Libera a vaga
@@ -621,3 +653,4 @@ class ReservaViewModel(application: Application) : AndroidViewModel(application)
         timer?.cancel()
     }
 }
+

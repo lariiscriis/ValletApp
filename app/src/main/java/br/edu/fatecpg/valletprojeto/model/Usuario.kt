@@ -7,5 +7,6 @@ data class Usuario(
     val tipoUser: String = "",
     val cnh: String? = null,
     val nomeEmpresa: String? = null,
-    val cargo: String? = null
+    val cargo: String? = null,
+    val telefone: String = ""
 )

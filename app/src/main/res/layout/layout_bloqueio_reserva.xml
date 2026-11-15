@@ -1,52 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutBloqueio"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/vallet_background"
+    android:clickable="true" android:focusable="true"
     android:orientation="vertical"
-    android:gravity="center"
-    android:background="@color/branco"
-    android:padding="32dp">
+    android:paddingHorizontal="24dp" android:paddingTop="4dp" android:paddingBottom="12dp">
 
-    <ImageView
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:src="@drawable/reserva_carro"
-        android:contentDescription="Animação de um carro sendo reservado"
-        android:layout_marginBottom="24dp" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:gravity="center_vertical" android:orientation="horizontal">
+        <ImageButton android:id="@+id/btnVoltarBloqueio"
+            android:layout_width="48dp" android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/bloqueio_voltar"
+            android:padding="12dp" android:src="@drawable/ic_arrow_back"
+            app:tint="@color/vallet_text" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:fontFamily="@font/poppins_semibold"
+            android:text="@string/bloqueio_cabecalho" android:textSize="18sp"
+            android:textColor="@color/vallet_text" />
+    </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Reserva Ativa Encontrada!"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@color/preto"
-        android:layout_marginBottom="16dp" />
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:minHeight="32dp" android:paddingVertical="4dp"
+        android:layout_marginTop="@dimen/bloqueio_espaco"
+        android:background="@drawable/bg_reserva_status"
+        android:drawableStart="@drawable/reserva_status_dot" android:drawablePadding="8dp"
+        android:gravity="center_vertical" android:paddingHorizontal="12dp"
+        android:fontFamily="@font/poppins_semibold" android:text="@string/bloqueio_status"
+        android:textColor="@color/vallet_green_dark" android:textSize="11sp" />
 
-    <TextView
-        android:id="@+id/textBloqueio"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Carregando informações da reserva..."
-        android:textSize="16sp"
-        android:textColor="@color/preto"
-        android:textAlignment="center"
-        android:lineSpacingExtra="4sp"
-        android:layout_marginBottom="32dp" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/bloqueio_espaco"
+        android:accessibilityHeading="true" android:fontFamily="@font/poppins_bold"
+        android:includeFontPadding="false" android:text="@string/bloqueio_titulo"
+        android:textColor="@color/vallet_text" android:textSize="@dimen/bloqueio_titulo" />
 
-    <Button
-        android:id="@+id/btnVerReserva"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ver Minha Reserva"
-        android:backgroundTint="@color/verdeclaro"
-        android:textColor="@color/branco"
-        android:paddingStart="32dp"
-        android:paddingEnd="32dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+    <TextView android:id="@+id/textBloqueio"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" android:fontFamily="@font/poppins"
+        android:text="@string/bloqueio_descricao" android:textSize="14sp"
+        android:textColor="@color/vallet_text" />
 
+    <!-- A ilustração cede espaço aos textos em janelas menores, sem rolagem. -->
+    <ImageView android:id="@+id/ilustracaoBloqueio"
+        android:layout_width="match_parent" android:layout_height="0dp"
+        android:layout_weight="1" android:layout_marginVertical="8dp"
+        android:importantForAccessibility="no" android:contentDescription="@null"
+        android:scaleType="fitCenter" android:src="@drawable/carro_reserva_ativa" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/vallet_surface" app:cardCornerRadius="22dp"
+        app:cardElevation="0dp" app:strokeColor="@color/vallet_green_muted" app:strokeWidth="1dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="@dimen/bloqueio_padding_cartao">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:id="@+id/tvBloqueioVaga"
+                    android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_weight="1" android:fontFamily="@font/poppins_bold"
+                    android:textColor="@color/vallet_text" android:textSize="22sp"
+                    tools:text="Vaga A-03" />
+                <TextView android:id="@+id/tvBloqueioTipo"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp" android:background="@drawable/bg_reserva_tipo"
+                    android:paddingHorizontal="12dp" android:paddingVertical="3dp"
+                    android:fontFamily="@font/poppins_semibold" android:textColor="@color/vallet_green_dark"
+                    android:textSize="12sp" android:visibility="gone" tools:visibility="visible" tools:text="Carro" />
+            </LinearLayout>
+            <TextView android:id="@+id/tvBloqueioEstacionamento"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_medium" android:textSize="15sp"
+                android:textColor="@color/vallet_text" android:visibility="gone"
+                tools:visibility="visible" tools:text="Estacionamento Central" />
+            <ProgressBar android:id="@+id/progressBloqueio"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="24dp" android:layout_height="24dp"
+                android:indeterminateTint="@color/vallet_green_dark" />
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:layout_marginVertical="10dp" android:background="@color/vallet_green_light" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_schedule" android:drawablePadding="8dp"
+                android:gravity="center_vertical" android:fontFamily="@font/poppins_semibold"
+                android:text="@string/bloqueio_andamento" android:textSize="13sp"
+                android:textColor="@color/vallet_green_dark" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton android:id="@+id/btnVerReserva"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/bloqueio_espaco"
+        android:minHeight="56dp" android:insetTop="0dp" android:insetBottom="0dp"
+        android:paddingVertical="12dp" android:paddingHorizontal="20dp"
+        android:fontFamily="@font/poppins_semibold" android:text="@string/bloqueio_ver_reserva"
+        android:textAllCaps="false" android:textColor="@color/vallet_surface" android:textSize="15sp"
+        app:backgroundTint="@color/vallet_green_dark" app:cornerRadius="18dp"
+        app:icon="@drawable/baseline_arrow_forward_24" app:iconGravity="end"
+        app:iconTint="@color/vallet_surface" app:iconSize="22dp" />
 </LinearLayout>

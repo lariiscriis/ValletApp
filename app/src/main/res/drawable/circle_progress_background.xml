@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <shape xmlns:android="http://schemas.android.com/apk/res/android"
-        android:shape="oval">
-        <stroke
-            android:width="8dp"
-            android:color="#046C4E"/>
-        <solid
-            android:color="@android:color/transparent"/>
-    </shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Círculo Externo Suave -->
+    <item>
+        <shape android:shape="ring"
+            android:innerRadiusRatio="2.6"
+            android:thickness="8dp"
+            android:useLevel="false">
+            <solid android:color="@color/vallet_green_light" />
+        </shape>
+    </item>
+    <!-- Anel Interno Decorativo -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#0D3B5942" />
+        </shape>
+    </item>
+</layer-list>

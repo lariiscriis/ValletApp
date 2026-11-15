@@ -1,11 +1,12 @@
 package br.edu.fatecpg.valletprojeto
 
-import android.content.Intent
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import br.edu.fatecpg.valletprojeto.ui.prepararVoltar
+import androidx.activity.enableEdgeToEdge
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,28 +15,25 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import kotlin.math.ceil
 import kotlin.math.max
+import android.graphics.BitmapFactory
+import android.util.Base64
+import android.widget.LinearLayout
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import br.edu.fatecpg.valletprojeto.service.RequisicaoPagamento
+import br.edu.fatecpg.valletprojeto.service.RespostaPix
+import br.edu.fatecpg.valletprojeto.service.RetrofitClient
+import androidx.core.view.isVisible
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 
-/**
- * Tela de pagamento (mock/simulação).
- *
- * Não existe nenhuma integração real com gateway de pagamento ou banco.
- * O objetivo aqui é apenas demonstrar o fluxo completo:
- * resumo da reserva -> escolha da forma de pagamento -> "processamento"
- * simulado -> tela de sucesso -> QR Code de saída -> simulação de leitura.
- *
- * Todos os dados de reserva chegam via Intent extras vindos da ReservaActivity.
- * Caso algum extra não tenha sido enviado, um valor mock é usado no lugar,
- * para que a tela sempre funcione mesmo em testes isolados desta Activity.
- */
 class PagamentoActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPagamentoBinding
-
-    // Forma de pagamento selecionada. Nula = nenhuma selecionada ainda.
     private enum class FormaPagamento { PIX, CREDITO, DEBITO }
     private var formaSelecionada: FormaPagamento? = null
 
-    // ---------- Dados recebidos da ReservaActivity (com fallback mock) ----------
     private var vagaNumero: String = "A-01"
     private var vagaTipo: String = "Carro"
     private var vagaLocalizacao: String = "Térreo"
@@ -46,25 +44,54 @@ class PagamentoActivity : AppCompatActivity() {
     private var horarioFimTexto: String = "15:00"
     private var horaInicioMillis: Long = 0L
 
-    // Regra de cobrança MOCK: valor fixo por hora.
-    // TODO: substituir pela regra real de precificação do Vallet quando existir.
-    private val valorPorHora = 10.0
+    // Agora o valor base vem da Intent
+    private var valorPorHora = 10.0
     private var horasCobradas = 1
     private var valorTotal = 10.0
 
+    private var reservaIdExtra: String = ""
+    private var usuarioIdExtra: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityPagamentoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.btnVoltar.prepararVoltar()
+        br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
 
         lerExtrasDaIntent()
-        calcularValorMock()
+        calcularValorDinamico()
         preencherResumo()
         setupSelecaoFormaPagamento()
         setupBotaoConfirmar()
         setupTelaSucesso()
 
-        binding.btnVoltar.setOnClickListener { finish() }
+        binding.btnVoltar.setOnClickListener { voltarEtapa() }
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() = voltarEtapa()
+        })
+    }
+
+    private fun voltarEtapa() {
+        when {
+            binding.layoutSaidaLiberada.isVisible -> {
+                setResult(RESULT_OK)
+                finish()
+            }
+            // Após aprovação, mantém o QR de saída até a conclusão.
+            binding.layoutSucesso.isVisible -> {
+                Toast.makeText(this, "Conclua a saída antes de voltar", Toast.LENGTH_SHORT).show()
+            }
+            binding.layoutEtapa2Pix.isVisible -> {
+                binding.layoutEtapa2Pix.visibility = View.GONE
+                binding.layoutEtapa1Pagamento.visibility = View.VISIBLE
+            }
+            else -> {
+                setResult(RESULT_CANCELED)
+                finish()
+            }
+        }
     }
 
     private fun lerExtrasDaIntent() {
@@ -77,18 +104,15 @@ class PagamentoActivity : AppCompatActivity() {
         intent.getStringExtra("horarioInicioTexto")?.let { horarioInicioTexto = it }
         intent.getStringExtra("horarioFimTexto")?.let { horarioFimTexto = it }
         horaInicioMillis = intent.getLongExtra("horaInicioMillis", System.currentTimeMillis() - 3_600_000)
+
+        // CAPTURA DO VALOR REAL DA HORA:
+        valorPorHora = intent.getDoubleExtra("valorHora", 10.0)
+
+        intent.getStringExtra("reservaId")?.let { reservaIdExtra = it }
+        intent.getStringExtra("usuarioId")?.let { usuarioIdExtra = it }
     }
 
-    /**
-     * Cálculo simples do valor a pagar.
-     * tempo utilizado = agora - início da reserva
-     * horas cobradas = arredondado pra cima (qualquer fração de hora conta como 1h)
-     * valor total = horas cobradas * valor por hora
-     *
-     * Isso é só um mock para o protótipo. A regra financeira real (tolerância,
-     * cobrança por minuto, taxas etc.) deve substituir esse trecho depois.
-     */
-    private fun calcularValorMock() {
+    private fun calcularValorDinamico() {
         val tempoUtilizadoMinutos = max(1L, (System.currentTimeMillis() - horaInicioMillis) / 60_000)
         horasCobradas = ceil(tempoUtilizadoMinutos / 60.0).toInt().coerceAtLeast(1)
         valorTotal = horasCobradas * valorPorHora
@@ -96,15 +120,22 @@ class PagamentoActivity : AppCompatActivity() {
         val horas = tempoUtilizadoMinutos / 60
         val minutos = tempoUtilizadoMinutos % 60
         val tempoTexto = if (horas > 0) "${horas}h ${minutos}min" else "${minutos}min"
-        binding.tvResumoTempoUtilizado.text = "Tempo utilizado: $tempoTexto"
+        binding.tvResumoTempoUtilizado.text = tempoTexto
     }
 
     private fun preencherResumo() {
-        binding.tvResumoEstacionamento.text = "Estacionamento: $estacionamentoNome"
-        binding.tvResumoVaga.text = "Vaga: $vagaNumero"
-        binding.tvResumoVeiculo.text = "Veículo: $veiculoModelo • $veiculoPlaca"
-        binding.tvResumoHorario.text = "Horário: $horarioInicioTexto - $horarioFimTexto"
+        binding.tvResumoEstacionamento.text = estacionamentoNome
+        binding.tvResumoVaga.text = vagaNumero
+        binding.tvResumoVeiculo.text = "$veiculoModelo • $veiculoPlaca"
+        binding.tvResumoHorario.text = "$horarioInicioTexto - $horarioFimTexto"
         binding.tvValorTotal.text = formatarValor(valorTotal)
+        binding.tvPixValor.text = formatarValor(valorTotal)
+        binding.tvPixEstacionamento.text = estacionamentoNome
+        binding.tvSucessoEstacionamento.text = estacionamentoNome
+        binding.tvSucessoVaga.text = getString(R.string.pagamento_qr_vaga, vagaNumero)
+        binding.tvSucessoVeiculo.text = getString(R.string.pagamento_qr_placa, veiculoPlaca)
+        binding.tvSucessoValor.text = formatarValor(valorTotal)
+        binding.tvSaidaValorPago.text = formatarValor(valorTotal)
     }
 
     private fun formatarValor(valor: Double): String = "R$ %.2f".format(valor).replace(".", ",")
@@ -117,33 +148,34 @@ class PagamentoActivity : AppCompatActivity() {
 
     private fun selecionarForma(forma: FormaPagamento) {
         formaSelecionada = forma
-
-        // Reseta visual dos 3 cards
         atualizarEstadoCard(binding.cardPix, binding.ivCheckPix, forma == FormaPagamento.PIX)
         atualizarEstadoCard(binding.cardCredito, binding.ivCheckCredito, forma == FormaPagamento.CREDITO)
         atualizarEstadoCard(binding.cardDebito, binding.ivCheckDebito, forma == FormaPagamento.DEBITO)
 
-        // Mostra/esconde os blocos condicionais
         binding.tvExplicacaoPix.visibility = if (forma == FormaPagamento.PIX) View.VISIBLE else View.GONE
         binding.layoutCamposCartao.visibility =
             if (forma == FormaPagamento.CREDITO || forma == FormaPagamento.DEBITO) View.VISIBLE else View.GONE
     }
 
-    private fun atualizarEstadoCard(
-        card: com.google.android.material.card.MaterialCardView,
-        check: android.widget.ImageView,
-        selecionado: Boolean
-    ) {
-        card.strokeColor = if (selecionado)
-            getColor(R.color.verdeescuro) else getColor(R.color.cinza)
-        card.strokeWidth = if (selecionado) 4 else 2
-        check.visibility = if (selecionado) View.VISIBLE else View.INVISIBLE
+    private fun atualizarEstadoCard(card: LinearLayout, check: android.widget.ImageView, selecionado: Boolean) {
+        if (selecionado) {
+            card.setBackgroundResource(R.drawable.bg_card_opcao_selecionada)
+            check.visibility = View.VISIBLE
+        } else {
+            card.setBackgroundResource(R.drawable.bg_card_opcao_padrao)
+            check.visibility = View.INVISIBLE
+        }
     }
 
     private fun setupBotaoConfirmar() {
         binding.btnConfirmarPagamento.setOnClickListener {
             if (!validarSelecaoEDados()) return@setOnClickListener
-            processarPagamentoSimulado()
+
+            if (formaSelecionada == FormaPagamento.PIX) {
+                solicitarPixNaAPI()
+            } else {
+                Toast.makeText(this, "Apenas PIX está implementado.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -159,43 +191,161 @@ class PagamentoActivity : AppCompatActivity() {
             val validade = binding.etValidadeCartao.text?.toString().orEmpty().trim()
             val cvv = binding.etCvvCartao.text?.toString().orEmpty().trim()
 
-
             if (numero.isEmpty() || nome.isEmpty() || validade.isEmpty() || cvv.isEmpty()) {
-                Toast.makeText(this, "Preencha todos os dados do cartão.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Preencha os dados do cartão.", Toast.LENGTH_SHORT).show()
                 return false
             }
         }
         return true
     }
 
-    private fun processarPagamentoSimulado() {
+    private fun solicitarPixNaAPI() {
         binding.btnConfirmarPagamento.isEnabled = false
         binding.progressBarPagamento.visibility = View.VISIBLE
 
-        // Simula um pequeno tempo de processamento (sem coroutine/rede real).
-        Handler(Looper.getMainLooper()).postDelayed({
-            binding.progressBarPagamento.visibility = View.GONE
-            mostrarPagamentoAprovado()
-        }, 1800)
+        val usuarioId = usuarioIdExtra.ifEmpty { "teste" }
+        val reservaId = reservaIdExtra.ifEmpty { "teste" }
+
+        val requisicao = RequisicaoPagamento(valorTotal, "pix", usuarioId, reservaId)
+
+        RetrofitClient.valletApiService.criarPagamentoPix(requisicao).enqueue(object : Callback<RespostaPix> {
+            override fun onResponse(call: Call<RespostaPix>, response: Response<RespostaPix>) {
+                binding.progressBarPagamento.visibility = View.GONE
+                if (response.isSuccessful && response.body() != null) {
+                    val resposta = response.body()!!
+                    exibirQrCode(resposta.qrCode, resposta.qrCodeBase64)
+                } else {
+                    exibirQrCodeSimulado()
+                }
+            }
+            override fun onFailure(call: Call<RespostaPix>, t: Throwable) {
+                binding.progressBarPagamento.visibility = View.GONE
+                exibirQrCodeSimulado()
+            }
+        })
     }
 
+    private fun exibirQrCodeSimulado() {
+        val codigoSimulado = "00020126580014br.gov.bcb.pix0136vallet-pagamento-${System.currentTimeMillis()}5204000053039865802BR5925Vallet Estacionamento6009Sao Paulo62070503***63041234"
+        val dummyBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
+        exibirQrCode(codigoSimulado, dummyBase64)
+    }
+
+    private fun gerarBitmapQrCode(conteudo: String): Bitmap {
+        val tamanho = 512
+        val bitMatrix = QRCodeWriter().encode(conteudo, BarcodeFormat.QR_CODE, tamanho, tamanho)
+        val bitmap = createBitmap(tamanho, tamanho, Bitmap.Config.RGB_565)
+        for (x in 0 until tamanho) {
+            for (y in 0 until tamanho) {
+                bitmap[x, y] = if (bitMatrix[x, y]) Color.BLACK else Color.WHITE
+            }
+        }
+        return bitmap
+    }
+
+    private fun exibirQrCode(codigoCopiaCola: String, qrCodeBase64: String) {
+        binding.layoutEtapa1Pagamento.visibility = View.GONE
+        binding.layoutEtapa2Pix.visibility = View.VISIBLE
+
+        binding.tvCodigoPixCopiaCola.text = codigoCopiaCola
+
+        try {
+            if (qrCodeBase64.isNotEmpty() && !qrCodeBase64.startsWith("iVBORw0KGgo")) {
+                val imageBytes = Base64.decode(qrCodeBase64, Base64.DEFAULT)
+                val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                binding.ivQrCodePagamento.setImageBitmap(decodedImage)
+            } else {
+                val bitmapQr = gerarBitmapQrCode(codigoCopiaCola)
+                binding.ivQrCodePagamento.setImageBitmap(bitmapQr)
+            }
+        } catch (e: Exception) {
+            val bitmapQr = gerarBitmapQrCode(codigoCopiaCola)
+            binding.ivQrCodePagamento.setImageBitmap(bitmapQr)
+        }
+
+        binding.btnVoltarPix.setOnClickListener { voltarEtapa() }
+
+        binding.btnSimularConfirmacaoWebhook.setOnClickListener {
+            mostrarPagamentoAprovado()
+        }
+
+        binding.btnCopiarPix.setOnClickListener {
+            val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Código Pix", codigoCopiaCola)
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(this, "Código Pix copiado!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private var pagamentoSalvoNoFirebase = false
+
     private fun mostrarPagamentoAprovado() {
-        binding.layoutConteudoPagamento.visibility = View.GONE
-        binding.layoutSucesso.visibility = View.VISIBLE
+        binding.layoutEtapa2Pix.visibility = View.GONE
+        binding.layoutEtapa1Pagamento.visibility = View.GONE
+        binding.layoutEtapa3Sucesso.visibility = View.VISIBLE
 
-        binding.tvSucessoEstacionamento.text = "Estacionamento: $estacionamentoNome"
-        binding.tvSucessoVaga.text = "Vaga: $vagaNumero"
-        binding.tvSucessoVeiculo.text = "Veículo: $veiculoModelo • $veiculoPlaca"
-        binding.tvSucessoValor.text = "Valor pago: ${formatarValor(valorTotal)}"
-
-        val conteudoQr = "VALLET-SAIDA-${System.currentTimeMillis()}"
-        gerarQrCode(conteudoQr)
-
+        salvarPagamentoNoFirebase()
+        gerarQrCode("VALLET-SAIDA-${System.currentTimeMillis()}")
         animarEntradaSucesso()
     }
 
+    private fun salvarPagamentoNoFirebase() {
+        if (pagamentoSalvoNoFirebase) return
+        pagamentoSalvoNoFirebase = true
+
+        val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+        val formaStr = formaSelecionada?.name ?: "PIX"
+
+        val dadosReserva = hashMapOf<String, Any>(
+            "valorTotal" to valorTotal,
+            "valorPago" to valorTotal,
+            "statusPagamento" to "pago",
+            "formaPagamento" to formaStr,
+            "dataPagamento" to com.google.firebase.Timestamp.now()
+        )
+
+        // Atualiza o valor total no documento da reserva no Firestore
+        if (reservaIdExtra.isNotEmpty()) {
+            db.collection("reserva")
+                .document(reservaIdExtra)
+                .set(dadosReserva, com.google.firebase.firestore.SetOptions.merge())
+                .addOnSuccessListener {
+                    android.util.Log.d("PagamentoActivity", "✅ Valor total R$ $valorTotal salvo com sucesso na reserva $reservaIdExtra")
+                }
+                .addOnFailureListener { e ->
+                    android.util.Log.e("PagamentoActivity", "❌ Erro ao salvar valor pago na reserva", e)
+                }
+        }
+
+        // Salva um registro completo na coleção de pagamentos
+        val usuarioId = usuarioIdExtra.ifEmpty {
+            com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid.orEmpty()
+        }
+
+        val novoPagamento = hashMapOf<String, Any>(
+            "usuarioId" to usuarioId,
+            "reservaId" to reservaIdExtra,
+            "estacionamentoNome" to estacionamentoNome,
+            "vagaNumero" to vagaNumero,
+            "veiculoPlaca" to veiculoPlaca,
+            "valorTotal" to valorTotal,
+            "formaPagamento" to formaStr,
+            "status" to "aprovado",
+            "dataPagamento" to com.google.firebase.Timestamp.now()
+        )
+
+        db.collection("pagamentos")
+            .add(novoPagamento)
+            .addOnSuccessListener { ref ->
+                android.util.Log.d("PagamentoActivity", "✅ Registro de pagamento salvo na coleção 'pagamentos' com ID: ${ref.id}")
+            }
+            .addOnFailureListener { e ->
+                android.util.Log.e("PagamentoActivity", "❌ Erro ao criar registro na coleção 'pagamentos'", e)
+            }
+    }
+
     private fun animarEntradaSucesso() {
-        val icone = binding.layoutSucesso.getChildAt(0) // ImageView do check
+        val icone = binding.ivSaidaCancela
         icone.scaleX = 0f
         icone.scaleY = 0f
         icone.animate()
@@ -205,21 +355,18 @@ class PagamentoActivity : AppCompatActivity() {
             .start()
     }
 
-    /**
-     * Gera o QR Code usando a biblioteca com.google.zxing:core (dependência mínima*/
     private fun gerarQrCode(conteudo: String) {
         try {
             val tamanho = 512
             val bitMatrix = QRCodeWriter().encode(conteudo, BarcodeFormat.QR_CODE, tamanho, tamanho)
-            val bitmap = Bitmap.createBitmap(tamanho, tamanho, Bitmap.Config.RGB_565)
+            val bitmap = createBitmap(tamanho, tamanho, Bitmap.Config.RGB_565)
             for (x in 0 until tamanho) {
                 for (y in 0 until tamanho) {
-                    bitmap.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                    bitmap[x, y] = if (bitMatrix[x, y]) Color.BLACK else Color.WHITE
                 }
             }
             binding.ivQrCode.setImageBitmap(bitmap)
         } catch (e: Exception) {
-
             binding.ivQrCode.setImageResource(R.drawable.ic_payments)
         }
     }
@@ -228,71 +375,11 @@ class PagamentoActivity : AppCompatActivity() {
         binding.btnSimularLeitura.setOnClickListener {
             binding.layoutSucesso.visibility = View.GONE
             binding.layoutSaidaLiberada.visibility = View.VISIBLE
-            preencherResumoSaida()
-            animarSaidaLiberada()
         }
 
         binding.btnConcluir.setOnClickListener {
             setResult(RESULT_OK)
             finish()
-        }
-    }
-
-    private fun preencherResumoSaida() {
-        binding.tvSaidaTempoTotal.text = "${horasCobradas}h"
-        binding.tvSaidaValorPago.text = formatarValor(valorTotal)
-    }
-
-
-    private fun animarSaidaLiberada() {
-        // Ícone: pop
-        binding.ivExitIcon.scaleX = 0f
-        binding.ivExitIcon.scaleY = 0f
-        binding.ivExitIcon.animate()
-            .scaleX(1f).scaleY(1f)
-            .setStartDelay(100)
-            .setDuration(400)
-            .setInterpolator(android.view.animation.OvershootInterpolator())
-            .start()
-
-        // Anel de pulso
-        binding.viewPulso.scaleX = 0.6f
-        binding.viewPulso.scaleY = 0.6f
-        binding.viewPulso.alpha = 0.8f
-        binding.viewPulso.animate()
-            .scaleX(1.6f).scaleY(1.6f)
-            .alpha(0f)
-            .setStartDelay(150)
-            .setDuration(900)
-            .withEndAction {
-                // reseta e pulsa mais uma vez, pra reforçar o efeito sem ficar repetitivo
-                binding.viewPulso.scaleX = 0.6f
-                binding.viewPulso.scaleY = 0.6f
-                binding.viewPulso.alpha = 0.8f
-                binding.viewPulso.animate()
-                    .scaleX(1.6f).scaleY(1.6f)
-                    .alpha(0f)
-                    .setDuration(900)
-                    .start()
-            }
-            .start()
-
-        // Textos e resumo: fade + sobe de baixo pra cima, em sequência
-        val elementos = listOf(
-            binding.tvSaidaTitulo,
-            binding.tvSaidaSubtitulo,
-            binding.layoutSaidaResumo,
-            binding.btnConcluir
-        )
-        elementos.forEachIndexed { index, view ->
-            view.alpha = 0f
-            view.translationY = 40f
-            view.animate()
-                .alpha(1f)
-                .translationY(0f)
-                .setStartDelay(250L + index * 120L)
-                .setDuration(350)
-                .start()
         }
     }
 }

@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -13,7 +12,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import br.edu.fatecpg.valletprojeto.DashboardBase
 import br.edu.fatecpg.valletprojeto.R
 import br.edu.fatecpg.valletprojeto.model.Vaga
 import com.google.firebase.Timestamp
@@ -23,7 +21,7 @@ import kotlinx.coroutines.launch
 
 class FirebaseMessagingService : FirebaseMessagingService() {
     private val db = FirebaseFirestore.getInstance()
-    private val parkingService = ParkingService(db)
+    private val parkingService = EstacionamentoService(db)
     private val auth = FirebaseAuth.getInstance()
 
     private val serviceScope = CoroutineScope(Dispatchers.IO)
@@ -87,7 +85,7 @@ class FirebaseMessagingService : FirebaseMessagingService() {
         Log.d("FCM_PARKING", "   placa: $placa")
         Log.d("FCM_PARKING", "   tipo: $tipo")
 
-        val listener = object : ParkingService.ParkingActionListener {
+        val listener = object : EstacionamentoService.ParkingActionListener {
             override fun askToCreateReservation(
                 vaga: Vaga,
                 usuarioId: String,

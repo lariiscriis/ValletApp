@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomBottomNavigationViewIndicator">
+        <item name="android:color">@color/vallet_background</item>
+        <item name="shapeAppearanceOverlay">
+            @style/ValletNavigationIndicatorShape
+        </item>
+    </style>
+
+    <style name="ValletNavigationIndicatorShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+
+
+
+</resources>

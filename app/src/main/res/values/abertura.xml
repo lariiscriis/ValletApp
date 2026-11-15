@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.ValletAbertura" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowBackground">@color/vallet_background</item>
+        <item name="android:colorBackground">@color/vallet_background</item>
+        <item name="android:statusBarColor">@color/vallet_background</item>
+        <item name="android:navigationBarColor">@color/vallet_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+    <style name="Theme.ValletAbertura" parent="Base.Theme.ValletAbertura" />
+</resources>

@@ -1,64 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardBackgroundColor="@color/branco"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:background="?android:attr/selectableItemBackground"
+    android:paddingHorizontal="20dp"
+    android:paddingTop="16dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="16dp">
+    <!-- Avatar / Círculo da Vaga (Mantém o ID tvVaga) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_vaga"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        app:cardBackgroundColor="@color/vallet_green_light"
+        app:cardCornerRadius="23dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/tvVaga"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_marginEnd="16dp"
-            android:background="@drawable/circle_spot_bg"
-            android:gravity="center"
-            android:textColor="@color/verdeescuro"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            tools:text="A1" />
-
-        <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:fontFamily="@font/poppins_semibold"
+            android:textColor="@color/vallet_green_dark"
+            android:textSize="18sp"
+            tools:text="P" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Textos: Nome do Estacionamento e Período -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/card_vaga"
+        app:layout_constraintEnd_toStartOf="@+id/card_status"
+        app:layout_constraintStart_toEndOf="@+id/card_vaga"
+        app:layout_constraintTop_toTopOf="@+id/card_vaga">
+
+        <TextView
+            android:id="@+id/tvEstacionamentoNome"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:fontFamily="@font/poppins_semibold"
+            android:textColor="@color/vallet_green_dark"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textSize="14sp"
+            tools:text="Shopping Praia Grande" />
 
-            <TextView
-                android:id="@+id/tvEstacionamentoNome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/verdeescuro"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                tools:text="Estacionamento Nome" />
-
-            <TextView
-                android:id="@+id/tvPeriodo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/preto"
-                android:textSize="14sp"
-                tools:text="Duração: 01/01/2025 - 00:00 até 02:00" />
-
-            <TextView
-                android:id="@+id/tvStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textSize="14sp"
-                android:textStyle="italic"
-                tools:text="Status: Finalizada" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvPeriodo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/poppins"
+            android:textColor="@color/vallet_green"
+            android:textSize="12sp"
+            tools:text="14/10/2025 • 10:12 - 12:45" />
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+
+    <!-- Pílula de Status / Duração (Mantém o ID tvStatus) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        app:cardBackgroundColor="#E5EAE5"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/card_vaga"
+        app:layout_constraintEnd_toStartOf="@+id/iv_arrow"
+        app:layout_constraintTop_toTopOf="@+id/card_vaga">
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:fontFamily="@font/poppins_medium"
+            android:textColor="@color/vallet_green_dark"
+            android:textSize="11sp"
+            tools:text="2h 33min" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Seta (Chevron Right) -->
+    <ImageView
+        android:id="@+id/iv_arrow"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/chevron_right"
+        app:tint="@color/vallet_green_dark"
+        app:layout_constraintBottom_toBottomOf="@+id/card_vaga"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/card_vaga" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="#E5EAE5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/card_vaga"
+        app:layout_constraintTop_toBottomOf="@+id/card_vaga" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,16 +1,18 @@
 package br.edu.fatecpg.valletprojeto
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Rect
 import android.os.Bundle
+import br.edu.fatecpg.valletprojeto.ui.prepararVoltar
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.edu.fatecpg.valletprojeto.adapter.VagasAdapter
 import br.edu.fatecpg.valletprojeto.databinding.ActivityVagaBinding
@@ -18,9 +20,6 @@ import br.edu.fatecpg.valletprojeto.model.Vaga
 import br.edu.fatecpg.valletprojeto.viewmodel.ReservaUIState
 import br.edu.fatecpg.valletprojeto.viewmodel.ReservaViewModel
 import br.edu.fatecpg.valletprojeto.viewmodel.VagaViewModel
-import com.google.android.material.chip.Chip
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 
 class VagaActivity : AppCompatActivity() {
 
@@ -28,154 +27,284 @@ class VagaActivity : AppCompatActivity() {
     private lateinit var reservaViewModel: ReservaViewModel
     private lateinit var binding: ActivityVagaBinding
     private lateinit var vagasAdapter: VagasAdapter
-    private var isAdmin: Boolean = false
+
     private var estacionamentoId: String? = null
+    private var layoutBloqueio: View? = null
+    private var reservaAtivaAtual: ReservaUIState.Active? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         binding = ActivityVagaBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.btnBack.prepararVoltar()
 
         viewModel = ViewModelProvider(this)[VagaViewModel::class.java]
-        reservaViewModel = ViewModelProvider(this)[ReservaViewModel::class.java]
+        reservaViewModel =
+            ViewModelProvider(this)[ReservaViewModel::class.java]
+
         estacionamentoId = intent.getStringExtra("estacionamentoId")
+        val estacionamentoNome =
+            intent.getStringExtra("estacionamentoNome")
 
         if (estacionamentoId == null) {
-            Toast.makeText(this, "Erro: ID do estacionamento não fornecido.", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                "Erro: ID do estacionamento não fornecido.",
+                Toast.LENGTH_LONG
+            ).show()
+
             finish()
             return
         }
-        verificarTipoUsuario()
+
+        binding.tvParkingName.text =
+            estacionamentoNome ?: "Estacionamento"
+
+        setupUI()
     }
 
     private fun setupUI() {
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+
         setupRecyclerView()
         setupObservers()
         setupFilterListeners()
-        setupAdminFeatures()
         setupReservaObserver()
-        viewModel.fetchVagasComFiltro(estacionamentoId!!)
 
-        reservaViewModel.verificarReservaAtiva()
-    }
+        viewModel.fetchVagasComFiltro(estacionamentoId!!, tipoFiltro = filtroSelecionado())
 
-    private fun verificarTipoUsuario() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId == null) {
-            isAdmin = false
-            setupUI()
-            return
-        }
+        binding.btnReservar.isEnabled = false
+        binding.btnReservar.alpha = 0.5f
 
-        FirebaseFirestore.getInstance().collection("usuario").document(userId).get()
-            .addOnSuccessListener { document ->
-                isAdmin = document.getString("tipo_user") == "admin"
-                setupUI()
-            }
-            .addOnFailureListener {
-                isAdmin = false
-                setupUI()
-            }
+        atualizarCoresDosFiltros(
+            binding.chipGroupTipoVaga.checkedChipId
+        )
     }
 
     private fun setupReservaObserver() {
+        // Registrado uma única vez durante a criação da tela.
+        reservaViewModel.uiState.observe(this) { uiState ->
+            reservaAtivaAtual = uiState as? ReservaUIState.Active
+            atualizarTelaBloqueio()
+        }
+
         reservaViewModel.temReservaAtiva.observe(this) { temReserva ->
             if (temReserva) {
+                // Oculta o cabeçalho.
+                binding.btnBack.visibility = View.GONE
+                binding.tvParkingName.visibility = View.GONE
+                binding.tvSubtitle.visibility = View.GONE
+
+                // Oculta toda a seleção de vagas.
                 binding.recyclerView.visibility = View.GONE
                 binding.chipGroupTipoVaga.visibility = View.GONE
+                binding.scrollChips.visibility = View.GONE
+                binding.plantContainer.visibility = View.GONE
+                binding.bottomPanel.visibility = View.GONE
+
+                binding.btnReservar.isEnabled = false
+                binding.btnReservar.setOnClickListener(null)
 
                 mostrarTelaBloqueio()
             } else {
+                esconderTelaBloqueio()
+
+                // Restaura o cabeçalho.
+                binding.btnBack.visibility = View.VISIBLE
+                binding.tvParkingName.visibility = View.VISIBLE
+                binding.tvSubtitle.visibility = View.VISIBLE
+
+                // Restaura a seleção de vagas.
                 binding.recyclerView.visibility = View.VISIBLE
                 binding.chipGroupTipoVaga.visibility = View.VISIBLE
-                esconderTelaBloqueio()
+                binding.scrollChips.visibility = View.VISIBLE
+                binding.plantContainer.visibility = View.VISIBLE
+                binding.bottomPanel.visibility = View.VISIBLE
+
+                binding.tvSubtitle.text =
+                    "Escolha sua vaga e garanta seu espaço."
+
+                binding.tvSelectedSpotName.text = "Selecione uma vaga"
+                binding.tvSelectedSpotDetails.text = "Planta interativa"
+                binding.tvPrecoReserva.text = "R$ --"
+
+                binding.btnReservar.isEnabled = false
+                binding.btnReservar.alpha = 0.5f
+                binding.btnReservar.setOnClickListener(null)
 
                 viewModel.fetchVagasComFiltro(estacionamentoId!!)
             }
         }
-
     }
 
     private fun mostrarTelaBloqueio() {
-        val existingBloqueio = findViewById<View>(R.id.layoutBloqueio)
-        if (existingBloqueio != null) {
-            binding.root.removeView(existingBloqueio)
+        if (layoutBloqueio == null) {
+            val novoLayout = layoutInflater.inflate(
+                R.layout.layout_bloqueio_reserva,
+                binding.root,
+                false
+            )
+
+            // O aviso ocupa toda a área disponível da tela.
+            val parametros = ConstraintLayout.LayoutParams(0, 0).apply {
+                topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+                bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+                startToStart = ConstraintLayout.LayoutParams.PARENT_ID
+                endToEnd = ConstraintLayout.LayoutParams.PARENT_ID
+            }
+
+            binding.root.addView(novoLayout, parametros)
+            layoutBloqueio = novoLayout
         }
 
-        val layoutBloqueio = View.inflate(this, R.layout.layout_bloqueio_reserva, null)
-        layoutBloqueio.id = R.id.layoutBloqueio
-        binding.root.addView(layoutBloqueio)
+        layoutBloqueio?.findViewById<View>(R.id.btnVoltarBloqueio)?.setOnClickListener { finish() }
+        atualizarTelaBloqueio()
+    }
 
-        val btnVerReserva = layoutBloqueio.findViewById<Button>(R.id.btnVerReserva)
-        val textBloqueio = layoutBloqueio.findViewById<TextView>(R.id.textBloqueio)
+    private fun atualizarTelaBloqueio() {
+        val tela = layoutBloqueio ?: return
 
-        reservaViewModel.uiState.observe(this) { uiState ->
-            when (uiState) {
-                is ReservaUIState.Active -> {
-                    val mensagem = "Você já tem uma reserva ativa na vaga ${uiState.vaga.numero}.\n\nFinalize sua reserva atual antes de reservar outra vaga."
-                    textBloqueio.text = mensagem
+        val botao = tela.findViewById<Button>(R.id.btnVerReserva)
+        val titulo = tela.findViewById<TextView>(R.id.tvBloqueioVaga)
+        val tipo = tela.findViewById<TextView>(R.id.tvBloqueioTipo)
+        val nome = tela.findViewById<TextView>(R.id.tvBloqueioEstacionamento)
+        tela.findViewById<View>(R.id.progressBloqueio).visibility =
+            if (reservaAtivaAtual == null) View.VISIBLE else View.GONE
+        val ativa = reservaAtivaAtual
 
-                    btnVerReserva.setOnClickListener {
-                        val intent = Intent(this, ReservaActivity::class.java).apply {
-                            putExtra("vagaId", uiState.reserva.vagaId)
-                            putExtra("estacionamentoId", uiState.reserva.estacionamentoId)
-                        }
-                        startActivity(intent)
-                    }
+        if (ativa != null) {
+            titulo.text = ativa.vaga.numero.takeIf { it.isNotBlank() }?.let {
+                getString(R.string.bloqueio_vaga, it)
+            } ?: getString(R.string.bloqueio_vaga_indisponivel)
+            tipo.text = ativa.vaga.tipo.replaceFirstChar { it.uppercase() }
+            tipo.visibility = if (ativa.vaga.tipo.isBlank()) View.GONE else View.VISIBLE
+            nome.text = ativa.reserva.estacionamentoNome
+            nome.visibility = if (ativa.reserva.estacionamentoNome.isBlank()) View.GONE else View.VISIBLE
+            // Reserva não persiste veículoId: não apresentar o veículo padrão como original.
+            botao.setText(R.string.bloqueio_ver_reserva)
+
+            botao.setOnClickListener {
+                if (isFinishing) return@setOnClickListener
+                val atual = reservaAtivaAtual
+                    ?: return@setOnClickListener
+
+                if (reservaViewModel.temReservaAtiva.value != true) {
+                    return@setOnClickListener
                 }
-                else -> {
-                    textBloqueio.text = "Você já tem uma reserva ativa em andamento.\n\nFinalize sua reserva atual antes de reservar outra vaga."
 
-                    btnVerReserva.setOnClickListener {
-                        reservaViewModel.verificarReservaAtiva()
-                        Toast.makeText(this, "Buscando reserva ativa...", Toast.LENGTH_SHORT).show()
-                    }
+                val intent = Intent(
+                    this,
+                    ReservaActivity::class.java
+                ).apply {
+                    putExtra("vagaId", atual.reserva.vagaId)
+                    putExtra(
+                        "estacionamentoId",
+                        atual.reserva.estacionamentoId
+                    )
                 }
+
+                startActivity(intent)
+                finish()
+            }
+        } else {
+            titulo.setText(R.string.bloqueio_carregando)
+            tipo.visibility = View.GONE
+            nome.visibility = View.GONE
+            botao.setText(R.string.bloqueio_buscar)
+
+            botao.setOnClickListener {
+                reservaViewModel.verificarReservaAtiva()
+
+                Toast.makeText(
+                    this,
+                    getString(R.string.bloqueio_buscando),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
     private fun esconderTelaBloqueio() {
-        val layoutBloqueio = findViewById<View>(R.id.layoutBloqueio)
         layoutBloqueio?.let {
             binding.root.removeView(it)
         }
+
+        layoutBloqueio = null
     }
 
     private fun setupRecyclerView() {
         vagasAdapter = VagasAdapter(
-            isAdmin = this.isAdmin,
-            onEditClick = { vaga ->
-                startActivity(Intent(this, EditarVagaActivity::class.java).apply {
-                    putExtra("vagaId", vaga.id)
-                })
-            },
-            onDeleteClick = { vaga ->
-                showDeleteDialog(vaga)
-            },
-            onVagaClick = { vaga ->
+            onVagaSelecionada = { vaga ->
                 if (reservaViewModel.temReservaAtiva.value == true) {
-                    Toast.makeText(this, "Você já tem uma reserva ativa. Finalize-a antes de reservar outra vaga.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this,
+                        "Você já tem uma reserva ativa. " +
+                                "Finalize-a antes de reservar outra vaga.",
+                        Toast.LENGTH_LONG
+                    ).show()
+
                     return@VagasAdapter
                 }
 
-                if (!vaga.disponivel) {
-                    Toast.makeText(this, "Esta vaga não está disponível no momento.", Toast.LENGTH_SHORT).show()
-                    return@VagasAdapter
-                }
-
-                val intent = Intent(this, ReservaActivity::class.java).apply {
-                    putExtra("vagaId", vaga.id)
-                    putExtra("estacionamentoId", estacionamentoId)
-                    putExtra("numero", vaga.numero)
-                    putExtra("preco", vaga.preco)
-                    putExtra("tipo", vaga.tipo)
-                }
-                startActivity(intent)
+                atualizarPainelInferior(vaga)
             }
         )
-        binding.recyclerView.layoutManager = GridLayoutManager(this,2)
+
+        binding.recyclerView.layoutManager =
+            GridLayoutManager(this, 2)
+
         binding.recyclerView.adapter = vagasAdapter
+
+        binding.recyclerView.addItemDecoration(
+            GridSpacingItemDecoration(2, 48)
+        )
+    }
+
+    private fun atualizarPainelInferior(vaga: Vaga) {
+        binding.tvSelectedSpotName.text = "Vaga ${vaga.numero}"
+
+        val tipoVaga = if (vaga.preferencial) {
+            "Preferencial"
+        } else {
+            vaga.tipo.replaceFirstChar {
+                it.uppercase()
+            }
+        }
+
+        binding.tvSelectedSpotDetails.text = "$tipoVaga · Livre"
+        binding.tvPrecoReserva.text = "R$ %.2f".format(vaga.preco)
+
+        binding.btnReservar.isEnabled = true
+        binding.btnReservar.alpha = 1.0f
+
+        binding.btnReservar.setOnClickListener {
+            if (reservaViewModel.temReservaAtiva.value == true) {
+                Toast.makeText(
+                    this,
+                    "Você já tem uma reserva ativa. " +
+                            "Acesse sua reserva para continuar.",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                return@setOnClickListener
+            }
+
+            val intent = Intent(
+                this,
+                ReservaActivity::class.java
+            ).apply {
+                putExtra("vagaId", vaga.id)
+                putExtra("estacionamentoId", estacionamentoId)
+                putExtra("numero", vaga.numero)
+                putExtra("preco", vaga.preco)
+                putExtra("tipo", vaga.tipo)
+            }
+
+            startActivity(intent)
+        }
     }
 
     private fun setupObservers() {
@@ -186,60 +315,129 @@ class VagaActivity : AppCompatActivity() {
         }
 
         viewModel.errorMessage.observe(this) { message ->
-            message?.let { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
+            message?.let {
+                Toast.makeText(
+                    this,
+                    it,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
 
-        viewModel.veiculoPadraoTipo.observe(this) { tipo ->
-            if (binding.chipGroupTipoVaga.checkedChipId == View.NO_ID) {
-                when (tipo?.lowercase()) {
-                    "carro" -> binding.chipCarro.isChecked = true
-                    "moto" -> binding.chipMoto.isChecked = true
-                    else -> binding.chipTodos.isChecked = true
-                }
-            }
+        viewModel.veiculoPadraoTipo.observe(this) {
+            atualizarIconeEntrada(filtroSelecionado())
         }
     }
 
     private fun setupFilterListeners() {
-        binding.chipGroupTipoVaga.setOnCheckedChangeListener { group, checkedId ->
-            if (checkedId == View.NO_ID) return@setOnCheckedChangeListener
+        binding.chipGroupTipoVaga.setOnCheckedStateChangeListener {
+                _, checkedIds ->
 
-            if (reservaViewModel.temReservaAtiva.value == true) return@setOnCheckedChangeListener
+            val checkedId = checkedIds.firstOrNull()
+                ?: return@setOnCheckedStateChangeListener
 
-            val chip = group.findViewById<Chip>(checkedId)
-            viewModel.fetchVagasComFiltro(estacionamentoId!!, tipoFiltro = chip.text.toString())
+            if (reservaViewModel.temReservaAtiva.value == true) {
+                return@setOnCheckedStateChangeListener
+            }
+
+            atualizarCoresDosFiltros(checkedId)
+
+            val filtroTexto = filtroSelecionado(checkedId)
+
+            atualizarIconeEntrada(filtroTexto)
+
+            viewModel.fetchVagasComFiltro(
+                estacionamentoId!!,
+                tipoFiltro = filtroTexto
+            )
         }
     }
 
-    private fun setupAdminFeatures() {
-        if (isAdmin) {
-            binding.fabAdd.visibility = View.VISIBLE
-            binding.fabAdd.setOnClickListener {
-                val intent = Intent(this, CadastroVagaActivity::class.java)
-                intent.putExtra("estacionamentoId", estacionamentoId)
-                startActivity(intent)
-            }
+    private fun filtroSelecionado(
+        checkedId: Int = binding.chipGroupTipoVaga.checkedChipId
+    ): String = when (checkedId) {
+        R.id.chip_carro -> "carro"
+        R.id.chip_moto -> "moto"
+        R.id.chip_preferencial -> "preferencial"
+        else -> "todos"
+    }
+
+    private fun atualizarIconeEntrada(tipoSelecionado: String) {
+        val tipo = tipoSelecionado.trim().lowercase()
+
+        val isMoto = tipo == "moto" ||
+            (tipo !in listOf("carro", "moto") && viewModel.veiculoPadraoTipo.value?.trim()?.lowercase() == "moto")
+
+        if (isMoto) {
+            binding.ivCarroEntrada.setImageResource(
+                R.drawable.moto_vagaocupada
+            )
         } else {
-            binding.fabAdd.visibility = View.GONE
+            binding.ivCarroEntrada.setImageResource(
+                R.drawable.carro_vagaocupada
+            )
         }
     }
 
-    private fun showDeleteDialog(vaga: Vaga) {
-        AlertDialog.Builder(this)
-            .setTitle("Excluir Vaga")
-            .setMessage("Tem certeza que deseja excluir esta vaga?")
-            .setPositiveButton("Excluir") { _, _ ->
-                viewModel.deleteVaga(vaga.id) { success, message ->
-                    val toastMessage = if (success) "Vaga excluída com sucesso" else message ?: "Erro ao excluir"
-                    Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show()
-                }
+    private fun atualizarCoresDosFiltros(checkedId: Int) {
+        val chips = listOf(
+            binding.chipTodos,
+            binding.chipCarro,
+            binding.chipMoto,
+            binding.chipPreferencial
+        )
+
+        for (chip in chips) {
+            if (chip.id == checkedId) {
+                chip.setChipBackgroundColorResource(
+                    R.color.vallet_green_dark
+                )
+
+                chip.setTextColor(Color.WHITE)
+            } else {
+                chip.chipBackgroundColor =
+                    android.content.res.ColorStateList.valueOf(
+                        Color.WHITE
+                    )
+
+                chip.setTextColor(Color.parseColor("#3B5942"))
             }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         reservaViewModel.verificarReservaAtiva()
+    }
+}
+
+class GridSpacingItemDecoration(
+    private val spanCount: Int,
+    private val spacingDp: Int
+) : RecyclerView.ItemDecoration() {
+
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State
+    ) {
+        val position = parent.getChildAdapterPosition(view)
+
+        if (position == RecyclerView.NO_POSITION) {
+            return
+        }
+
+        val density = view.resources.displayMetrics.density
+        val spacing = (spacingDp * density).toInt()
+        val column = position % spanCount
+
+        if (column == 0) {
+            outRect.left = (8 * density).toInt()
+            outRect.right = spacing / 2
+        } else {
+            outRect.left = spacing / 2
+            outRect.right = (8 * density).toInt()
+        }
     }
 }

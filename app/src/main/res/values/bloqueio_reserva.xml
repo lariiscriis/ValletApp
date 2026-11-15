@@ -1,0 +1,18 @@
+<resources>
+    <string name="bloqueio_rodape">Finalize a reserva atual para reservar outra vaga.</string>
+    <string name="bloqueio_voltar">Voltar</string>
+    <string name="bloqueio_cabecalho">Reservar vaga</string>
+    <string name="bloqueio_status">RESERVA ATIVA</string>
+    <string name="bloqueio_titulo">Sua vaga já está reservada.</string>
+    <string name="bloqueio_descricao">Acompanhe sua reserva atual antes de escolher outra vaga.</string>
+    <string name="bloqueio_andamento">Reserva em andamento</string>
+    <string name="bloqueio_ver_reserva">Ver minha reserva</string>
+    <string name="bloqueio_buscar">Buscar minha reserva</string>
+    <string name="bloqueio_carregando">Carregando resumo…</string>
+    <string name="bloqueio_buscando">Buscando reserva ativa…</string>
+    <string name="bloqueio_vaga">Vaga %1$s</string>
+    <string name="bloqueio_vaga_indisponivel">Vaga reservada</string>
+    <dimen name="bloqueio_titulo">24sp</dimen>
+    <dimen name="bloqueio_espaco">10dp</dimen>
+    <dimen name="bloqueio_padding_cartao">14dp</dimen>
+</resources>

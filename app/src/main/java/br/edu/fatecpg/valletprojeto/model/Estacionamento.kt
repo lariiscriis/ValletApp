@@ -2,7 +2,6 @@ package br.edu.fatecpg.valletprojeto.model
 
 import android.location.Location
 import java.util.Calendar
-import java.util.concurrent.TimeUnit
 
 data class Estacionamento(
     var id: String = "",
@@ -12,7 +11,7 @@ data class Estacionamento(
     val adminUid: String? = null,
     val adminEmail: String = "",
     val dataCadastro: Any? = null,
-    val endereco: String = "",
+    val endereco: Map<String, Any>? = null,
     val cep: String = "",
     val tiposVagasComum: Boolean = false,
     val tiposVagasIdosoPcd: Boolean = false,
@@ -33,11 +32,21 @@ data class Estacionamento(
     val horarioFechamento: String = "7:00",
     val valorHora: Double? = null,
     val geohash: String? = null,
-    val isFavorite: Boolean = false
-
+    val isFavorite: Boolean = false,
+    val funciona24h: Boolean = false
 )
 {
 
+    val enderecoCompleto: String
+        get() {
+            if (endereco == null) return ""
+            val logradouro = endereco["logradouro"] ?: ""
+            val numero = endereco["numero"] ?: ""
+            val bairro = endereco["bairro"] ?: ""
+            val cidade = endereco["cidade"] ?: ""
+            val uf = endereco["uf"] ?: ""
+            return "$logradouro, $numero - $bairro, $cidade - $uf".trim().trim(',', '-', ' ')
+        }
     fun calcularDistancia(userLocation: Location?): Int? {
         if (userLocation == null || (latitude == 0.0 && longitude == 0.0)) {
             return null
@@ -51,6 +60,7 @@ data class Estacionamento(
     }
 
     fun estaAberto(): Boolean {
+        if (funciona24h) return true
         return try {
             val now = Calendar.getInstance()
             var currentMinutes = now.get(Calendar.HOUR_OF_DAY) * 60 + now.get(Calendar.MINUTE)

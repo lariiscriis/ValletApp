@@ -1,0 +1,5 @@
+<resources>
+    <dimen name="bloqueio_titulo">28sp</dimen>
+    <dimen name="bloqueio_espaco">16dp</dimen>
+    <dimen name="bloqueio_padding_cartao">18dp</dimen>
+</resources>

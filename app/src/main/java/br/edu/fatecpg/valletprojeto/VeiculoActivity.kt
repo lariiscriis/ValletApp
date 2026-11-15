@@ -2,7 +2,9 @@ package br.edu.fatecpg.valletprojeto
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,6 +25,13 @@ class VeiculoActivity : AppCompatActivity() {
     private lateinit var binding: ActivityVeiculoBinding
     private val viewModel: VeiculoViewModel by viewModels()
     private lateinit var veiculosAdapter: VeiculosAdapter
+    private val roteador by lazy { br.edu.fatecpg.valletprojeto.onboarding.RoteadorCadastro(this) }
+    private val cadastroInicial get() = intent.getBooleanExtra(EXTRA_CADASTRO_INICIAL, false)
+
+    companion object {
+        const val EXTRA_CADASTRO_INICIAL = "cadastro_inicial"
+        private const val TAG_CADASTRO = "cadastro_inicial_veiculo"
+    }
 
     private val editarVeiculoLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -34,8 +43,37 @@ class VeiculoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityVeiculoBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
+
+        if (cadastroInicial) {
+            binding.fabAddCar.visibility = View.GONE
+            binding.tvTitle.visibility = View.GONE
+            binding.tvSubtitle.visibility = View.GONE
+            binding.rvCarList.visibility = View.GONE
+            binding.llEmptyState.visibility = View.GONE
+            onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() = continuarDepois()
+            })
+            // Também valida restaurações do processo e entradas antigas nesta Activity.
+            roteador.verificar(carregando = {
+                binding.progressOverlay.visibility = if (it) View.VISIBLE else View.GONE
+            }, destinoAtual = { destino ->
+                if (destino == br.edu.fatecpg.valletprojeto.onboarding.DestinoCadastro.VEICULO) {
+                    binding.fragmentContainer.visibility = View.VISIBLE
+                    if (supportFragmentManager.findFragmentByTag(TAG_CADASTRO) == null) {
+                        supportFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, VeiculoFragment().apply {
+                                arguments = Bundle().apply { putBoolean(EXTRA_CADASTRO_INICIAL, true) }
+                            }, TAG_CADASTRO)
+                            .commit()
+                    }
+                } else roteador.abrir(destino)
+            })
+            return
+        }
 
         binding.fabAddCar.setOnClickListener {
             val veiculoFragment = VeiculoFragment()
@@ -49,6 +87,15 @@ class VeiculoActivity : AppCompatActivity() {
     fun carregarVeiculosDoUsuario() {
         viewModel.listarVeiculosDoUsuario(
             onSuccess = { lista ->
+                // Controle do Estado Vazio (Empty State)
+                if (lista.isEmpty()) {
+                    binding.rvCarList.visibility = View.GONE
+                    binding.llEmptyState.visibility = View.VISIBLE
+                } else {
+                    binding.rvCarList.visibility = View.VISIBLE
+                    binding.llEmptyState.visibility = View.GONE
+                }
+
                 veiculosAdapter.submitList(lista)
             },
             onFailure = { erro ->
@@ -58,7 +105,21 @@ class VeiculoActivity : AppCompatActivity() {
     }
 
     fun onVeiculoCadastrado() {
-        carregarVeiculosDoUsuario()
+        if (cadastroInicial) {
+            // Só chamado após confirmação do salvamento; confirma novamente o estado persistido.
+            roteador.verificar(carregando = {
+                binding.progressOverlay.visibility = if (it) View.VISIBLE else View.GONE
+            })
+        } else carregarVeiculosDoUsuario()
+    }
+
+    fun continuarDepois() {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Continuar depois?")
+            .setMessage("Seu cadastro será retomado na etapa de veículo ao abrir o Vallet.")
+            .setPositiveButton("Continuar depois") { _, _ -> moveTaskToBack(true) }
+            .setNegativeButton("Ficar", null)
+            .show()
     }
 
     private fun setupRecyclerView() {
@@ -66,7 +127,11 @@ class VeiculoActivity : AppCompatActivity() {
             onToggleClick = { veiculo ->
                 val userId = FirebaseAuth.getInstance().currentUser?.uid
                 if (userId != null) {
-                    viewModel.definirVeiculoPadrao(veiculo.id, userId) { sucesso -> }
+                    viewModel.definirVeiculoPadrao(veiculo.id, userId) { sucesso ->
+                        if (sucesso) {
+                            carregarVeiculosDoUsuario()
+                        }
+                    }
                 }
             },
             onItemClick = { veiculo ->
@@ -77,12 +142,13 @@ class VeiculoActivity : AppCompatActivity() {
                     putExtra("modelo", veiculo.modelo)
                     putExtra("apelido", veiculo.apelido)
                     putExtra("ano", veiculo.ano)
-                    putExtra("km", veiculo.km)
                     putExtra("tipo", veiculo.tipo)
+                    putExtra("cor", veiculo.cor)
+                    putExtra("padrao", veiculo.padrao)
+                    putExtra("fotoUrl", veiculo.fotoUrl)
                 }
                 editarVeiculoLauncher.launch(intent)
             }
-
         )
         binding.rvCarList.apply {
             layoutManager = LinearLayoutManager(this@VeiculoActivity)
@@ -100,22 +166,42 @@ class VeiculosAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(veiculo: Veiculo) {
-            binding.txvApelidoVeiculo.text = veiculo.modelo
-            binding.txvDetalhesVeiculo.text = "${veiculo.marca} - ${veiculo.ano}"
+            binding.txvApelidoVeiculo.text = if (!veiculo.apelido.isNullOrEmpty()) veiculo.apelido else veiculo.modelo
+
+            binding.txvDetalhesVeiculo.text = "${veiculo.marca} ${veiculo.modelo} - ${veiculo.ano}"
             binding.txvPlacaVeiculo.text = veiculo.placa
 
-            binding.ivVehicleIcon.setImageResource(
-                if (veiculo.tipo.equals("Moto", ignoreCase = true)) {
-                    R.drawable.moto_option_resized
-                } else {
-                    R.drawable.carro_option_resized
-                }
-            )
+            android.util.Log.d("VeiculoDebug", "Veiculo ${veiculo.modelo} placa ${veiculo.placa} fotoUrl = '${veiculo.fotoUrl}'")
 
-            if (veiculo.padrao) {
-                binding.ivFavoriteToggle.setImageResource(R.drawable.btn_star_on)
+            if (!veiculo.fotoUrl.isNullOrEmpty()) {
+                android.util.Log.d("GlideDebug", "Loading vehicle image URL: '${veiculo.fotoUrl}'")
+                com.bumptech.glide.Glide.with(binding.root.context)
+                    .load(veiculo.fotoUrl)
+                    .placeholder(
+                        if (veiculo.tipo.equals("Moto", ignoreCase = true)) R.drawable.moto_option_resized else R.drawable.carro_option_resized
+                    )
+                    .error(
+                        if (veiculo.tipo.equals("Moto", ignoreCase = true)) R.drawable.moto_option_resized else R.drawable.carro_option_resized
+                    )
+                    .centerCrop()
+                    .into(binding.ivVehicleIcon)
             } else {
-                binding.ivFavoriteToggle.setImageResource(R.drawable.btn_star_off)
+                binding.ivVehicleIcon.setImageResource(
+                    if (veiculo.tipo.equals("Moto", ignoreCase = true)) {
+                        R.drawable.moto_option_resized
+                    } else {
+                        R.drawable.carro_option_resized
+                    }
+                )
+            }
+
+            // Controle da Badge "Veículo principal" e ícone de Favorito
+            if (veiculo.padrao) {
+                binding.llBadgePrincipal.visibility = View.VISIBLE
+                binding.ivFavoriteToggle.setImageResource(R.drawable.ic_heart_filled)
+            } else {
+                binding.llBadgePrincipal.visibility = View.GONE
+                binding.ivFavoriteToggle.setImageResource(R.drawable.ic_heart_outline)
             }
 
             binding.ivFavoriteToggle.setOnClickListener {

@@ -13,11 +13,13 @@
     <string name="modelo">Modelo</string>
     <string name="apelido">Apelido (opcional)</string>
     <string name="ano">Ano</string>
-    <string name="KM">Km\'s</string>
     <string name="carro">Carro</string>
     <string name="moto">Moto</string>
     <string name="slider">Slider de tempo</string>
     <string name="editar_veiculo">Editar Veículo</string>
+
+    <string name="qr_acesso_botao">Acesso</string>
+    <string name="qr_acesso_descricao">Mostrar QR Code de acesso</string>
 
     <!-- Strings do Dashboard -->
     <string name="dashboard_reserva_atual">Sua Reserva Atual</string>
@@ -31,4 +33,20 @@
     <string name="dashboard_reservas">Reservas</string>
     <string name="dashboard_tempo_total">Tempo total</string>
     <string name="dashboard_historico_recente">Histórico Recente</string>
+    <string name="estacionamentos">Estacionamentos</string>
+    <string name="inicio">Início</string>
+    <string name="veiculos">Veículos</string>
+
+    <!-- Strings de Pagamento -->
+    <string name="pag_interrompido">Pagamento interrompido</string>
+    <string name="pag_dados_invalidos">Dados de pagamento inválidos</string>
+    <string name="pag_erro">Erro ao processar pagamento</string>
+    <plurals name="reserva_duracao_horas">
+        <item quantity="one">%d hora</item>
+        <item quantity="other">%d horas</item>
+    </plurals>
+    <string name="cancelamento_restante">Você pode cancelar por mais %1$02d:%2$02d.</string>
+    <string name="cancelamento_encerrado">O prazo de cancelamento encerrou. Para encerrar a reserva, utilize Finalizar.</string>
+    <string name="cancelamento_data_invalida">Não foi possível validar o início da reserva. Para encerrar, utilize Finalizar.</string>
+    <string name="cancelamento_indisponivel">O cancelamento está temporariamente indisponível. Sua reserva continua ativa. Tente novamente mais tarde.</string>
 </resources>

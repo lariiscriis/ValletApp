@@ -1,8 +1,8 @@
 package br.edu.fatecpg.valletprojeto
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -17,6 +17,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 import br.edu.fatecpg.valletprojeto.model.Vaga
+import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import br.edu.fatecpg.valletprojeto.model.JanelaCancelamento
 
 class ReservaActivity : AppCompatActivity() {
 
@@ -28,35 +35,36 @@ class ReservaActivity : AppCompatActivity() {
 
     private var vagaAtivaParaPagamento: Vaga? = null
 
+    private var estacionamentoLat: Double? = null
+    private var estacionamentoLon: Double? = null
+    private var estacionamentoNome: String? = null
+
+    // Capturando o valor real da hora do BD
+    private var estacionamentoValorHora: Double = 10.0
+
     private val pagamentoLauncher =
         registerForActivityResult(
             androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
         ) { result ->
-
             if (result.resultCode == RESULT_OK) {
                 vagaAtivaParaPagamento?.let { vaga ->
+
+                    // O ViewModel finaliza e libera a coleção "vaga" no mesmo lote.
                     viewModel.finalizarReservaAposPagamento(vaga) {
-
-                        val intent = Intent(this, DashboardBase::class.java)
+                        val intent = Intent(this, DashboardActivity::class.java)
                         startActivity(intent)
-
                         finish()
                     }
                 }
             }
         }
 
-
-    private var estacionamentoLat: Double? = null
-    private var estacionamentoLon: Double? = null
-    private var estacionamentoNome: String? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityReservaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(this).get(ReservaViewModel::class.java)
+        viewModel = ViewModelProvider(this)[ReservaViewModel::class.java]
 
         vagaId = intent.getStringExtra("vagaId")
         estacionamentoId = intent.getStringExtra("estacionamentoId")
@@ -78,13 +86,21 @@ class ReservaActivity : AppCompatActivity() {
                     estacionamentoNome!!
                 )
             } else {
-                Toast.makeText(this, "Carregando dados do estacionamento, tente novamente.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Carregando dados, tente novamente.", Toast.LENGTH_SHORT).show()
             }
         }
 
         setupGifAnimation()
         setupListeners()
         setupObservers()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                while (true) {
+                    atualizarCancelamento()
+                    delay(250)
+                }
+            }
+        }
 
         viewModel.carregarDadosIniciais(vagaId!!)
     }
@@ -97,24 +113,29 @@ class ReservaActivity : AppCompatActivity() {
                     estacionamentoLon = document.getDouble("longitude")
                     estacionamentoNome = document.getString("nome")
 
-                    Log.d("ReservaActivity", "Dados do Estacionamento carregados: $estacionamentoNome")
+                    val valorBd = document.getDouble("valorHora") ?: document.getDouble("valor_hora")
+                    if (valorBd != null) {
+                        estacionamentoValorHora = valorBd
+                    }
+
+                    Log.d("ReservaActivity", "Estacionamento: $estacionamentoNome | Valor: R$ $estacionamentoValorHora")
                 } else {
                     Toast.makeText(this, "Estacionamento não encontrado.", Toast.LENGTH_LONG).show()
                 }
             }
             .addOnFailureListener { e ->
                 Log.e("ReservaActivity", "Erro ao buscar dados do estacionamento", e)
-                Toast.makeText(this, "Erro ao carregar dados do estacionamento.", Toast.LENGTH_LONG).show()
             }
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
     fun abrirRotaParaEstacionamento(
         context: Context,
         destinoLatitude: Double,
         destinoLongitude: Double,
         nomeDestino: String
     ) {
-        val gmmIntentUri = Uri.parse("google.navigation:q=$destinoLatitude,$destinoLongitude")
+        val gmmIntentUri = "google.navigation:q=$destinoLatitude,$destinoLongitude".toUri()
         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
         mapIntent.setPackage("com.google.android.apps.maps")
         if (mapIntent.resolveActivity(context.packageManager) != null) {
@@ -122,7 +143,7 @@ class ReservaActivity : AppCompatActivity() {
         } else {
             val webIntent = Intent(
                 Intent.ACTION_VIEW,
-                Uri.parse("https://www.google.com/maps/dir/?api=1&destination=$destinoLatitude,$destinoLongitude&destination_place_id=$nomeDestino" )
+                "https://www.google.com/maps/dir/?api=1&destination=$destinoLatitude,$destinoLongitude&destination_place_id=$nomeDestino".toUri()
             )
             if (webIntent.resolveActivity(context.packageManager) != null) {
                 context.startActivity(webIntent)
@@ -132,29 +153,76 @@ class ReservaActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupGifAnimation() {
+    private fun carregarImagemVeiculo(tipo: String) {
+        val imagemResId = if (tipo.equals("Moto", ignoreCase = true) || tipo.equals("Motocicleta", ignoreCase = true)) {
+            R.drawable.moto_vagaocupada
+        } else {
+            R.drawable.carro_vagaocupada
+        }
+
         Glide.with(this)
-            .asGif()
-            .load(R.drawable.reserva_carro)
+            .load(imagemResId)
             .into(binding.gifCarro)
     }
 
+    private fun setupGifAnimation() {
+        val pulseAnimation = android.view.animation.AnimationUtils.loadAnimation(this, R.anim.pulse_animation)
+        binding.circuloFundoAnimado.startAnimation(pulseAnimation)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        atualizarDuracaoSelecionada()
+    }
+
+    private fun atualizarDuracaoSelecionada() {
+        val horas = binding.sliderTempo.value.toInt()
+        binding.tvTempoSelecionado.text =
+            resources.getQuantityString(R.plurals.reserva_duracao_horas, horas, horas)
+    }
+
     private fun setupListeners() {
-        binding.sliderTempo.addOnChangeListener { _, value, _ ->
-            val horas = value.toInt()
-            binding.tvTempoSelecionado.text = String.format("%02d:00", horas)
+        binding.btnVoltar.setOnClickListener {
+            finish()
         }
+
+        atualizarDuracaoSelecionada()
+        binding.sliderTempo.addOnChangeListener { _, _, _ ->
+            atualizarDuracaoSelecionada()
+        }
+
         binding.btnReservar.setOnClickListener {
             val horasSelecionadas = binding.sliderTempo.value.toInt()
             if (estacionamentoNome != null) {
                 viewModel.criarReserva(vagaId!!, estacionamentoId!!,
                     estacionamentoNome!!, horasSelecionadas)
             } else {
-                Toast.makeText(this, "Nome do estacionamento não carregado. Tente novamente.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Nome não carregado. Tente novamente.", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    private fun atualizarCancelamento() {
+        val ativa = viewModel.uiState.value as? ReservaUIState.Active ?: return
+        val inicio = ativa.reserva.inicioReserva?.toDate()?.time
+        val restante = JanelaCancelamento.restanteMs(ativa.reserva.status, inicio, System.currentTimeMillis())
+        val ocupado = viewModel.cancelando.value == true
+        binding.tvPrazoCancelamento.visibility = View.VISIBLE
+        binding.btnCancelar.isEnabled = restante > 0 && !ocupado
+        binding.btnRenovar.isEnabled = !ocupado
+        binding.btnFinalizar.isEnabled = !ocupado
+        binding.tvPrazoCancelamento.text = when {
+            inicio == null || inicio <= 0 || inicio > System.currentTimeMillis() ->
+                getString(R.string.cancelamento_data_invalida)
+            restante == 0L -> getString(R.string.cancelamento_encerrado)
+            else -> {
+                val segundos = (restante + 999) / 1000
+                getString(R.string.cancelamento_restante, segundos / 60, segundos % 60)
+            }
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
     private fun setupObservers() {
         viewModel.uiState.observe(this) { state ->
             binding.progressBar.visibility = View.GONE
@@ -164,6 +232,7 @@ class ReservaActivity : AppCompatActivity() {
             binding.btnRenovar.visibility = View.GONE
             binding.btnFinalizar.visibility = View.GONE
             binding.btnCancelar.visibility = View.GONE
+            binding.tvPrazoCancelamento.visibility = View.GONE
 
             when (state) {
                 is ReservaUIState.Initial, is ReservaUIState.Loading -> {
@@ -174,9 +243,11 @@ class ReservaActivity : AppCompatActivity() {
                     binding.layoutConfigReserva.visibility = View.VISIBLE
                     binding.btnReservar.visibility = View.VISIBLE
 
-                    binding.tvVagaNumero.text = "Vaga ${state.vaga.numero}"
-                    binding.tvVagaDetalhes.text = "Tipo: ${state.vaga.tipo} • Local: ${state.vaga.localizacao}"
-                    binding.tvVeiculoInfo.text = "Veículo: ${state.veiculo.modelo} (${state.veiculo.placa})"
+                    binding.tvVagaNumero.text = state.vaga.numero
+                    binding.tvVagaDetalhes.text = "${state.vaga.tipo}\n${state.vaga.localizacao}"
+                    binding.tvVeiculoInfo.text = "${state.veiculo.modelo} (${state.veiculo.placa})"
+
+                    carregarImagemVeiculo(state.vaga.tipo)
                 }
 
                 is ReservaUIState.Active -> {
@@ -186,21 +257,22 @@ class ReservaActivity : AppCompatActivity() {
                     binding.btnRenovar.visibility = View.VISIBLE
                     binding.btnFinalizar.visibility = View.VISIBLE
                     binding.btnCancelar.visibility = View.VISIBLE
+                    atualizarCancelamento()
 
-                    binding.tvVagaNumero.text = "Vaga ${state.vaga.numero}"
-                    binding.tvVagaDetalhes.text = "Tipo: ${state.vaga.tipo} • Local: ${state.vaga.localizacao}"
-                    binding.tvVeiculoInfo.text = "Veículo: ${state.veiculo.modelo} (${state.veiculo.placa})"
+                    binding.tvVagaNumero.text = state.vaga.numero
+                    binding.tvVagaDetalhes.text = "${state.vaga.tipo}\n${state.vaga.localizacao}"
+                    binding.tvVeiculoInfo.text = "${state.veiculo.modelo} (${state.veiculo.placa})"
+
+                    carregarImagemVeiculo(state.vaga.tipo)
 
                     val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-                    val inicioStr = sdf.format(state.reserva.inicioReserva!!.toDate())
+                    val inicioStr = state.reserva.inicioReserva?.toDate()?.let { sdf.format(it) } ?: "—"
                     val fimStr = sdf.format(state.reserva.fimReserva!!.toDate())
-                    binding.tvHorarioReserva.text = "Reserva das $inicioStr às $fimStr"
+                    binding.tvHorarioReserva.text = "$inicioStr às $fimStr"
 
                     binding.btnRenovar.setOnClickListener { viewModel.renovarReserva(state.reserva) }
                     binding.btnCancelar.setOnClickListener { viewModel.cancelarReserva(state.vaga) }
 
-                    // Finalizar Reserva: abre a tela de pagamento (mock) para encerrar
-                    // a reserva antes do horário final, passando os dados atuais.
                     binding.btnFinalizar.setOnClickListener {
                         val intent = Intent(this, PagamentoActivity::class.java).apply {
                             putExtra("vagaId", state.vaga.id)
@@ -212,7 +284,13 @@ class ReservaActivity : AppCompatActivity() {
                             putExtra("veiculoPlaca", state.veiculo.placa)
                             putExtra("horarioInicioTexto", inicioStr)
                             putExtra("horarioFimTexto", fimStr)
-                            putExtra("horaInicioMillis", state.reserva.inicioReserva!!.toDate().time)
+                            state.reserva.inicioReserva?.let { putExtra("horaInicioMillis", it.toDate().time) }
+
+                            // ENVIANDO O PREÇO PARA A TELA DE PAGAMENTO!
+                            putExtra("valorHora", estacionamentoValorHora)
+
+                            putExtra("reservaId", state.reserva.id)
+                            putExtra("usuarioId", com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid)
                         }
 
                         pagamentoLauncher.launch(intent)
@@ -231,9 +309,16 @@ class ReservaActivity : AppCompatActivity() {
             }
         }
 
+        viewModel.cancelando.observe(this) { atualizarCancelamento() }
+        viewModel.erroCancelamento.observe(this) { erro ->
+            if (erro != null) {
+                Toast.makeText(this, erro, Toast.LENGTH_LONG).show()
+                viewModel.consumirErroCancelamento()
+                atualizarCancelamento()
+            }
+        }
         viewModel.tempoRestante.observe(this) { tempo ->
             binding.tvTimer.text = tempo
         }
     }
-
 }
