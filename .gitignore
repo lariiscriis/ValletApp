@@ -20,9 +20,5 @@ Thumbs.db
 .externalNativeBuild
 .cxx
 /manage.py
-/.vscode/settings.json
-
-
-
-
+.vscode/
 
