@@ -65,7 +65,7 @@
             app:layout_constraintEnd_toEndOf="@id/cv_parking_image_container"
             app:layout_constraintTop_toTopOf="@id/cv_parking_image_container" />
 
-        <!-- NOME DO ESTACIONAMENTO (Agora ocupa todo o espaço até a foto) -->
+        <!-- NOME DO ESTACIONAMENTO -->
         <TextView
             android:id="@+id/txv_nome_estacionamento"
             android:layout_width="0dp"
