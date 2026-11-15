@@ -20,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.core.graphics.get
 
 /** Apresentação local: a decisão de sessão/cadastro permanece exclusivamente na MainActivity. */
 class AberturaActivity : AppCompatActivity(), TextureView.SurfaceTextureListener {
@@ -84,7 +85,7 @@ class AberturaActivity : AppCompatActivity(), TextureView.SurfaceTextureListener
                         }
                         val frame = retriever.getFrameAtTime(0)
                         frame?.let {
-                            val pixel = it.getPixel(0, 0)
+                            val pixel = it[0, 0]
                             it.recycle()
                             pixel
                         }

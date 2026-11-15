@@ -80,9 +80,6 @@ class PerfilActivity : AppCompatActivity() {
     }
     private fun setupListeners() {
         binding.btnSairConta.setOnClickListener { SessaoUsuario.sair(this) }
-/*        binding.btnVerHistorico.setOnClickListener {
-            startActivity(Intent(this, HistoricoReservasActivity::class.java))
-        }*/
     }
 
     override fun onResume() {

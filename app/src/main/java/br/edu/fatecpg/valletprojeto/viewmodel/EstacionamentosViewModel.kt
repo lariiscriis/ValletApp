@@ -114,7 +114,13 @@ class EstacionamentosViewModel(application: Application) : AndroidViewModel(appl
                 val favoriteIdsDeferred = async { fetchFavoriteIds() }
                 val parkingsDeferred = async {
                     if (userLocation != null) {
-                        fetchParkingsNear(userLocation)
+                        val nearParkings = fetchParkingsNear(userLocation)
+                        if (nearParkings.isNotEmpty()) {
+                            nearParkings
+                        } else {
+                            Log.d("EstacionamentosViewModel", "Nenhum estacionamento no raio de $currentRadiusKm km ou sem geohash. Buscando todos como fallback...")
+                            fetchAllParkings()
+                        }
                     } else {
                         Log.d("EstacionamentosViewModel", "Fallback: buscando todos os estacionamentos (sem geofire).")
                         fetchAllParkings()

@@ -34,12 +34,8 @@ class CadastroUsuarioActivity : AppCompatActivity() {
         binding.btnVoltar.prepararVoltar()
         br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
         IndicadoresCadastro.mostrar(binding.root, 2)
-        binding.botaoLogin.setOnClickListener {
-            if (!ocupado()) {
-                SessaoUsuario.sair(this)
-            }
-        }
-        binding.btnVoltar.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        setupUI()
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (!ocupado()) {
@@ -48,7 +44,6 @@ class CadastroUsuarioActivity : AppCompatActivity() {
                 }
             }
         })
-        binding.btnCadastrar.setOnClickListener { cadastrar() }
         viewModel.estado.observe(this) { estado ->
             atualizarCarregamento()
             ajustarSessao()
@@ -57,7 +52,6 @@ class CadastroUsuarioActivity : AppCompatActivity() {
                 avancando = true
                 IndicadoresCadastro.mostrar(binding.root, 2)
                 lifecycleScope.launch {
-                    delay(320)
                     roteador.verificar(::carregando)
                 }
             }
@@ -133,5 +127,32 @@ class CadastroUsuarioActivity : AppCompatActivity() {
             return
         }
         viewModel.cadastrarUsuario(usuario)
+    }
+
+    private fun setupUI() {
+        setupListeners()
+    }
+
+    private fun setupListeners() {
+        binding.botaoLogin.setOnClickListener {
+            if (!ocupado()) {
+                SessaoUsuario.sair(this)
+            }
+        }
+        binding.btnVoltar.setOnClickListener { onBackPressedDispatcher.onBackPressed() }
+        binding.btnCadastrar.setOnClickListener { cadastrar() }
+
+        var isPasswordVisible = false
+        binding.senhaimg.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+            if (isPasswordVisible) {
+                binding.edtSenha.transformationMethod = android.text.method.HideReturnsTransformationMethod.getInstance()
+                binding.senhaimg.setImageResource(R.drawable.ic_eye)
+            } else {
+                binding.edtSenha.transformationMethod = android.text.method.PasswordTransformationMethod.getInstance()
+                binding.senhaimg.setImageResource(R.drawable.ic_eye_off)
+            }
+            binding.edtSenha.setSelection(binding.edtSenha.text?.length ?: 0)
+        }
     }
 }

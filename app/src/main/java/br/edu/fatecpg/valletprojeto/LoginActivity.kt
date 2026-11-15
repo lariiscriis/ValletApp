@@ -9,7 +9,6 @@ import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import br.edu.fatecpg.valletprojeto.databinding.ActivityLoginBinding
 import com.google.android.gms.security.ProviderInstaller

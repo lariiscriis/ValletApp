@@ -92,7 +92,17 @@ class CadastroFotoUsuarioActivity : AppCompatActivity() {
             setTextColor(ContextCompat.getColor(this@CadastroFotoUsuarioActivity, R.color.white))
             conteudo.addView(this, LinearLayout.LayoutParams(-1, dp(58)))
         }
-        escolher = botao("Escolher foto")
+        fun escolherFoto(titulo: String): MaterialButton = MaterialButton(this).apply {
+            text = titulo; isAllCaps = false
+            cornerRadius = dp(24)
+            strokeColor = ContextCompat.getColorStateList(this@CadastroFotoUsuarioActivity, R.color.vallet_green_dark)
+            strokeWidth = dp(2)
+            typeface = ResourcesCompat.getFont(this@CadastroFotoUsuarioActivity, R.font.poppins_medium)
+            backgroundTintList = ContextCompat.getColorStateList(this@CadastroFotoUsuarioActivity, R.color.vallet_background)
+            setTextColor(ContextCompat.getColor(this@CadastroFotoUsuarioActivity, R.color.vallet_green_dark))
+            conteudo.addView(this, LinearLayout.LayoutParams(-1, dp(58)))
+        }
+        escolher = escolherFoto("Escolher foto")
         continuar = botao("Salvar foto e continuar")
         depois = botao("Adicionar depois")
         texto("Você pode alterar sua foto no perfil.", 12f)
