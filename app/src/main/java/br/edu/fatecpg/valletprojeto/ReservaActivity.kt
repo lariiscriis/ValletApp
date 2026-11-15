@@ -24,6 +24,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
 import br.edu.fatecpg.valletprojeto.model.JanelaCancelamento
+import kotlin.time.Duration.Companion.milliseconds
 
 class ReservaActivity : AppCompatActivity() {
 
@@ -97,7 +98,7 @@ class ReservaActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 while (true) {
                     atualizarCancelamento()
-                    delay(250)
+                    delay(250.milliseconds)
                 }
             }
         }
@@ -128,27 +129,41 @@ class ReservaActivity : AppCompatActivity() {
             }
     }
 
-    @SuppressLint("QueryPermissionsNeeded")
     fun abrirRotaParaEstacionamento(
         context: Context,
-        destinoLatitude: Double,
-        destinoLongitude: Double,
-        nomeDestino: String
+        destinoLatitude: Double?,
+        destinoLongitude: Double?,
+        nomeDestino: String?
     ) {
-        val gmmIntentUri = "google.navigation:q=$destinoLatitude,$destinoLongitude".toUri()
-        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-        mapIntent.setPackage("com.google.android.apps.maps")
-        if (mapIntent.resolveActivity(context.packageManager) != null) {
+        if (destinoLatitude == null || destinoLongitude == null || (destinoLatitude == 0.0 && destinoLongitude == 0.0)) {
+            Toast.makeText(context, "Coordenadas de localização indisponíveis para este estacionamento.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        try {
+            // Abre navegação direta no Google Maps
+            val gmmIntentUri = "google.navigation:q=$destinoLatitude,$destinoLongitude".toUri()
+            val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
+                setPackage("com.google.android.apps.maps")
+            }
             context.startActivity(mapIntent)
-        } else {
-            val webIntent = Intent(
-                Intent.ACTION_VIEW,
-                "https://www.google.com/maps/dir/?api=1&destination=$destinoLatitude,$destinoLongitude&destination_place_id=$nomeDestino".toUri()
-            )
-            if (webIntent.resolveActivity(context.packageManager) != null) {
-                context.startActivity(webIntent)
-            } else {
-                Toast.makeText(context, "Nenhum aplicativo de mapas encontrado.", Toast.LENGTH_LONG).show()
+        } catch (_: Exception) {
+            try {
+                // Tenta abrir genérico com geo URI (permite ao usuário escolher entre Waze, Maps, etc.)
+                val geoUri = "geo:$destinoLatitude,$destinoLongitude?q=$destinoLatitude,$destinoLongitude(${nomeDestino ?: "Estacionamento"})".toUri()
+                val geoIntent = Intent(Intent.ACTION_VIEW, geoUri)
+                context.startActivity(geoIntent)
+            } catch (_: Exception) {
+                try {
+                    // Fallback final: navegador web com direções do Google Maps
+                    val webIntent = Intent(
+                        Intent.ACTION_VIEW,
+                        "https://www.google.com/maps/dir/?api=1&destination=$destinoLatitude,$destinoLongitude".toUri()
+                    )
+                    context.startActivity(webIntent)
+                } catch (_: Exception) {
+                    Toast.makeText(context, "Nenhum aplicativo de mapas ou navegador encontrado.", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
@@ -318,7 +333,6 @@ class ReservaActivity : AppCompatActivity() {
             }
         }
         viewModel.tempoRestante.observe(this) { tempo ->
-            binding.tvTimer.text = tempo
-        }
+            binding.tvTimer.text = tempo}
     }
 }
