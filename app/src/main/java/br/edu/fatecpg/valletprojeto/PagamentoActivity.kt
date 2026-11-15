@@ -24,6 +24,9 @@ import retrofit2.Response
 import br.edu.fatecpg.valletprojeto.service.RequisicaoPagamento
 import br.edu.fatecpg.valletprojeto.service.RespostaPix
 import br.edu.fatecpg.valletprojeto.service.RetrofitClient
+import androidx.core.view.isVisible
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 
 class PagamentoActivity : AppCompatActivity() {
 
@@ -72,15 +75,15 @@ class PagamentoActivity : AppCompatActivity() {
 
     private fun voltarEtapa() {
         when {
-            binding.layoutSaidaLiberada.visibility == View.VISIBLE -> {
+            binding.layoutSaidaLiberada.isVisible -> {
                 setResult(RESULT_OK)
                 finish()
             }
             // Após aprovação, mantém o QR de saída até a conclusão.
-            binding.layoutSucesso.visibility == View.VISIBLE -> {
+            binding.layoutSucesso.isVisible -> {
                 Toast.makeText(this, "Conclua a saída antes de voltar", Toast.LENGTH_SHORT).show()
             }
-            binding.layoutEtapa2Pix.visibility == View.VISIBLE -> {
+            binding.layoutEtapa2Pix.isVisible -> {
                 binding.layoutEtapa2Pix.visibility = View.GONE
                 binding.layoutEtapa1Pagamento.visibility = View.VISIBLE
             }
@@ -131,6 +134,8 @@ class PagamentoActivity : AppCompatActivity() {
         binding.tvSucessoEstacionamento.text = estacionamentoNome
         binding.tvSucessoVaga.text = getString(R.string.pagamento_qr_vaga, vagaNumero)
         binding.tvSucessoVeiculo.text = getString(R.string.pagamento_qr_placa, veiculoPlaca)
+        binding.tvSucessoValor.text = formatarValor(valorTotal)
+        binding.tvSaidaValorPago.text = formatarValor(valorTotal)
     }
 
     private fun formatarValor(valor: Double): String = "R$ %.2f".format(valor).replace(".", ",")
@@ -229,10 +234,10 @@ class PagamentoActivity : AppCompatActivity() {
     private fun gerarBitmapQrCode(conteudo: String): Bitmap {
         val tamanho = 512
         val bitMatrix = QRCodeWriter().encode(conteudo, BarcodeFormat.QR_CODE, tamanho, tamanho)
-        val bitmap = Bitmap.createBitmap(tamanho, tamanho, Bitmap.Config.RGB_565)
+        val bitmap = createBitmap(tamanho, tamanho, Bitmap.Config.RGB_565)
         for (x in 0 until tamanho) {
             for (y in 0 until tamanho) {
-                bitmap.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                bitmap[x, y] = if (bitMatrix[x, y]) Color.BLACK else Color.WHITE
             }
         }
         return bitmap
@@ -272,13 +277,71 @@ class PagamentoActivity : AppCompatActivity() {
         }
     }
 
+    private var pagamentoSalvoNoFirebase = false
+
     private fun mostrarPagamentoAprovado() {
         binding.layoutEtapa2Pix.visibility = View.GONE
         binding.layoutEtapa1Pagamento.visibility = View.GONE
         binding.layoutEtapa3Sucesso.visibility = View.VISIBLE
 
+        salvarPagamentoNoFirebase()
         gerarQrCode("VALLET-SAIDA-${System.currentTimeMillis()}")
         animarEntradaSucesso()
+    }
+
+    private fun salvarPagamentoNoFirebase() {
+        if (pagamentoSalvoNoFirebase) return
+        pagamentoSalvoNoFirebase = true
+
+        val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+        val formaStr = formaSelecionada?.name ?: "PIX"
+
+        val dadosReserva = hashMapOf<String, Any>(
+            "valorTotal" to valorTotal,
+            "valorPago" to valorTotal,
+            "statusPagamento" to "pago",
+            "formaPagamento" to formaStr,
+            "dataPagamento" to com.google.firebase.Timestamp.now()
+        )
+
+        // Atualiza o valor total no documento da reserva no Firestore
+        if (reservaIdExtra.isNotEmpty()) {
+            db.collection("reserva")
+                .document(reservaIdExtra)
+                .set(dadosReserva, com.google.firebase.firestore.SetOptions.merge())
+                .addOnSuccessListener {
+                    android.util.Log.d("PagamentoActivity", "✅ Valor total R$ $valorTotal salvo com sucesso na reserva $reservaIdExtra")
+                }
+                .addOnFailureListener { e ->
+                    android.util.Log.e("PagamentoActivity", "❌ Erro ao salvar valor pago na reserva", e)
+                }
+        }
+
+        // Salva um registro completo na coleção de pagamentos
+        val usuarioId = usuarioIdExtra.ifEmpty {
+            com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid.orEmpty()
+        }
+
+        val novoPagamento = hashMapOf<String, Any>(
+            "usuarioId" to usuarioId,
+            "reservaId" to reservaIdExtra,
+            "estacionamentoNome" to estacionamentoNome,
+            "vagaNumero" to vagaNumero,
+            "veiculoPlaca" to veiculoPlaca,
+            "valorTotal" to valorTotal,
+            "formaPagamento" to formaStr,
+            "status" to "aprovado",
+            "dataPagamento" to com.google.firebase.Timestamp.now()
+        )
+
+        db.collection("pagamentos")
+            .add(novoPagamento)
+            .addOnSuccessListener { ref ->
+                android.util.Log.d("PagamentoActivity", "✅ Registro de pagamento salvo na coleção 'pagamentos' com ID: ${ref.id}")
+            }
+            .addOnFailureListener { e ->
+                android.util.Log.e("PagamentoActivity", "❌ Erro ao criar registro na coleção 'pagamentos'", e)
+            }
     }
 
     private fun animarEntradaSucesso() {
@@ -296,10 +359,10 @@ class PagamentoActivity : AppCompatActivity() {
         try {
             val tamanho = 512
             val bitMatrix = QRCodeWriter().encode(conteudo, BarcodeFormat.QR_CODE, tamanho, tamanho)
-            val bitmap = Bitmap.createBitmap(tamanho, tamanho, Bitmap.Config.RGB_565)
+            val bitmap = createBitmap(tamanho, tamanho, Bitmap.Config.RGB_565)
             for (x in 0 until tamanho) {
                 for (y in 0 until tamanho) {
-                    bitmap.setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                    bitmap[x, y] = if (bitMatrix[x, y]) Color.BLACK else Color.WHITE
                 }
             }
             binding.ivQrCode.setImageBitmap(bitmap)
