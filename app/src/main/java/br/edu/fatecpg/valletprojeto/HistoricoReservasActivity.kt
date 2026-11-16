@@ -3,11 +3,13 @@ package br.edu.fatecpg.valletprojeto
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import br.edu.fatecpg.valletprojeto.adapter.ReservaAdapter
 import br.edu.fatecpg.valletprojeto.databinding.ActivityHistoricoReservasBinding
+import br.edu.fatecpg.valletprojeto.ui.prepararVoltar
 import br.edu.fatecpg.valletprojeto.viewmodel.HistoricoReservasViewModel
 
 class HistoricoReservasActivity : AppCompatActivity() {
@@ -18,24 +20,22 @@ class HistoricoReservasActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityHistoricoReservasBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.btnVoltar.prepararVoltar()
+        br.edu.fatecpg.valletprojeto.ui.FormularioInsets.instalar(binding.root)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        title = "Histórico de Reservas"
+        binding.btnVoltar.setOnClickListener {
+            finish()
+        }
 
-        viewModel = ViewModelProvider(this).get(HistoricoReservasViewModel::class.java)
+        viewModel = ViewModelProvider(this)[HistoricoReservasViewModel::class.java]
 
         setupRecyclerView()
         setupObservers()
 
         viewModel.carregarHistoricoCompleto()
-    }
-
-
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
     }
 
     private fun setupRecyclerView() {

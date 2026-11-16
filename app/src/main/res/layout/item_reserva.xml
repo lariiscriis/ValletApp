@@ -8,7 +8,7 @@
     android:paddingHorizontal="20dp"
     android:paddingTop="16dp">
 
-    <!-- Avatar / Círculo da Vaga (Mantém o ID tvVaga) -->
+    <!-- Avatar / Círculo da Vaga -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_vaga"
         android:layout_width="46dp"
@@ -27,15 +27,15 @@
             android:gravity="center"
             android:fontFamily="@font/poppins_semibold"
             android:textColor="@color/vallet_green_dark"
-            android:textSize="18sp"
-            tools:text="P" />
+            android:textSize="14sp"
+            tools:text="A-4" />
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Textos: Nome do Estacionamento e Período -->
+    <!-- Textos: Nome do Estacionamento e Período (15/11 • 22:55 - 02:55) -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="14dp"
         android:layout_marginEnd="8dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@+id/card_vaga"
@@ -52,7 +52,7 @@
             android:maxLines="1"
             android:ellipsize="end"
             android:textSize="14sp"
-            tools:text="Shopping Praia Grande" />
+            tools:text="Litoral Plaza Shopping" />
 
         <TextView
             android:id="@+id/tvPeriodo"
@@ -61,41 +61,43 @@
             android:layout_marginTop="2dp"
             android:fontFamily="@font/poppins"
             android:textColor="@color/vallet_green"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:textSize="12sp"
-            tools:text="14/10/2025 • 10:12 - 12:45" />
+            tools:text="15/11 • 22:55 - 02:55" />
     </LinearLayout>
 
-    <!-- Pílula de Status / Duração (Mantém o ID tvStatus) -->
+    <!-- Pílula de Status / Duração (Ex: 4h 0min) -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         app:cardBackgroundColor="#E5EAE5"
         app:cardCornerRadius="12dp"
         app:cardElevation="0dp"
         app:strokeWidth="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/card_vaga"
-        app:layout_constraintEnd_toStartOf="@+id/iv_arrow"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/card_vaga">
 
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="5dp"
             android:fontFamily="@font/poppins_medium"
-            android:textColor="@color/vallet_green_dark"
-            android:textSize="11sp"
-            tools:text="2h 33min" />
+            android:textColor="@color/vallet_text"
+            android:textSize="12sp"
+            tools:text="4h 0min" />
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Seta (Chevron Right) -->
+    <!-- Seta removida conforme solicitado -->
     <ImageView
         android:id="@+id/iv_arrow"
         android:layout_width="16dp"
         android:layout_height="16dp"
+        android:visibility="gone"
         android:src="@drawable/chevron_right"
         app:tint="@color/vallet_green_dark"
         app:layout_constraintBottom_toBottomOf="@+id/card_vaga"
